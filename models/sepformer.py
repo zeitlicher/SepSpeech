@@ -97,7 +97,7 @@ class SepFormerLayer(nn.Module):
     def __init__(self, config):
         super(SepFormerLayer, self).__init__()
         self.pos_encoder = PositionEncoding(config)
-        encoder_layer = TransformerEncoderLayer(
+        encoder_layer = nn.TransformerEncoderLayer(
             config['d_model'],
             config['nhead'],
             config['dim_feedforward'],
@@ -110,12 +110,12 @@ class SepFormerLayer(nn.Module):
             eps=config['layer_norm_eps']
         )
 
-        self.intra_T = TransformerEncoder(
+        self.intra_T = nn.TransformerEncoder(
             encoder_layer,
             config['num_layers'],
             encoder_norm
             )
-        self.inter_T = TransformerEncoder(
+        self.inter_T = nn.TransformerEncoder(
             encoder_layer,
             config['num_layers'],
             encoder_norm
