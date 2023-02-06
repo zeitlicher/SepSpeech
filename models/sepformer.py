@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
-from .. import configure
+from ..configure import configure
 import torchaudio
 
 class PositionEncoding(nn.Module):
