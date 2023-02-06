@@ -123,7 +123,7 @@ class SepFormerLayer(nn.Module):
 
     def forward(self, x):
         # x: (B, C, Intra, Inter)
-        _batch, _channel, _intra, _inter = x.shape()
+        _batch, _channel, _intra, _inter = x.shape
         x = rearrange('b a r c-> (b r) a c')
         x = self.intra_T.forward(self.pos_encoder(x))
         x = torch.reshape(x, (_batch, _inter, _intra, _channel))
@@ -197,6 +197,7 @@ class MaskingNetwork(nn.Module):
         y = rearrange(x, 'b c t -> b t c')
         y = self.norm(y)
         y = self.linear1(y)
+        print(y.shape)
         y = self.chunk(y)
         y = self.sepformer(y)
         y = self.linear2(self.act2(y))
