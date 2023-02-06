@@ -164,7 +164,7 @@ class SpeakerNetwork(nn.Module):
 
     def forward(self, x):
         y = self.encoder(x)
-        y = self.conv(x)
+        y = self.conv(y)
         y = torch.mean(y, dim=1) # (B, C)
         z = self.linear(self.act(y)) # (B, S)
         return y, z
