@@ -5,7 +5,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
-from model import PositionEncoding
+import ..configure
+import torchaudio
 
 class PositionEncoding(nn.Module):
     def __init__(self, config):
@@ -13,8 +14,8 @@ class PositionEncoding(nn.Module):
         self.dropout = nn.Dropout(config['dropout'])
 
         pe = torch.zeros(config['max_len'], config['d_model'])
-        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
-        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0)/d_model))
+        position = torch.arange(0, config['max_len'], dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0)/config['d_model']))
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
 
@@ -136,7 +137,7 @@ class SepFormer(nn.Module):
     def __init__(self, config):
         super(SepFormer, self).__init__()
         self.layers = ModuleList()
-        for n in range(config['num_sep_layers']):
+        for n in range(config['num_sepformer_layers']):
             self.layers.append(SepFormerLayer(config))
 
     def forward(self, x):
@@ -185,9 +186,7 @@ class MaskingNetwork(nn.Module):
         )
         self.linear1 = nn.Linear(config['channels'], config['d_model'])
         self.chunk = ChunkLayer(config)
-        self.layers = ModuleList()
-        for n in range(config['num_sepformers']):
-            self.layers.append(SepFormer(config))
+        self.sepformer = SepFormer(config)
         self.act1 = nn.PReLU()
         self.linear2 = nn.Linear(config['d_model'], config['channels'])
         self.overlapadd = OverlapAddLayer(config)
@@ -196,8 +195,7 @@ class MaskingNetwork(nn.Module):
     def forward(self, x):
         y = self.linear1(self.norm(x))
         y = self.chunk(y)
-        for layer in self.layers:
-            y = layer(y)
+        y = self.sepformer(y)
         y = self.linear2(self.act2(y))
         y = self.overlapadd(y)
         y = self.act2(y)
@@ -221,3 +219,26 @@ class Separator(nn.Module):
         out = self.decoder(enc_x*mask)
 
         return out, y
+
+'''
+    Test functions
+'''
+def padding(x, padding)
+    return F.pad(x, padding)
+
+if __name__ == '__main__':
+    config = configure()
+    mix_path = ''
+    spk_path = ''
+
+    mix, sr = torchaudio.load(mix_path)
+    len = config['stride'] * config['chunk_size']
+    pad_value = len - mix.shape[-1] % len
+    mix = padding(mix, (0, pad_value))
+
+    spk, sr = torchaudio.load(spk_path)
+    len = config['stride']
+    pad_value = len - spk.shape[-1] % len
+    spk = padding(spk, (0, pad_value))
+
+    model = Separator(config)

@@ -6,9 +6,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
 from model import PositionEncoding
+from asteroid.masknn.norm import GlobLN # non-causal
 
 '''
-    L_out = int ((L_in + 2*pad - dil*(ker-1) - 1)/str) + 1
+    (TODO) Conv-TasNet
 '''
 class Conv1dBlock(nn.Module):
     def __init__(self, config, dilation_factor=0):
