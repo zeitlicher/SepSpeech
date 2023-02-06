@@ -46,7 +46,7 @@ class Encoder(nn.Module):
         return self.act(self.conv(x))
 
 class Decoder(nn.Module):
-    def __init__():
+    def __init__(self, config):
         super(Decoder, self).__init__()
         self.conv = nn.ConvTranspose1d(
             config['channels'],
