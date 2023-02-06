@@ -210,7 +210,7 @@ class Separator(nn.Module):
         self.masking = MaskingNetwork(config)
         self.decoder = Decoder(config)
         self.speaker = SpeakerNetwork(config)
-        self.adpt = SpeakerAdaptationLayer(config)
+        self.adpt = SpeakerAdaptationLayer()
 
     def forward(self, x, s):
         enc_x = self.encoder(x)
