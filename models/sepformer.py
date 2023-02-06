@@ -69,12 +69,12 @@ class ChunkLayer(nn.Module):
         assert self.chunk_size % 2 == 0
 
     def forward(self, x):
-        # x: (B, C, T)
-        _batch, _channel, _time = x.shape()
+        # x: (B, T, C)
+        _batch, _time, _channel = x.shape()
         assert _time % self.chunk_size == 0
 
-        x = torch.reshape(x, (_batch, _channel, _time//(self.chunk_size//2), -1))
-        y = torch.cat((x[:,:,:self.chunk_size//2,:], x[:,:,self.chunk_size//2:,:]), 2)
+        x = torch.reshape(x, (_batch, _time//(self.chunk_size//2), -1, _channel))
+        y = torch.cat((x[:,:self.chunk_size//2,:, :], x[:,self.chunk_size//2:,:,:]), 1)
 
         return y
 
@@ -86,9 +86,9 @@ class OverlapAddLayer(nn.Module):
 
     def forward(self,x):
         y = torch.zeros(x.shape())
-        _batch, _channel, _, _, = x.shape()
-        y[:, :, :self.chunk_size//2,:] =  x[:, :, :self.chunk_size//2,:]
-        y[:, :, self:chunk_size//2:,:] += x[:, :, self.chunk_size//2:,:]
+        _batch, _, _, _channel= x.shape()
+        y[:, :self.chunk_size//2,:, :] =  x[:, :self.chunk_size//2,:, :]
+        y[:, self:chunk_size//2:,:, :] += x[:, self.chunk_size//2:,:, :]
         y = torch.reshape(y, (_batch, _channel, -1))
 
         return y
@@ -124,13 +124,13 @@ class SepFormerLayer(nn.Module):
     def forward(self, x):
         # x: (B, C, Intra, Inter)
         _batch, _channel, _intra, _inter = x.shape()
-        x = rearrange('b c a r -> (b r) a c')
+        x = rearrange('b a r c-> (b r) a c')
         x = self.intra_T.forward(self.pos_encoder(x))
         x = torch.reshape(x, (_batch, _inter, _intra, _channel))
         x = rearrange('b r a c -> (b a) r c')
         x = self.inter_T.forward(self.pos_encoder(x))
         x = torch.reshape(x, (_batch, _intra, _inter, _channel))
-        x = rearrange('b a r c -> b c a r')
+        #x = rearrange('b a r c -> b c a r')
 
         return x
 
@@ -196,13 +196,13 @@ class MaskingNetwork(nn.Module):
     def forward(self, x):
         y = rearrange(x, 'b c t -> b t c')
         y = self.norm(y)
-        y = rearrange(x, 'b t c -> b c t')
         y = self.linear1(y)
         y = self.chunk(y)
         y = self.sepformer(y)
         y = self.linear2(self.act2(y))
         y = self.overlapadd(y)
         y = self.act2(y)
+        y = rearrange(x, 'b t c -> b c t')
 
         return y
 
