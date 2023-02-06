@@ -219,6 +219,7 @@ class Separator(nn.Module):
         enc_x = self.encoder(x)
         enc_s, y = self.speaker(s)
         enc_a = self.adpt(enc_x, enc_s)
+        print(enc_a.shape)
         mask = self.masking(enc_a)
         out = self.decoder(enc_x*mask)
 
