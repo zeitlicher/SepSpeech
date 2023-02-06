@@ -136,7 +136,7 @@ class SepFormerLayer(nn.Module):
 class SepFormer(nn.Module):
     def __init__(self, config):
         super(SepFormer, self).__init__()
-        self.layers = ModuleList()
+        self.layers = nn.ModuleList()
         for n in range(config['num_sepformer_layers']):
             self.layers.append(SepFormerLayer(config))
 
