@@ -104,7 +104,7 @@ class SepFormerLayer(nn.Module):
             config['layer_norm_eps'],
             batch_first=True,norm_first=True
         )
-        encoder_norm = LayerNorm(
+        encoder_norm = nn.LayerNorm(
             config['d_model'],
             eps=config['layer_norm_eps']
         )
@@ -180,7 +180,7 @@ class SpeakerAdaptationLayer(nn.Module):
 class MaskingNetwork(nn.Module):
     def __init__(self,config):
         super(MaskingNetwork, self).__init__()
-        self.norm = LayerNorm(
+        self.norm = nn.LayerNorm(
             config['channels'],
             eps=config['layer_norm_eps']
         )
