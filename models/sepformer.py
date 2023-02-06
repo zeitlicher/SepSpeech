@@ -41,7 +41,7 @@ class Encoder(nn.Module):
         self.act = nn.ReLU()
 
     def forward(self, x):
-        assert x.dims() == 2 # (B, T)
+        assert x.dim() == 2 # (B, T)
         x = x.unsqueeze(1) # add channel
         return self.act(self.conv(x))
 
@@ -57,7 +57,7 @@ class Decoder(nn.Module):
             1
         )
     def forward(self, x):
-        assert x.dims() == 3 # (B, C, T)
+        assert x.dim() == 3 # (B, C, T)
         x = self.conv(x)
         x = rearrange('b c t -> (b c) t') # channels=1
         return x
