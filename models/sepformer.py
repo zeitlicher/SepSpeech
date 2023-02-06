@@ -228,8 +228,8 @@ def padding(x, padding)
 
 if __name__ == '__main__':
     config = configure()
-    mix_path = ''
-    spk_path = ''
+    mix_path = './samples/sample.wav'
+    spk_path = './samples/sample.wav'
 
     mix, sr = torchaudio.load(mix_path)
     len = config['stride'] * config['chunk_size']
