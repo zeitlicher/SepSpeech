@@ -223,7 +223,7 @@ class Separator(nn.Module):
 '''
     Test functions
 '''
-def padding(x, padding)
+def padding(x, padding):
     return F.pad(x, padding)
 
 if __name__ == '__main__':
