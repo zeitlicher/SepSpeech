@@ -246,6 +246,5 @@ if __name__ == '__main__':
 
     model = Separator(config)
 
-    out, y = model(mix)
+    out, y = model(mix, spk)
     print(out.shape)
-    
