@@ -194,7 +194,10 @@ class MaskingNetwork(nn.Module):
         self.act2 = nn.ReLU()
 
     def forward(self, x):
-        y = self.linear1(self.norm(x))
+        y = rearrange(x, 'b c t -> b t c')
+        y = self.norm(y)
+        y = rearrange(x, 'b t c -> b c t')
+        y = self.linear1(y)
         y = self.chunk(y)
         y = self.sepformer(y)
         y = self.linear2(self.act2(y))
