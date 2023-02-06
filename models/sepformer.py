@@ -204,7 +204,7 @@ class MaskingNetwork(nn.Module):
 
 class Separator(nn.Module):
     def __init__(self, config):
-        super(Separator).__init__()
+        super(Separator, self).__init__()
         self.encoder = Encoder(config)
         self.masking = MaskingNetwork(config)
         self.decoder = Decoder(config)
