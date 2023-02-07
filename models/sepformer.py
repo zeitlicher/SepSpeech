@@ -65,7 +65,7 @@ class Decoder(nn.Module):
     def forward(self, x):
         assert x.dim() == 3 # (B, C, T)
         x = self.conv(x)
-        x = rearrange('b c t -> (b c) t') # channels=1
+        x = rearrange(x, 'b c t -> (b c) t') # channels=1
         return x
 
 class ChunkLayer(nn.Module):
