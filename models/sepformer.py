@@ -250,15 +250,15 @@ class Separator(nn.Module):
         enc_x = self.encoder(x)
         enc_s, y = self.speaker(s)
         enc_a = self.adpt(enc_x, enc_s)
-        print('before masking')
-        print(enc_x.shape)
-        print(enc_a.shape)
+        #print('before masking')
+        #print(enc_x.shape)
+        #print(enc_a.shape)
         mask = self.masking(enc_a)
         mask = rearrange(mask, 'b t c -> b c t')
-        print('after masking')
-        print(enc_a.shape)
-        print('mask shape')
-        print(mask.shape)
+        #print('after masking')
+        #print(enc_a.shape)
+        #print('mask shape')
+        #print(mask.shape)
         out = self.decoder(enc_x*mask)
 
         return out, y
@@ -277,8 +277,8 @@ if __name__ == '__main__':
     mix, sr = torchaudio.load(mix_path)
     len = config['stride'] * config['chunk_size']
     pad_value = len - mix.shape[-1] % len -1
-    #print('before padding')
-    #print(mix.shape)
+    print('input shape')
+    print(mix.shape)
     mix = padding(mix, (0, pad_value))
     #print('after padding')
     #print(mix.shape)
@@ -291,5 +291,5 @@ if __name__ == '__main__':
     model = Separator(config)
 
     out, y = model(mix, spk)
-    #print('output shape')
-    #print(out.shape)
+    print('output shape')
+    print(out.shape)
