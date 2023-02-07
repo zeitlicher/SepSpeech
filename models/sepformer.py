@@ -145,6 +145,8 @@ class SepFormerLayer(nn.Module):
         x = self.pos_encoder(x)
         x = self.intra_T(x)
         x = torch.reshape(x, (_batch, _inter, _intra, _channel))
+        print('before inter ')
+        print(x.shape)
         x = rearrange(x, 'b r a c -> (b a) r c')
         self.pos_encoder(x)
         x = self.inter_T(x)
