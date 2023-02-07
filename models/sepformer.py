@@ -103,11 +103,11 @@ class SepFormerLayer(nn.Module):
 
         self.intra_T = nn.TransformerEncoder(
             nn.TransformerEncoderLayer(
-                                config['d_model'],
-                                config['nhead'],
-                                config['dim_feedforward'],
-                                config['dropout'],
-                                config['layer_norm_eps'],
+                                d_model=config['d_model'],
+                                nhead=config['nhead'],
+                                dim_feedforward=config['dim_feedforward'],
+                                dropout=config['dropout'],
+                                layer_norm_eps=config['layer_norm_eps'],
                                 batch_first=True,norm_first=True
             ) ,
             config['num_layers'],
@@ -118,11 +118,11 @@ class SepFormerLayer(nn.Module):
         )
         self.inter_T = nn.TransformerEncoder(
             nn.TransformerEncoderLayer(
-                                config['d_model'],
-                                config['nhead'],
-                                config['dim_feedforward'],
-                                config['dropout'],
-                                config['layer_norm_eps'],
+                                d_model=config['d_model'],
+                                nhead=config['nhead'],
+                                dim_feedforward=config['dim_feedforward'],
+                                dropout=config['dropout'],
+                                layer_norm_eps=config['layer_norm_eps'],
                                 batch_first=True,norm_first=True
             ) ,
             config['num_layers'],
