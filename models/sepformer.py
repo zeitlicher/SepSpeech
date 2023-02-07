@@ -251,7 +251,7 @@ class Separator(nn.Module):
         enc_s, y = self.speaker(s)
         enc_a = self.adpt(enc_x, enc_s)
         print('before masking')
-        print(enc_x.mask)
+        print(enc_x.shape)
         print(enc_a.shape)
         mask = self.masking(enc_a)
         mask = rearrange(mask, 'b t c -> b c t')
