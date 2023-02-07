@@ -197,6 +197,7 @@ class MaskingNetwork(nn.Module):
         y = rearrange(x, 'b c t -> b t c')
         y = self.norm(y)
         y = self.linear1(y)
+        print('before chunking')
         print(y.shape)
         y = self.chunk(y)
         y = self.sepformer(y)
@@ -220,6 +221,7 @@ class Separator(nn.Module):
         enc_x = self.encoder(x)
         enc_s, y = self.speaker(s)
         enc_a = self.adpt(enc_x, enc_s)
+        print('before masking')
         print(enc_a.shape)
         mask = self.masking(enc_a)
         out = self.decoder(enc_x*mask)
@@ -240,8 +242,10 @@ if __name__ == '__main__':
     mix, sr = torchaudio.load(mix_path)
     len = config['stride'] * config['chunk_size']
     pad_value = len - mix.shape[-1] % len
+    print('before padding')
     print(mix.shape)
     mix = padding(mix, (0, pad_value))
+    print('after padding')
     print(mix.shape)
 
     spk, sr = torchaudio.load(spk_path)
@@ -252,4 +256,5 @@ if __name__ == '__main__':
     model = Separator(config)
 
     out, y = model(mix, spk)
+    print('output shape')
     print(out.shape)
