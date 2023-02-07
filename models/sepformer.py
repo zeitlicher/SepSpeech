@@ -149,6 +149,7 @@ class SepFormer(nn.Module):
 
     def forward(self, x):
         for mod in self.layers:
+            print(callable(x))
             x = mod(x)
 
         return x
