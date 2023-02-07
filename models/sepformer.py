@@ -136,16 +136,18 @@ class SepFormerLayer(nn.Module):
         )
 
     def forward(self, x):
-        # x: (B, C, Intra, Inter)
+        # x: (B, Intra, Inter, C)
         print('sepformer input')
         print(x.shape)
-        _batch, _channel, _intra, _inter = x.shape
+        _batch, _intra, _inter, _channel = x.shape
         x = rearrange(x, 'b a r c-> (b r) a c')
         print('before transformer')
         print(x.shape)
         print(x.dtype)
         x = self.pos_encoder(x)
         x = self.intra_T(x)
+        print('after intra')
+        print(x.shape)
         x = torch.reshape(x, (_batch, _inter, _intra, _channel))
         print('before inter ')
         print(x.shape)
