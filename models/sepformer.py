@@ -241,7 +241,7 @@ if __name__ == '__main__':
 
     mix, sr = torchaudio.load(mix_path)
     len = config['stride'] * config['chunk_size']
-    pad_value = len - mix.shape[-1] % len
+    pad_value = len - mix.shape[-1] % len -1
     print('before padding')
     print(mix.shape)
     mix = padding(mix, (0, pad_value))
@@ -250,7 +250,7 @@ if __name__ == '__main__':
 
     spk, sr = torchaudio.load(spk_path)
     len = config['stride']
-    pad_value = len - spk.shape[-1] % len
+    pad_value = len - spk.shape[-1] % len - 1
     spk = padding(spk, (0, pad_value))
 
     model = Separator(config)
