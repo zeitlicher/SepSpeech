@@ -137,20 +137,20 @@ class SepFormerLayer(nn.Module):
 
     def forward(self, x):
         # x: (B, Intra, Inter, C)
-        print('sepformer input')
-        print(x.shape)
+        #print('sepformer input')
+        #print(x.shape)
         _batch, _intra, _inter, _channel = x.shape
         x = rearrange(x, 'b a r c-> (b r) a c')
-        print('before transformer')
-        print(x.shape)
-        print(x.dtype)
+        #print('before transformer')
+        #print(x.shape)
+        #print(x.dtype)
         x = self.pos_encoder(x)
         x = self.intra_T(x)
-        print('after intra')
-        print(x.shape)
+        #print('after intra')
+        #print(x.shape)
         x = torch.reshape(x, (_batch, _inter, _intra, _channel))
-        print('before inter ')
-        print(x.shape)
+        #print('before inter ')
+        #print(x.shape)
         x = rearrange(x, 'b r a c -> (b a) r c')
         self.pos_encoder(x)
         x = self.inter_T(x)
@@ -168,7 +168,6 @@ class SepFormer(nn.Module):
 
     def forward(self, x):
         for mod in self.layers:
-            print(callable(x))
             x = mod(x)
 
         return x
@@ -223,19 +222,19 @@ class MaskingNetwork(nn.Module):
         y = rearrange(x, 'b c t -> b t c')
         y = self.norm(y)
         y = self.linear1(y)
-        print('before chunking')
-        print(y.shape)
+        #print('before chunking')
+        #print(y.shape)
         y = self.chunk(y)
-        print('after chunking')
-        print(y.shape)
+        #print('after chunking')
+        #print(y.shape)
         y = self.sepformer(y)
         y = self.linear2(self.act2(y))
         y = self.overlapadd(y)
-        print('after overlapadd')
-        print(y.shape)
+        #print('after overlapadd')
+        #print(y.shape)
         y = self.act2(y)
         y = rearrange(x, 'b t c -> b c t')
-        print(y.shape)
+        #print(y.shape)
         return y
 
 class Separator(nn.Module):
@@ -251,13 +250,13 @@ class Separator(nn.Module):
         enc_x = self.encoder(x)
         enc_s, y = self.speaker(s)
         enc_a = self.adpt(enc_x, enc_s)
-        print('before masking')
-        print(enc_a.shape)
+        #print('before masking')
+        #print(enc_a.shape)
         mask = self.masking(enc_a)
-        print('feat shape')
-        print(enc_a.shape)
-        print('mask shape')
-        print(mask.shape)
+        #print('feat shape')
+        #print(enc_a.shape)
+        #print('mask shape')
+        #print(mask.shape)
         out = self.decoder(enc_x*mask)
 
         return out, y
@@ -276,11 +275,11 @@ if __name__ == '__main__':
     mix, sr = torchaudio.load(mix_path)
     len = config['stride'] * config['chunk_size']
     pad_value = len - mix.shape[-1] % len -1
-    print('before padding')
-    print(mix.shape)
+    #print('before padding')
+    #print(mix.shape)
     mix = padding(mix, (0, pad_value))
-    print('after padding')
-    print(mix.shape)
+    #print('after padding')
+    #print(mix.shape)
 
     spk, sr = torchaudio.load(spk_path)
     len = config['stride']
@@ -290,5 +289,5 @@ if __name__ == '__main__':
     model = Separator(config)
 
     out, y = model(mix, spk)
-    print('output shape')
-    print(out.shape)
+    #print('output shape')
+    #print(out.shape)
