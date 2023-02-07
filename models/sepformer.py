@@ -280,8 +280,8 @@ if __name__ == '__main__':
     print('input shape')
     print(mix.shape)
     mix = padding(mix, (0, pad_value))
-    #print('after padding')
-    #print(mix.shape)
+    print('after padding')
+    print(mix.shape)
 
     spk, sr = torchaudio.load(spk_path)
     len = config['stride']
