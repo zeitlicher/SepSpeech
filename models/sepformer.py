@@ -100,26 +100,26 @@ class SepFormerLayer(nn.Module):
     def __init__(self, config):
         super(SepFormerLayer, self).__init__()
         self.pos_encoder = PositionEncoding(config)
-        encoder_layer = nn.TransformerEncoderLayer(
-            config['d_model'],
-            config['nhead'],
-            config['dim_feedforward'],
-            config['dropout'],
-            config['layer_norm_eps'],
-            batch_first=True,norm_first=True
-        )
+        encoder_layers = [ nn.TransformerEncoderLayer(
+                            config['d_model'],
+                            config['nhead'],
+                            config['dim_feedforward'],
+                            config['dropout'],
+                            config['layer_norm_eps'],
+                            batch_first=True,norm_first=True
+                            ) for n in range(config['num_layers']) ]
         encoder_norm = nn.LayerNorm(
             config['d_model'],
             eps=config['layer_norm_eps']
         )
 
         self.intra_T = nn.TransformerEncoder(
-            encoder_layer,
+            encoder_layers,
             config['num_layers'],
             encoder_norm
             )
         self.inter_T = nn.TransformerEncoder(
-            encoder_layer,
+            encoder_layers,
             config['num_layers'],
             encoder_norm
         )
@@ -236,6 +236,10 @@ class Separator(nn.Module):
         print('before masking')
         print(enc_a.shape)
         mask = self.masking(enc_a)
+        print('feat shape')
+        print(enc_a.shape)
+        print('mask shape')
+        print(mask.shape)
         out = self.decoder(enc_x*mask)
 
         return out, y
