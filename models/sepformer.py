@@ -255,8 +255,8 @@ class Separator(nn.Module):
         #print(enc_a.shape)
         mask = self.masking(enc_a)
         mask = rearrange(mask, 'b t c -> b c t')
-        #print('after masking')
-        #print(enc_a.shape)
+        print('after masking')
+        print(enc_a.shape)
         #print('mask shape')
         #print(mask.shape)
         out = self.decoder(enc_x*mask)
@@ -275,6 +275,8 @@ if __name__ == '__main__':
     spk_path = '../samples/sample.wav'
 
     mix, sr = torchaudio.load(mix_path)
+    original_len = mix.shape[-1]
+
     len = config['stride'] * config['chunk_size']
     pad_value = len - mix.shape[-1] % len -1
     print('input shape')
@@ -291,5 +293,6 @@ if __name__ == '__main__':
     model = Separator(config)
 
     out, y = model(mix, spk)
+    out = out[:, :original_len]
     print('output shape')
     print(out.shape)
