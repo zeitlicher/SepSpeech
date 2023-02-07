@@ -213,9 +213,11 @@ class MaskingNetwork(nn.Module):
         y = self.sepformer(y)
         y = self.linear2(self.act2(y))
         y = self.overlapadd(y)
+        print('after overlapadd')
+        print(y.shape)
         y = self.act2(y)
         y = rearrange(x, 'b t c -> b c t')
-
+        print(y.shape)
         return y
 
 class Separator(nn.Module):
