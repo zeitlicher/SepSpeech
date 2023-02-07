@@ -70,7 +70,7 @@ class ChunkLayer(nn.Module):
 
     def forward(self, x):
         # x: (B, T, C)
-        _batch, _time, _channel = x.shape()
+        _batch, _time, _channel = x.shape
         assert _time % self.chunk_size == 0
 
         x = torch.reshape(x, (_batch, _time//(self.chunk_size//2), -1, _channel))
