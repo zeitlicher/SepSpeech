@@ -137,6 +137,8 @@ class SepFormerLayer(nn.Module):
 
     def forward(self, x):
         # x: (B, C, Intra, Inter)
+        print('sepformer input')
+        print(x.shape)
         _batch, _channel, _intra, _inter = x.shape
         x = rearrange(x, 'b a r c-> (b r) a c')
         print('before transformer')
