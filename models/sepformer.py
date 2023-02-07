@@ -74,7 +74,7 @@ class ChunkLayer(nn.Module):
         assert _time % self.chunk_size == 0
 
         x = torch.reshape(x, (_batch, _time//(self.chunk_size//2), -1, _channel))
-        y = torch.cat((x[:,:self.chunk_size//2,:, :], x[:,self.chunk_size//2:,:,:]), 1)
+        y = torch.cat((x[:,:, 0:-2:2, :], x[:,:, 1:-1:2, :]), 1)
 
         return y
 
