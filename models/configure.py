@@ -18,10 +18,10 @@ def configure():
     config['nhead'] = 8
     config['dim_feedforward'] = 1024
     config['layer_norm_eps'] = 1.e-8
-    config['num_layers'] = 8
+    config['num_layers'] = 4 # default=8
 
     # separator parameters
-    config['num_sepformer_layers'] = 2
+    config['num_sepformer_layers'] = 1 # default = 2
 
     # speaker networks
     config['n_speakers'] = 256
