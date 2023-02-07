@@ -88,8 +88,8 @@ class OverlapAddLayer(nn.Module):
         assert self.chunk_size % 2 == 0
 
     def forward(self,x):
-        y = torch.zeros(x.shape())
-        _batch, _, _, _channel= x.shape()
+        y = torch.zeros(x.shape)
+        _batch, _, _, _channel= x.shape
         y[:, :self.chunk_size//2,:, :] =  x[:, :self.chunk_size//2,:, :]
         y[:, self:chunk_size//2:,:, :] += x[:, self.chunk_size//2:,:, :]
         y = torch.reshape(y, (_batch, _channel, -1))
