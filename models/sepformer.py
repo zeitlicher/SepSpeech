@@ -148,8 +148,8 @@ class SepFormer(nn.Module):
             self.layers.append(SepFormerLayer(config))
 
     def forward(self, x):
-        for layer in self.layers:
-            x = layer(x)
+        for mod in self.layers:
+            x = mod(x)
 
         return x
 
