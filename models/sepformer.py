@@ -25,6 +25,9 @@ class PositionEncoding(nn.Module):
 
     def forward(self, x):
         x = x + self.pe[:, :x.shape[1], :]
+        print('position encoding')
+        print(x.shape)
+        print(x.dtype)
         return self.dropout(x)
 
 class Encoder(nn.Module):
