@@ -255,8 +255,8 @@ class Separator(nn.Module):
         #print(enc_a.shape)
         mask = self.masking(enc_a)
         mask = rearrange(mask, 'b t c -> b c t')
-        print('after masking')
-        print(enc_a.shape)
+        #print('after masking')
+        #print(enc_a.shape)
         #print('mask shape')
         #print(mask.shape)
         out = self.decoder(enc_x*mask)
@@ -293,6 +293,8 @@ if __name__ == '__main__':
     model = Separator(config)
 
     out, y = model(mix, spk)
+    print('output len')
+    print(out.shape)
     out = out[:, :original_len]
     print('output shape')
     print(out.shape)
