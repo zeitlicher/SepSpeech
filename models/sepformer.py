@@ -60,7 +60,7 @@ class Decoder(nn.Module):
             config['kernel_size'],
             config['stride'],
             config['kernel_size']//4,
-            1
+            0 #padding
         )
     def forward(self, x):
         assert x.dim() == 3 # (B, C, T)
