@@ -91,7 +91,7 @@ class OverlapAddLayer(nn.Module):
         y = torch.zeros(x.shape)
         _batch, _, _, _channel= x.shape
         y[:, :self.chunk_size//2,:, :] =  x[:, :self.chunk_size//2,:, :]
-        y[:, self:chunk_size//2:,:, :] += x[:, self.chunk_size//2:,:, :]
+        y[:, self.chunk_size//2:,:, :] += x[:, self.chunk_size//2:,:, :]
         y = torch.reshape(y, (_batch, _channel, -1))
 
         return y
