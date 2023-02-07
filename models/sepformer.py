@@ -124,10 +124,10 @@ class SepFormerLayer(nn.Module):
     def forward(self, x):
         # x: (B, C, Intra, Inter)
         _batch, _channel, _intra, _inter = x.shape
-        x = rearrange('b a r c-> (b r) a c')
+        x = rearrange(x, 'b a r c-> (b r) a c')
         x = self.intra_T.forward(self.pos_encoder(x))
         x = torch.reshape(x, (_batch, _inter, _intra, _channel))
-        x = rearrange('b r a c -> (b a) r c')
+        x = rearrange(x, 'b r a c -> (b a) r c')
         x = self.inter_T.forward(self.pos_encoder(x))
         x = torch.reshape(x, (_batch, _intra, _inter, _channel))
         #x = rearrange('b a r c -> b c a r')
