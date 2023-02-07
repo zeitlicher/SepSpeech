@@ -24,13 +24,13 @@ class PositionEncoding(nn.Module):
         self.register_buffer('pe', pe)
 
     def forward(self, x):
-        print(x.shape)
-        print('positional encoder shape')
-        print(self.pe.shape)
+        #print(x.shape)
+        #print('positional encoder shape')
+        #print(self.pe.shape)
         x = x + self.pe[:, :x.shape[1], :]
-        print('position encoding')
-        print(x.shape)
-        print(x.dtype)
+        #print('position encoding')
+        #print(x.shape)
+        #print(x.dtype)
         return self.dropout(x)
 
 class Encoder(nn.Module):
