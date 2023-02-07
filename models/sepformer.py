@@ -92,7 +92,6 @@ class OverlapAddLayer(nn.Module):
 
     def forward(self,x):
         y = torch.zeros(x.shape)
-        print(x.shape)
         _batch, _, _, _channel= x.shape
         y[:, :self.chunk_size//2,:, :] =  x[:, :self.chunk_size//2,:, :]
         y[:, self.chunk_size//2:,:, :] += x[:, self.chunk_size//2:,:, :]
@@ -251,13 +250,13 @@ class Separator(nn.Module):
         enc_x = self.encoder(x)
         enc_s, y = self.speaker(s)
         enc_a = self.adpt(enc_x, enc_s)
-        #print('before masking')
-        #print(enc_a.shape)
+        print('before masking')
+        print(enc_a.shape)
         mask = self.masking(enc_a)
-        #print('feat shape')
-        #print(enc_a.shape)
-        #print('mask shape')
-        #print(mask.shape)
+        print('after masking')
+        print(enc_a.shape)
+        print('mask shape')
+        print(mask.shape)
         out = self.decoder(enc_x*mask)
 
         return out, y
