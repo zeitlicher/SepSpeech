@@ -1,0 +1,44 @@
+# dataset
+dataset:
+  # csv format, source_speaker_index must be < n_speakers
+  # mixture_path, source_path, length, source_speaker, source_speaker_index
+  train: ''
+  # source_path, length, source_speaker, source_speaker_index
+  train_enroll: ''
+  valid: ''
+  valid_enroll: ''
+  test: ''
+  test_enroll: ''
+
+# training parameters
+train:
+  max_epochs: 100
+  gradient_clip_val: 5.
+  precision: 16
+  accelerator: 'gpu'
+  batch_size: 16
+  sample_rate: 16000
+  segment: 3
+
+# model parameters
+model:
+  # positional encoding
+  max_len: 80000
+  # encoder/decoder conv filters
+  channels: 256
+  kernel_size: 16
+  stride: 8
+  # chunking samples
+  chunk_size: 250
+  # intra- & inter- Transformers
+  d_model: 256
+  nhead: 8
+  dim_feedforward: 1024
+  layer_norm_eps: 1.e-8
+  num_layers: 8
+  # sepformers
+  num_sepformer_layers: 2
+  # speakers
+  n_speakers: 256
+  # dropout (all modules)
+  dropout: 0.1

@@ -12,11 +12,11 @@ import torchaudio
 class PositionEncoding(nn.Module):
     def __init__(self, config):
         super(PositionEncoding, self).__init__()
-        self.dropout = nn.Dropout(config['dropout'])
+        self.dropout = nn.Dropout(config['model']['dropout'])
 
-        pe = torch.zeros(config['max_len'], config['d_model'])
-        position = torch.arange(0, config['max_len'], dtype=torch.float).unsqueeze(1)
-        div_term = torch.exp(torch.arange(0, config['d_model'], 2).float() * (-math.log(10000.0)/config['d_model']))
+        pe = torch.zeros(config['model']['max_len'], config['model']['d_model'])
+        position = torch.arange(0, config['model']['max_len'], dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, config['model']['d_model'], 2).float() * (-math.log(10000.0)/config['model']['d_model']))
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
 
@@ -38,10 +38,10 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
         self.conv = nn.Conv1d(
             1,
-            config['channels'],     # 256
-            config['kernel_size'],  # 16
-            config['stride'],       # 8
-            config['kernel_size']//2, # padding
+            config['model']['channels'],     # 256
+            config['model']['kernel_size'],  # 16
+            config['model']['stride'],       # 8
+            config['model']['kernel_size']//2, # padding
             1
         )
         self.act = nn.ReLU()
@@ -55,11 +55,11 @@ class Decoder(nn.Module):
     def __init__(self, config):
         super(Decoder, self).__init__()
         self.conv = nn.ConvTranspose1d(
-            config['channels'],
+            config['model']['channels'],
             1,
-            config['kernel_size'],
-            config['stride'],
-            config['kernel_size']//4,
+            config['model']['kernel_size'],
+            config['model']['stride'],
+            config['model']['kernel_size']//4,
             0 #padding
         )
     def forward(self, x):
@@ -71,7 +71,7 @@ class Decoder(nn.Module):
 class ChunkLayer(nn.Module):
     def __init__(self, config):
         super(ChunkLayer,self).__init__()
-        self.chunk_size=config['chunk_size']
+        self.chunk_size=config['model']['chunk_size']
         assert self.chunk_size % 2 == 0
 
     def forward(self, x):
@@ -87,7 +87,7 @@ class ChunkLayer(nn.Module):
 class OverlapAddLayer(nn.Module):
     def __init__(self,config):
         super(OverlapAddLayer, self).__init__()
-        self.chunk_size=config['chunk_size']
+        self.chunk_size=config['model']['chunk_size']
         assert self.chunk_size % 2 == 0
 
     def forward(self,x):
@@ -106,56 +106,46 @@ class SepFormerLayer(nn.Module):
 
         self.intra_T = nn.TransformerEncoder(
             nn.TransformerEncoderLayer(
-                                d_model=config['d_model'],
-                                nhead=config['nhead'],
-                                dim_feedforward=config['dim_feedforward'],
-                                dropout=config['dropout'],
-                                layer_norm_eps=config['layer_norm_eps'],
+                                d_model=config['model']['d_model'],
+                                nhead=config['model']['nhead'],
+                                dim_feedforward=config['model']['dim_feedforward'],
+                                dropout=config['model']['dropout'],
+                                layer_norm_eps=config['model']['layer_norm_eps'],
                                 batch_first=True,norm_first=True
             ) ,
-            config['num_layers'],
+            config['model']['num_layers'],
             nn.LayerNorm(
-                config['d_model'],
-                eps=config['layer_norm_eps']
+                config['model']['d_model'],
+                eps=config['model']['layer_norm_eps']
             )
         )
         self.inter_T = nn.TransformerEncoder(
             nn.TransformerEncoderLayer(
-                                d_model=config['d_model'],
-                                nhead=config['nhead'],
-                                dim_feedforward=config['dim_feedforward'],
-                                dropout=config['dropout'],
-                                layer_norm_eps=config['layer_norm_eps'],
+                                d_model=config['model']['d_model'],
+                                nhead=config['model']['nhead'],
+                                dim_feedforward=config['model']['dim_feedforward'],
+                                dropout=config['model']['dropout'],
+                                layer_norm_eps=config['model']['layer_norm_eps'],
                                 batch_first=True,norm_first=True
             ) ,
-            config['num_layers'],
+            config['model']['num_layers'],
             nn.LayerNorm(
-                config['d_model'],
-                eps=config['layer_norm_eps']
+                config['model']['d_model'],
+                eps=config['model']['layer_norm_eps']
             )
         )
 
     def forward(self, x):
         # x: (B, Intra, Inter, C)
-        #print('sepformer input')
-        #print(x.shape)
         _batch, _intra, _inter, _channel = x.shape
         x = rearrange(x, 'b a r c-> (b r) a c')
-        #print('before transformer')
-        #print(x.shape)
-        #print(x.dtype)
         x = self.pos_encoder(x)
         x = self.intra_T(x)
-        #print('after intra')
-        #print(x.shape)
         x = torch.reshape(x, (_batch, _inter, _intra, _channel))
-        #print('before inter ')
-        #print(x.shape)
         x = rearrange(x, 'b r a c -> (b a) r c')
         self.pos_encoder(x)
         x = self.inter_T(x)
         x = torch.reshape(x, (_batch, _intra, _inter, _channel))
-        #x = rearrange('b a r c -> b c a r')
 
         return x
 
@@ -163,7 +153,7 @@ class SepFormer(nn.Module):
     def __init__(self, config):
         super(SepFormer, self).__init__()
         self.layers = nn.ModuleList()
-        for n in range(config['num_sepformer_layers']):
+        for n in range(config['model']['num_sepformer_layers']):
             self.layers.append(SepFormerLayer(config))
 
     def forward(self, x):
@@ -177,15 +167,15 @@ class SpeakerNetwork(nn.Module):
         super(SpeakerNetwork, self).__init__()
         self.encoder = Encoder(config)
         self.conv = nn.Conv1d(
-            config['channels'],     # 256
-            config['d_model'],
-            config['kernel_size'],  # 16
+            config['model']['channels'],     # 256
+            config['model']['d_model'],
+            config['model']['kernel_size'],  # 16
             1,
-            config['kernel_size']//2, # padding
+            config['model']['kernel_size']//2, # padding
             1
         )
         self.act = nn.ReLU()
-        self.linear=nn.Linear(config['d_model'],config['n_speakers'])
+        self.linear=nn.Linear(config['model']['d_model'],config['model']['n_speakers'])
 
     def forward(self, x):
         y = self.encoder(x)
@@ -207,14 +197,14 @@ class MaskingNetwork(nn.Module):
     def __init__(self,config):
         super(MaskingNetwork, self).__init__()
         self.norm = nn.LayerNorm(
-            config['channels'],
-            eps=config['layer_norm_eps']
+            config['model']['channels'],
+            eps=config['model']['layer_norm_eps']
         )
-        self.linear1 = nn.Linear(config['channels'], config['d_model'])
+        self.linear1 = nn.Linear(config['model']['channels'], config['model']['d_model'])
         self.chunk = ChunkLayer(config)
         self.sepformer = SepFormer(config)
         self.act1 = nn.PReLU()
-        self.linear2 = nn.Linear(config['d_model'], config['channels'])
+        self.linear2 = nn.Linear(config['model']['d_model'], config['model']['channels'])
         self.overlapadd = OverlapAddLayer(config)
         self.act2 = nn.ReLU()
 
@@ -222,19 +212,12 @@ class MaskingNetwork(nn.Module):
         y = rearrange(x, 'b c t -> b t c')
         y = self.norm(y)
         y = self.linear1(y)
-        #print('before chunking')
-        #print(y.shape)
         y = self.chunk(y)
-        #print('after chunking')
-        #print(y.shape)
         y = self.sepformer(y)
         y = self.linear2(self.act2(y))
         y = self.overlapadd(y)
-        #print('after overlapadd')
-        #print(y.shape)
         y = self.act2(y)
         y = rearrange(x, 'b t c -> b c t')
-        #print(y.shape)
         return y
 
 class Separator(nn.Module):
@@ -250,21 +233,14 @@ class Separator(nn.Module):
         enc_x = self.encoder(x)
         enc_s, y = self.speaker(s)
         enc_a = self.adpt(enc_x, enc_s)
-        #print('before masking')
-        #print(enc_x.shape)
-        #print(enc_a.shape)
         mask = self.masking(enc_a)
         mask = rearrange(mask, 'b t c -> b c t')
-        #print('after masking')
-        #print(enc_a.shape)
-        #print('mask shape')
-        #print(mask.shape)
         out = self.decoder(enc_x*mask)
 
         return out, y
 
 '''
-    Test functions
+    for module testing
 '''
 def padding(x, padding):
     return F.pad(x, padding)
@@ -279,11 +255,7 @@ if __name__ == '__main__':
 
     len = config['stride'] * config['chunk_size']
     pad_value = len - mix.shape[-1] % len -1
-    print('input shape')
-    print(mix.shape)
     mix = padding(mix, (0, pad_value))
-    print('after padding')
-    print(mix.shape)
 
     spk, sr = torchaudio.load(spk_path)
     len = config['stride']
@@ -293,8 +265,4 @@ if __name__ == '__main__':
     model = Separator(config)
 
     out, y = model(mix, spk)
-    print('output len')
-    print(out.shape)
     out = out[:, :original_len]
-    print('output shape')
-    print(out.shape)
