@@ -218,12 +218,12 @@ if __name__ == '__main__':
     mix, sr = torchaudio.load(mix_path)
     original_len = mix.shape[-1]
 
-    len = config['stride'] * config['chunk_size']
+    len = config['sepformer']['stride'] * config['sepformer']['chunk_size']
     pad_value = len - mix.shape[-1] % len -1
     mix = padding(mix, (0, pad_value))
 
     spk, sr = torchaudio.load(spk_path)
-    len = config['stride']
+    len = config['sepformer']['stride']
     pad_value = len - spk.shape[-1] % len - 1
     spk = padding(spk, (0, pad_value))
 
