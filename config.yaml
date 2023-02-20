@@ -25,7 +25,7 @@ sepformer:
   # positional encoding
   max_len: 80000
   # encoder/decoder conv filters
-  channels: 256
+  channels: 128 #256
   kernel_size: 16
   stride: 8
   # chunking samples
@@ -35,9 +35,9 @@ sepformer:
   nhead: 8
   dim_feedforward: 1024
   layer_norm_eps: 1.e-8
-  num_layers: 8
+  num_layers: 4 #8
   # sepformers
-  num_sepformer_layers: 2
+  num_sepformer_layers: 1 #2
   # speakers
   num_speakers: 256
   # dropout (all modules)
