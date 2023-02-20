@@ -1,4 +1,3 @@
-from __future__ import annotations
 import math
 import sys
 import numpy as np
@@ -8,13 +7,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
 import torchaudio
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from sepformer import Encoder
 
 class SpeakerNetwork(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, num_speakers):
         super(SpeakerNetwork, self).__init__()
+        from sepformer import Encoder
         self.encoder = Encoder(config)
         self.conv = nn.Conv1d(
             in_channels,      # 256

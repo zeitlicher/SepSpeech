@@ -1,4 +1,3 @@
-from __future__ import annotations
 import math
 import sys
 import numpy as np
@@ -8,8 +7,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
 import torchaudio
-from typing import TYPE_CHECKING
-from speaker import SpeakerNetwork, SpeakerAdaptationLayer
 import yaml
 
 class PositionEncoding(nn.Module):
@@ -192,6 +189,7 @@ class Separator(nn.Module):
         self.encoder = Encoder(config)
         self.masking = MaskingNetwork(config)
         self.decoder = Decoder(config)
+        from speaker import SpeakerNetwork, SpeakerAdaptationLayer
         self.speaker = SpeakerNetwork(config['sepformer']['channels'], config['sepformer']['d_model'], config['sepformer']['kernel_size'], config['sepformer']['num_speakers'])
         self.adpt = SpeakerAdaptationLayer()
 
