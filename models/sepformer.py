@@ -7,7 +7,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
 import torchaudio
-from speaker import SpeakerNetwork, SpeakerAdaptationLayer
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from speaker import SpeakerNetwork, SpeakerAdaptationLayer
 import yaml
 
 class PositionEncoding(nn.Module):
