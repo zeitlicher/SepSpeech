@@ -31,7 +31,7 @@ sepformer:
   # chunking samples
   chunk_size: 250
   # intra- & inter- Transformers
-  d_model: 256
+  d_model: 128 #256
   nhead: 8
   dim_feedforward: 1024
   layer_norm_eps: 1.e-8
