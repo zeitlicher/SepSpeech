@@ -9,10 +9,10 @@ from einops import rearrange
 import torchaudio
 
 class SpeakerNetwork(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, num_speakers):
+    def __init__(self, encoder, in_channels, out_channels, kernel_size, num_speakers):
         super(SpeakerNetwork, self).__init__()
         from sepformer import Encoder
-        self.encoder = Encoder(config)
+        self.encoder = encoder
         self.conv = nn.Conv1d(
             in_channels,      # 256
             out_channels,

@@ -13,6 +13,24 @@ def param(nnet, Mb=True):
     return neles / 10**6 if Mb else neles
 
 
+class Encoder(nn.Module):
+    def __init__(self, config):
+        super(Encoder, self).__init__()
+        self.conv = nn.Conv1d(
+            1,
+            config['tasnet']['in_channels'],    # 256
+            config['tasnet']['kernel_size'],    # 20
+            config['tasnet']['stride']//2,      # 10
+            config['tasnet']['kernel_size']//2, # padding
+            1
+        )
+        self.act = nn.ReLU()
+
+    def forward(self, x):
+        assert x.dim() == 2 # (B, T)
+        x = x.unsqueeze(1) # add channel
+        return self.act(self.conv(x))
+
 class ChannelWiseLayerNorm(nn.LayerNorm):
     """
     Channel wise layer normalization
@@ -225,7 +243,8 @@ class ConvTasNet(nn.Module):
             kernel_size=config['tasnet']['block_kernel_size'],
             norm=norm,
             causal=causal)
-        self.spk_net = SpeakerNetwork(config['tasnet']['in_channels'], config['tasnet']['in_channels'], config['tasnet']['block_kernel_size'], config['tasnet']['num_speakers'])
+        spk_encoder = Encoder(config)
+        self.spk_net = SpeakerNetwork(spk_encoder, config['tasnet']['in_channels'], config['tasnet']['in_channels'], config['tasnet']['block_kernel_size'], config['tasnet']['num_speakers'])
         self.adpt = SpeakerAdaptationLayer()
         self.repeats = self._build_repeats(
             config['tasnet']['num_repeats']-1,

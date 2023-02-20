@@ -189,8 +189,9 @@ class Separator(nn.Module):
         self.encoder = Encoder(config)
         self.masking = MaskingNetwork(config)
         self.decoder = Decoder(config)
+        spk_encoder = Encoder(config)
         from speaker import SpeakerNetwork, SpeakerAdaptationLayer
-        self.speaker = SpeakerNetwork(config['sepformer']['channels'], config['sepformer']['d_model'], config['sepformer']['kernel_size'], config['sepformer']['num_speakers'])
+        self.speaker = SpeakerNetwork(spk_encoder, config['sepformer']['channels'], config['sepformer']['d_model'], config['sepformer']['kernel_size'], config['sepformer']['num_speakers'])
         self.adpt = SpeakerAdaptationLayer()
 
     def forward(self, x, s):
