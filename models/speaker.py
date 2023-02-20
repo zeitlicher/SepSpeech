@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
 import torchaudio
+from sepformer import Encoder
 
 class SpeakerNetwork(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, num_speakers):
