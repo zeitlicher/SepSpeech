@@ -6,9 +6,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
-import configure
 import torchaudio
 from speaker import SpeakerNetwork, SpeakerAdaptationLayer
+import yaml
 
 class PositionEncoding(nn.Module):
     def __init__(self, config):
@@ -210,7 +210,8 @@ def padding(x, padding):
     return F.pad(x, padding)
 
 if __name__ == '__main__':
-    config = configure.configure()
+    with open("../config.yaml", 'r') as yf:
+        config = yaml.safe_load(yf)
     mix_path = '../samples/sample.wav'
     spk_path = '../samples/sample.wav'
 
