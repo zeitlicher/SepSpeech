@@ -41,7 +41,7 @@ class SpeechDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         row = self.df.iloc[idx]
         # mixture path
-        self.mixture_path = row['mixture_path']
+        self.mixture_path = row['mixture']
         if self.seg_len is not None:
             start = random.randint(0, row["length"] - self.seg_len)
             stop = start + self.seg_len
@@ -49,7 +49,7 @@ class SpeechDataset(torch.utils.data.Dataset):
             start = 0
             stop = -1
 
-        source_path = row['source_path']
+        source_path = row['source']
         if os.path.exists(source_path):
             source, sr = torchaudio.load(source_path)
             source = source[start:stop]
@@ -58,10 +58,10 @@ class SpeechDataset(torch.utils.data.Dataset):
         mixture, sr = torchaudio.load(mixture_path)
         mixture = mixture[start:stop]
 
-        source_speaker = int(row['source_speaker_index'])
-        filtered = self.enroll_df.query('source_speaker_index == @source_speaker')
+        source_speaker = int(row['index'])
+        filtered = self.enroll_df.query('index == @source_speaker')
 
-        enroll = filtered.iloc[randint(0, len(filtered)-1)]['source_path']
+        enroll = filtered.iloc[randint(0, len(filtered)-1)]['source']
         enroll = enroll[start:stop]
 
         return mixture, source, enroll, source_speaker
