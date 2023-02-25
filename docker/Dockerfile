@@ -1,5 +1,5 @@
-ENV HTTP_PROXY="http://gw.a.tsukuba-tech.ac.jp:8080"
-ENV HTTPS_PROXY="http://gw.a.tsukuba-tech.ac.jp:8080"
+ENV HTTP_PROXY "http://gw.a.tsukuba-tech.ac.jp:8080"
+ENV HTTPS_PROXY "http://gw.a.tsukuba-tech.ac.jp:8080"
 # nvidia-driver >= 515
 ARG CUDA="11.7.1"  
 ARG CUDNN="8"
