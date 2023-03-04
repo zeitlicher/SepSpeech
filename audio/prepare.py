@@ -14,7 +14,7 @@ def main(args):
 
     for path in glob(os.path.join(args.root, '**/*.wav')):
         if args.relative:
-            path=os.relative_to(path)
+            path=os.path.relpath(path)
         else:
             path=os.relative(path)
         wav = wave.open(path, 'r')
@@ -24,14 +24,14 @@ def main(args):
             df.append(data=[[path, wavlen]])
         else:
             if '_DT' in file: # JNAS Desktop recordings
-                file.replace('_DT.wav', '')
+                file = file.replace('_DT.wav', '')
                 if file.startwith('N'): # JNAS newspaper
                     spk = re.search(r'N(\S+)\d\d\d', file).group()
                 else:   # JNAS balance sentences
                     spk = re.search(r'B(\S+)\S\d\d', file).group()
             elif file.startwith('M') or file startwith('F'): # Deaf male/female balance sentences
                 spk = 'D'+re.search(r'(\S\S\S)\S\S\S\.wav', file).group()
-            if spk2id[spk] is None:
+            if not spk2id.get(spk):
                 spk2id[spk] = id
                 id+=1
             df.append(data=[[path, wavlen, spk, spk2id[spk]]])

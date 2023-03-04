@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 import yaml
 
-def main(config):
+def main(config:dict):
     model = LitSepSpeaker(config)
     data = SpeechDataModule(config)
     trainer = Trainer(

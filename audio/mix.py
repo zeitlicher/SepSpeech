@@ -8,8 +8,7 @@ import pandas as pd
 
 # 音声とSNRから二乗平均平方根(root mean square)を計算する
 def cal_adjusted_rms(clean_rms, snr):
-    a = float(snr) / 20
-    noise_rms = clean_rms / (10**a)
+    noise_rms = clean_rms / (10**(float(snr) / 20))
     return noise_rms
 
 # 音声ファイルから振幅を計算する

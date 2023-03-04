@@ -8,7 +8,7 @@ class NegativeSISDR(_Loss):
         self.take_log = take_log
         self.eps = eps
 
-    def forward(self, est_target, target):
+    def forward(self, est_target:Tensor, target:Tensor) -> Tensor:
         assert target.size() == est_target.size()
         if self.zero_mean :
             mean_source = torch.mean(target, dim=1, keepdim=True)

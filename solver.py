@@ -1,27 +1,28 @@
 import pytorch_lightning as pt
 from models.sepformer import Separator
 from losses import NegativeSISDR
+from typing import Tuple
 
 class LitSepSpeaker(pl.LightningModule):
-    def __init__(self, config):
+    def __init__(self, config:dict) -> None:
         super().__init__()
         self.config = config
         self.model = Separator(self.config)
         self.ce = nn.CrossEntropyLoss()
         self.sdr = NegativeSISDR()
 
-    def padding(self, x):
+    def padding(self, x:Tensor) -> Tensor:
         self.org_len = x.shape[-1]
         pads=self.config['model']['stride'] - x.shape[-1] % self.config['model']['stride'] - 1
-        x = F.pad(x, (0, pads))
+        return F.pad(x, (0, pads))
 
-    def truncate(self, x):
+    def truncate(self, x:Tensor) -> Tensor:
         return x[:, :self.org_len]
 
-    def forward(self, mix, enr):
+    def forward(self, mix:Tensor, enr:Tensor) -> Tuple[Tensor, Tensor]:
         return self.model(mix, enr)
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch, batch_idx:int) -> Tensor:
         mix, src, enr, _, spk = batch
         mix = padding(mix)
         est_src, est_spk = self.model(mix, enr)
@@ -35,7 +36,7 @@ class LitSepSpeaker(pl.LightningModule):
 
         return loss
 
-    def training_epoch_end(outputs):
+    def training_epoch_end(outputs:Tensor):
         loss = torch.mean(outputs)
 
     def validation_step(self, batch, batch_idx, dataloader_idx):
@@ -47,7 +48,7 @@ class LitSepSpeaker(pl.LightningModule):
         values = {'val_loss': loss, 'val_sdr': sdr_loss, 'val_ce': ce_loss}
         self.log_dict(values)
 
-    def validation_epoch_end(outputs):
+    def validation_epoch_end(outputs:Tensor):
         loss = torch.mean(outputs)
 
     def configure_optimizers(self):

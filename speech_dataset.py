@@ -6,10 +6,11 @@ import torch.nn as nn
 import torch.utils.data as data
 import pytorch_lightning as pt
 import pandas as pd
+from typing import Tuple
 
 class SpeechDataset(torch.utils.data.Dataset):
 
-    def __init__(self, csv_path, enroll_path, sample_rate=16000, segment=None):
+    def __init__(self, csv_path:str, enroll_path:str, sample_rate=16000, segment=None) -> None:
         super(SpeechDataset, self).__init__()
 
         self.df = pd.read_csv(csv_path)
@@ -35,10 +36,10 @@ class SpeechDataset(torch.utils.data.Dataset):
                 f"(shorter than {segment} seconds)"
             )
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.df)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx:int) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
         row = self.df.iloc[idx]
         # mixture path
         self.mixture_path = row['mixture']
@@ -66,7 +67,7 @@ class SpeechDataset(torch.utils.data.Dataset):
 
         return mixture, source, enroll, source_speaker
 
-def data_processing(data):
+def data_processing(data:Tuple[Tensor,Tensor,Tensor,Tensor]) -> Tuple[Tensor, Tensor, Tensor, list, list]:
     mixtures = []
     sources = []
     enrolls=[]
@@ -80,7 +81,8 @@ def data_processing(data):
             sources.append(source)
         enrolls.append(enroll)
         lengths.append(len(mixture))
-        speakers.append(torch.from_numpy(speaker.astype(np.int)).clone())
+        #speakers.append(torch.from_numpy(speaker.astype(np.int)).clone())
+        speakers.append(speaker)
 
     mixtures = nn.utils.rnn.pad_sequence(mixtures, batch_first=True)
     if sources.empty() is not True:
@@ -90,11 +92,11 @@ def data_processing(data):
     return mixtures, sources, enrolls, lengths, speakers
 
 class SpeechDataModule(pl.LightningModule):
-    def __init__(self, config):
+    def __init__(self, config:dict) -> None:
         super().__init__()
         self.config=config
 
-    def setup():
+    def setup(self) -> None:
         self.train_dataset=SpeechDataset(
             self.config['dataset']['train'],
             self.config['dataset']['train_enroll'],
@@ -114,7 +116,7 @@ class SpeechDataModule(pl.LightningModule):
         self.config['train']['segment']
         )
 
-    def train_dataloader(self):
+    def train_dataloader(self) -> data.DataLoader:
         return data.DataLoader(
                 self.train_dataset,
                 batch_size = self.config['train']['batch_size'],
@@ -122,13 +124,13 @@ class SpeechDataModule(pl.LightningModule):
                 collate_fn=lambda x: data_processing(x)
             )
 
-    def val_dataloader(self):
+    def val_dataloader(self) -> data.DataLoader:
         return data.DataLoader(
                 self.valid_dataset,
                 batch_size = self.config['train']['batch_size'],
                 collate_fn=lambda x: data_processing(x)
             )
-    def test_dataloader(self):
+    def test_dataloader(self):data.DataLoader:
         return data.DataLoader(
                 self.test_dataset,
                 batch_size = self.config['train']['batch_size'],
