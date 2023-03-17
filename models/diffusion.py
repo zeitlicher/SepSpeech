@@ -91,23 +91,31 @@ class DiffusionSolver(pl.LightningModule):
         loss2 = self.ce(est_spk, spk)
         loss = self.lambda1 * loss1 + self.lambda2 * loss2
         values = {'loss': loss, 'p_loss': loss1, 'ce': loss2}
-        self.log_dict(values)
+        #self.log_dict(values)
 
-        return loss
+        return values
 
     def training_epoch_end(outputs:Tensor):
-        loss = torch.mean(outputs)
+        agv_loss = torch.stack([x['loss'] for x in outputs]).mean()
+        tensorboard_logs={'loss': agv_loss}
+        return {'avg_loss': avg_loss, 'log': tensorboard_logs}
 
     def validation_step(self, batch, batch_idx, dataloader_idx):
         mix, src, enr, _, spk = batch
-        est_src, est_spk = self.model(mix, enr)
-        ce_loss = self.ce(est_spk, spk)
-        loss = self.lambda1 * sdr_loss + self.lambda2 * ce_loss
-        values = {'val_loss': loss, 'val_sdr': sdr_loss, 'val_ce': ce_loss}
-        self.log_dict(values)
+
+        t = torch.randint(0, self.timesteps, (batch_size,), device=device).long()
+        noise, est_noise, est_spk = self.forward(mix, enr, t)
+        loss1 = p_loss(noise, est_noise)
+        loss2 = self.ce(est_spk, spk)
+        loss = self.lambda1 * loss1 + self.lambda2 * loss2
+        values = {'val_loss': loss, 'val_p_loss': loss1, 'val_ce': loss2}
+        #self.log_dict(values)
+        return values
 
     def validation_epoch_end(outputs:Tensor):
-        loss = torch.mean(outputs)
+        agv_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
+        tensorboard_logs={'val_loss': agv_loss}
+        return {'avg_loss': avg_loss, 'log': tensorboard_logs}
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)

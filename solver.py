@@ -32,12 +32,14 @@ class LitSepSpeaker(pl.LightningModule):
         ce_loss = self.ce(est_spk, spk)
         loss = self.lambda1 * sdr_loss + self.lambda2 * ce_loss
         values = {'loss': loss, 'sdr': sdr_loss, 'ce': ce_loss}
-        self.log_dict(values)
+        #self.log_dict(values)
 
-        return loss
+        return values
 
     def training_epoch_end(outputs:Tensor):
-        loss = torch.mean(outputs)
+        agv_loss = torch.stack([x['loss'] for x in outputs]).mean()
+        tensorboard_logs={'loss': agv_loss}
+        return {'avg_loss': avg_loss, 'log': tensorboard_logs}
 
     def validation_step(self, batch, batch_idx, dataloader_idx):
         mix, src, enr, len, spk = batch
@@ -46,10 +48,13 @@ class LitSepSpeaker(pl.LightningModule):
         ce_loss = self.ce(est_spk, spk)
         loss = self.lambda1 * sdr_loss + self.lambda2 * ce_loss
         values = {'val_loss': loss, 'val_sdr': sdr_loss, 'val_ce': ce_loss}
-        self.log_dict(values)
+        #self.log_dict(values)
+        return values
 
     def validation_epoch_end(outputs:Tensor):
-        loss = torch.mean(outputs)
+        agv_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
+        tensorboard_logs={'val_loss': agv_loss}
+        return {'avg_loss': avg_loss, 'log': tensorboard_logs}
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
