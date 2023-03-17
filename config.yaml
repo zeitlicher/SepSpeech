@@ -51,3 +51,24 @@ tasnet:
   block_kernel_size: 3
   num_repeats: 4
   num_speakers: 256
+diffusion:
+  timesteps: 200
+  beta_start: 0.001
+  beta_end: 0.02
+  lambda1: 1.0
+  lambda2: 1.0
+unet:
+  normalize: True
+  floor: 1e-3
+  resample: 4
+  depth: 5
+  in_channels: 1
+  mid_channels: 48
+  out_channels: 1
+  max_channels: 10000
+  kernel_size: 8
+  growth: 2
+  rescale: 0.1
+  stride: 4
+  reference: 0.1
+  causal: True
