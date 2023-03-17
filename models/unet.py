@@ -33,6 +33,7 @@ class BLSTM(nn.Module):
 
 class EncoderBlock(nn.Module):
     def __init__(self, chin:int, chout:int, kernel_size:int, stride:int) -> None:
+        super().__init__()
         self.block = nn.Sequential(
             nn.Conv1d(chin, chout, kernel_size, stride),
             nn.ReLU(),
@@ -45,6 +46,7 @@ class EncoderBlock(nn.Module):
 
 class DecoderBlock(nn.Module):
     def __init__(self, chin:int, chout:int, kernel_size:int, stride:int, append=False) -> None:
+        super().__init__()
         block = [
             nn.Conv1d(chin, chin, 1),
             nn.ReLU(),
@@ -60,15 +62,24 @@ class DecoderBlock(nn.Module):
 class UNet(nn.Module):
     def __init__(self, config:dict) -> None:
         super().__init__()
-        depth = config['unet']['depth']
+        self.normalize = config['unet']['normalize']
+        self.floor = config['unet']['floor']
+        self.resample = config['unet']['resample']
+        self.depth = config['unet']['depth']
 
         in_channels=config['unet']['in_channels']
         mid_channels=config['unet']['mid_channels']
         out_channels=config['unet']['out_channels']
         max_channels=config['unet']['max_channels']
+        self.kernel_size=config['unet']['kernel_size']
+        growth=config['unet']['growth']
+        self.rescale=config['unet']['rescale']
+        self.stride=config['unet']['stride']
+        reference=config['unet']['reference']
+
         self.encoder = nn.ModuleList()
         self.decoder = nn.ModuleList()
-        for index in range(depth):
+        for index in range(self.depth):
             self.encoder.append(EncoderBlock(in_channels, mid_channels, self.kernel_size, self.stride))
             if index > 0:
                 self.decoder.append(DecoderBlock(mid_channels, out_channels, self.kernel_size, self.stride, True))
@@ -78,10 +89,12 @@ class UNet(nn.Module):
             in_channels = mid_channels
             mid_channels = min(int(growth*mid_channels), max_channels)
 
-            self.lstm = BLSTM(in_channels, bi=not config['unet']['causal'])
+        self.lstm = BLSTM(in_channels, bi=not config['unet']['causal'])
 
-            if rescale:
-                rescale_module(self, reference=reference)
+        if rescale:
+            rescale_module(self, reference=reference)
+        from sepformer import Encoder
+        spk_encoder = Encoder(config)
         from speaker import SpeakerNetwork
         self.speaker = SpeakerNetwork(spk_encoder, config['unet']['in_channels'], config['sepformer']['mid_channels'], config['unet']['kernel_size'], config['unet']['num_speakers'])
         from speaker import SpeakerAdaptationLayer
@@ -99,9 +112,9 @@ class UNet(nn.Module):
     
     @property
     def total_stride(self):
-        return self.stride ** seld.depth // self.resample
+        return self.stride ** self.depth // self.resample
 
-    def forward(self, mix, enr):
+    def forward(self, mix:Tensor, enr:Tensor) -> Tuple[Tensor, Tensor]:
         if mix.dim() == 2:
             mix = mix.unsqueeze(1) 
         
@@ -114,15 +127,17 @@ class UNet(nn.Module):
         length = mix.shape[-1]
         x = mix
         x = F.pad(x, (0, self.valid_length(length) - length))
-        if self.resqmple == 2:
+        if self.resample == 2:
             x = upsample2(x)
-        elif self.resqmple == 4:
+        elif self.resample == 4:
             x = upsample2(x)
             x = upsample2(x)
         skips = []
-        enc_s, y = self.speaker(enr)
+        enc_s, y = None
+        if enr is not None:
+            enc_s, y = self.speaker(enr)
         for n, encode in enumerate(self.encoder):
-            if n == 1:
+            if n == 1 and enc_s is not None:
                 x = self.adpt(x, enc_s)
             x = encode(x)
             skips.append(x)

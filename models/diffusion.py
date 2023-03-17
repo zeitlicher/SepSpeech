@@ -1,4 +1,4 @@
-import pytorch_lightning as pt
+import pytorch_lightning as pl
 from typing import Tuple
 import torch
 import torch.nn.functional as F
@@ -22,20 +22,23 @@ class DiffusionSolver(pl.LightningModule):
         self.posterior_variance = self.betas * (1. - self.alphas_cumprod_prev) / (1. - self.alphas_cumprod)
         self.sqrt_recip_alphas = torch.sqrt(1./self.alphas)
         self.ce = nn.CrossEntropyLoss()
+        
+        self.lambda1 = config['diffusion']['lambda1']
+        self.lambda2 = config['diffusion']['lambda2']
 
-    def p_losses(noise:Tensor, est_noise:Tensor):
+    def p_losses(self, noise:Tensor, est_noise:Tensor):
         loss = F.l2_loss(noise, est_noise)
         return loss 
 
-    def extract(a, t, x_shape):
+    def extract(self, a, t, x_shape):
         batch_size = t.shape[0]
         out = a.gather(-1, t.cpu())
         return out.reshape(batch_size, *((1,) * (len(x_shape) - 1))).to(t.device)
 
-    def linear_beta_schedule():
+    def linear_beta_schedule(self):
         return torch.linspace(self.beta_start, self.beta_end, self.timesteps)
 
-    def q_sample(x_start, t, noise=None):
+    def q_sample(self, x_start, t, noise=None):
         if noise is None:
             noise = torch.randn_like(x_start)
         sqrt_alphas_cumprod_t = extract(self.sqrt_alphas_cumprod, t, x_start.shape)
@@ -44,7 +47,7 @@ class DiffusionSolver(pl.LightningModule):
         return sqrt_alphas_cumprod_t * x_start + sqrt_one_minus_alphas_cumprod_t * noise
 
     @torch.no_grad()
-    def p_sample(x, s, t, t_index):
+    def p_sample(self, x, s, t, t_index):
         betas_t = extract(self.betas, t, x.shape)
         sqrt_one_minus_alphas_cumprod_t = extract(self.sqrt_one_minus_alphas_cumprod, t, x.shape)
         sqrt_recip_alphas_t = extract(self.sqrt_recip_alphas, t, x.shape)
@@ -58,7 +61,7 @@ class DiffusionSolver(pl.LightningModule):
         return model_mean + torch.sqrt(posterior_variance_t) * noise
 
     @torch.no_grad()
-    def p_sample_loop(shape):
+    def p_sample_loop(self, shape):
         device = next(self.model.parameters()).device
         b=shape[0]
         img = torch.randn(shape, device=device)
@@ -70,7 +73,7 @@ class DiffusionSolver(pl.LightningModule):
         return imgs
 
     @torch.no_grad()
-    def sample(image_size, batch_size=16, channels=3):
+    def sample(self, image_size, batch_size=16, channels=3):
         return p_sample_loop(shape=(batch_size, channels, image_size, image_size))
 
     def forward(self, mix:Tensor, enr:Tensor, noise:Tensor, t:int) -> Tuple[Tensor, Tensor]:
@@ -87,7 +90,7 @@ class DiffusionSolver(pl.LightningModule):
         t = torch.randint(0, self.timesteps, (batch_size,), device=device).long()
         noise, est_noise, est_spk = self.forward(mix, enr, t)
 
-        loss1 = p_loss(noise, est_noise)
+        loss1 = p_losses(noise, est_noise)
         loss2 = self.ce(est_spk, spk)
         loss = self.lambda1 * loss1 + self.lambda2 * loss2
         values = {'loss': loss, 'p_loss': loss1, 'ce': loss2}
@@ -95,7 +98,7 @@ class DiffusionSolver(pl.LightningModule):
 
         return values
 
-    def training_epoch_end(outputs:Tensor):
+    def training_epoch_end(self, outputs:Tensor):
         agv_loss = torch.stack([x['loss'] for x in outputs]).mean()
         tensorboard_logs={'loss': agv_loss}
         return {'avg_loss': avg_loss, 'log': tensorboard_logs}
@@ -112,7 +115,7 @@ class DiffusionSolver(pl.LightningModule):
         #self.log_dict(values)
         return values
 
-    def validation_epoch_end(outputs:Tensor):
+    def validation_epoch_end(self, outputs:Tensor):
         agv_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
         tensorboard_logs={'val_loss': agv_loss}
         return {'avg_loss': avg_loss, 'log': tensorboard_logs}
