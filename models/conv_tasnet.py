@@ -316,7 +316,7 @@ class ConvTasNet(nn.Module):
         out = self.decoder_1d(x, squeeze=True)
         # spks x n x S
         return out, z
-
+'''
 def foo_conv1d_block():
     nnet = Conv1DBlock(256, 512, 3, 20)
     print(param(nnet))
@@ -328,17 +328,15 @@ def foo_layernorm():
     print(param(nnet1, Mb=False))
     nnet2 = nn.LayerNorm([C, T], elementwise_affine=False)
     print(param(nnet2, Mb=False))
-
-
-def foo_conv_tas_net():
-    x = torch.rand(4, 1000)
-    nnet = ConvTasNet(norm="cLN", causal=False)
+'''
+def foo_conv_tas_net(config:dict):
+    #x = torch.rand(4, 1000)
+    nnet = ConvTasNet(config)
     # print(nnet)
     print("ConvTasNet #param: {:.2f}".format(param(nnet)))
-    x = nnet(x)
-    s1 = x[0]
-    print(s1.shape)
-
+    #x = nnet(x)
+    #s1 = x[0]
+    #print(s1.shape)
 
 if __name__ == "__main__":
     foo_conv_tas_net()
