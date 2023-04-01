@@ -346,6 +346,6 @@ if __name__ == "__main__":
 
     with open(args['config'], 'r') as yf:
         config = yaml.safe_load(yf)
-    foo_conv_tas_net(config)
+        foo_conv_tas_net(config)
     # foo_conv1d_block()
     # foo_layernorm()
