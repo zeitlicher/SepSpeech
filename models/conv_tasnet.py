@@ -340,7 +340,7 @@ def foo_conv_tas_net(config:dict):
     #print(s1.shape)
 
 if __name__ == "__main__":
-    parser = ArgumentParser()
+    parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, required=True)
     args=parser.parse_args()
 
