@@ -1,6 +1,6 @@
 # https://github.com/funcwj/conv-tasnet/blob/master/nnet/conv_tas_net.py
 
-import torch as th
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from speaker import SpeakerNetwork, SpeakerAdaptationLayer
