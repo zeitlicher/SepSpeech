@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from speaker import SpeakerNetwork, SpeakerAdaptationLayer
 from typing import Tuple
+import argparse
 
 def param(nnet, Mb=True):
     """
@@ -339,6 +340,12 @@ def foo_conv_tas_net(config:dict):
     #print(s1.shape)
 
 if __name__ == "__main__":
-    foo_conv_tas_net()
+    parser = ArgumentParser()
+    parser.add_argument('--config', type=str, required=True)
+    args=parser.parse_args()
+
+    with open(args['config'], 'r') as yf:
+        config = yaml.safe_load(yf)
+    foo_conv_tas_net(config)
     # foo_conv1d_block()
     # foo_layernorm()
