@@ -343,7 +343,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, required=True)
     args=parser.parse_args()
-
+    print(args)
     with open(args['config'], 'r') as yf:
         config = yaml.safe_load(yf)
         foo_conv_tas_net(config)
