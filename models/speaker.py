@@ -25,7 +25,7 @@ class SpeakerNetwork(nn.Module):
         self.act = nn.ReLU()
         self.linear=nn.Linear(out_channels, num_speakers)
 
-    def forward(self, x:Tensor) -> Tuple[Tensor,Tensor]:
+    def forward(self, x:torch.Tensor) -> Tuple[torch.Tensor,torch.Tensor]:
         y = self.encoder(x)
         y = self.conv(y)
         y = torch.mean(y, dim=-1) # (B, C)
@@ -36,7 +36,7 @@ class SpeakerAdaptationLayer(nn.Module):
     def __init__(self) -> None:
         super(SpeakerAdaptationLayer, self).__init__()
 
-    def forward(self, x:Tensor, s:Tensor) -> Tensor:
+    def forward(self, x:torch.Tensor, s:torch.Tensor) -> torch.Tensor:
         # (B, C, T) x (B, C)
         y = x * s.unsqueeze(-1)
         return y
