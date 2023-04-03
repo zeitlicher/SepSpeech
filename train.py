@@ -17,7 +17,7 @@ if __name__ == '__main__':
     parser.add_argument('--config', type=str, required=True)
     args=parser.parse_args()
 
-    with open(args['config'], 'r') as yf:
+    with open(args.config, 'r') as yf:
         config = yaml.safe_load(yf)
 
     main(config)
