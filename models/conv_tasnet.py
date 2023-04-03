@@ -319,6 +319,10 @@ class ConvTasNet(nn.Module):
         out = self.decoder_1d(x, squeeze=True)
         # spks x n x S
         return out, z
+
+def count_parameters(model):
+    return sum(param.numel() for param in model.parameters() if param.requires_grad)
+
 '''
 def foo_conv1d_block():
     nnet = Conv1DBlock(256, 512, 3, 20)
@@ -336,7 +340,7 @@ def foo_conv_tas_net(config:dict):
     #x = torch.rand(4, 1000)
     nnet = ConvTasNet(config)
     print(nnet)
-    print("ConvTasNet #param: {:.2f}".format(param(nnet)))
+    print("ConvTasNet #param: {:.2f}".format(count_parameters(nnet)))
     #x = nnet(x)
     #s1 = x[0]
     #print(s1.shape)
