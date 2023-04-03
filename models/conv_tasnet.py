@@ -6,6 +6,7 @@ import torch.nn.functional as F
 from speaker import SpeakerNetwork, SpeakerAdaptationLayer
 from typing import Tuple
 import argparse
+import yaml
 
 def param(nnet, Mb=True):
     """
