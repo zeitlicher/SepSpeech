@@ -1,9 +1,11 @@
-# nvidia-driver >= 515
-ARG CUDA="11.7.1"  
+# nvidia-driver >= 515 && pytorch-2.0 binary-build
+ARG CUDA="11.8.0"  
 ARG CUDNN="8"
 ARG UBUNTU="22.04"
 FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-devel-ubuntu${UBUNTU}
-ENV HTTP_PROXY "http://gw.a.tsukuba-tech.ac.jp:8080"
-ENV HTTPS_PROXY "http://gw.a.tsukuba-tech.ac.jp:8080"
-RUN apt-get --no-install-recommends -y install emacs python3.9 python3-pip libsndfile1-dev
-RUN pip3 install torch torchvision torchaudio torchmetrics lightning einops numpy sklearn tqdm pandas scipy numba h5py seaborn wave librosa
+USER root
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends emacs python3.9 python3-pip libsndfile1-dev
+# unfortunatelly, we do not use CUDA 12.0
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+RUN pip3 install torchmetrics lightning einops numpy sklearn tqdm pandas scipy numba h5py seaborn wave librosa
