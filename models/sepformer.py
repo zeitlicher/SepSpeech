@@ -99,7 +99,7 @@ class OverlapAddLayer(nn.Module):
         self.chunk_size=config['sepformer']['chunk_size']
         assert self.chunk_size % 2 == 0
 
-    def forward(self,x:Tnsor) -> Tensor:
+    def forward(self,x:Tensor) -> Tensor:
         y = torch.zeros(x.shape)
         _batch, _, _, _channel= x.shape
         y[:, :self.chunk_size//2,:, :] =  x[:, :self.chunk_size//2,:, :]
