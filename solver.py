@@ -1,6 +1,6 @@
 import pytorch_lightning as pt
 from models.sepformer import Separator
-from losses import NegativeSISDR
+from sdr import NegativeSISDR
 from typing import Tuple
 
 class LitSepSpeaker(pl.LightningModule):
