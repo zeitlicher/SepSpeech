@@ -335,7 +335,7 @@ def foo_layernorm():
 def foo_conv_tas_net(config:dict):
     #x = torch.rand(4, 1000)
     nnet = ConvTasNet(config)
-    # print(nnet)
+    print(nnet)
     print("ConvTasNet #param: {:.2f}".format(param(nnet)))
     #x = nnet(x)
     #s1 = x[0]
