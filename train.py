@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 import yaml
-from sovler import LitSepSpeaker
+from solver import LitSepSpeaker
 from speech_dataset import SpeechDataModule
 
 def main(config:dict):
