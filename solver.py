@@ -1,4 +1,4 @@
-import pytorch_lightning as pt
+import pytorch_lightning as pl
 from models.sepformer import Separator
 from sdr import NegativeSISDR
 from typing import Tuple
