@@ -3,6 +3,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import Tensor
 from speaker import SpeakerNetwork, SpeakerAdaptationLayer
 from typing import Tuple
 import argparse
@@ -29,7 +30,7 @@ class Encoder(nn.Module):
         )
         self.act = nn.ReLU()
 
-    def forward(self, x:torch.Tensor) -> torch.Tensor:
+    def forward(self, x:Tensor) -> Tensor:
         assert x.dim() == 2 # (B, T)
         x = x.unsqueeze(1) # add channel
         return self.act(self.conv(x))
@@ -42,7 +43,7 @@ class ChannelWiseLayerNorm(nn.LayerNorm):
     def __init__(self, *args, **kwargs):
         super(ChannelWiseLayerNorm, self).__init__(*args, **kwargs)
 
-    def forward(self, x:torch.Tensor) -> torch.Tensor:
+    def forward(self, x:Tensor) -> Tensor:
         """
         x: N x C x T
         """
@@ -75,7 +76,7 @@ class GlobalChannelLayerNorm(nn.Module):
             self.register_parameter("weight", None)
             self.register_parameter("bias", None)
 
-    def forward(self, x:torch.Tensor) -> torch.Tensor:
+    def forward(self, x:Tensor) -> Tensor:
         """
         x: N x C x T
         """
@@ -120,7 +121,7 @@ class Conv1D(nn.Conv1d):
     def __init__(self, *args, **kwargs):
         super(Conv1D, self).__init__(*args, **kwargs)
 
-    def forward(self, x:torch.Tensor, squeeze=False) -> torch.Tensor:
+    def forward(self, x:Tensor, squeeze=False) -> Tensor:
         """
         x: N x L or N x C x L
         """
@@ -141,7 +142,7 @@ class ConvTrans1D(nn.ConvTranspose1d):
     def __init__(self, *args, **kwargs):
         super(ConvTrans1D, self).__init__(*args, **kwargs)
 
-    def forward(self, x:torch.Tensor, squeeze=False) -> torch.Tensor:
+    def forward(self, x:Tensor, squeeze=False) -> Tensor:
         """
         x: N x L or N x C x L
         """
@@ -191,7 +192,7 @@ class Conv1DBlock(nn.Module):
         self.causal = causal
         self.dconv_pad = dconv_pad
 
-    def forward(self, x:torch.Tensor) -> torch.Tensor:
+    def forward(self, x:Tensor) -> Tensor:
         y = self.conv1x1(x)
         y = self.lnorm1(self.prelu1(y))
         y = self.dconv(y)
@@ -289,7 +290,7 @@ class ConvTasNet(nn.Module):
         ]
         return nn.Sequential(*repeats)
 
-    def forward(self, x:torch.Tensor, s:torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    def forward(self, x:Tensor, s:Tensor) -> Tuple[Tensor, Tensor]:
         if x.dim() >= 3:
             raise RuntimeError(
                 "{} accept 1/2D tensor as input, but got {:d}".format(
