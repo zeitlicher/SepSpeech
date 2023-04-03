@@ -1,8 +1,11 @@
 from argparse import ArgumentParser
 import yaml
+from sovler import LitSepSpeaker
+from speech_dataset import SpeechDataModule
 
 def main(config:dict):
     model = LitSepSpeaker(config)
+    exit(1)
     data = SpeechDataModule(config)
     trainer = Trainer(
         max_epochs=config['train']['max_epochs'],
