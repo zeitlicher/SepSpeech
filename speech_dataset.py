@@ -4,48 +4,10 @@ import random
 import torch
 import torch.nn as nn
 import torch.utils.data as data
-import pytorch_lightning as pt
+import pytorch_lightning as pl
 import pandas as pd
 from typing import Tuple
-
-class SpeechDatasetLive(SpeechDataset):
-    def __init__(self, csv_path:str, noise_csv_path:str, enroll_path:str, sample_rate=16000, segment=None) -> None:
-        super().__init__(csv_path:str, enroll_path:str, sample_rate=16000, segment=None)
-        self.noise_df = pd.read_csv(noise_csv_path)
-
-    def __getitem__(self, idx:int) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
-        row = self.df.iloc[idx]
-        source_path = row['source']
-        if self.seg_len is not None:
-            start = random.randint(0, row["length"] - self.seg_len)
-            stop = start + self.seg_len
-        else:
-            start = 0
-            stop = -1
-        assert os.path.exists(source_path):
-        source, sr = torchaudio.load(source_path)
-        source = source[start:stop]
-
-        source_speaker = int(row['index'])
-        filtered = self.enroll_df.query('index == @source_speaker')
-        enroll = filtered.iloc[randint(0, len(filtered)-1)]['source']
-        enroll = enroll[start:stop]
-
-        noise_row = self.noise_df[random.randint(0, len(self.noise_df))]
-        self.noise_path = noise_row['noise']
-        if self.seg_len is not None:
-            start = random.randint(0, row["length"] - self.seg_len)
-            stop = start + sele.seg_len
-        else:
-            start = random.randint(0, row["length"] - len(source))
-            stop = start + len(source)
-        if os.path.exists(noise_path):
-            noise, sr = torchaudio.load(noise_path)
-            noise = noise[start:stop]
-        else:
-            noise=None
-
-        return source, noise, enroll, source_speaker
+from torch import Tensor
 
 class SpeechDataset(torch.utils.data.Dataset):
 
@@ -106,6 +68,47 @@ class SpeechDataset(torch.utils.data.Dataset):
 
         return mixture, source, enroll, source_speaker
 
+'''
+class SpeechDatasetLive(SpeechDataset):
+    def __init__(self, csv_path:str, noise_csv_path:str, enroll_path:str, sample_rate=16000, segment=None) -> None:
+        super().__init__(csv_path, enroll_path, sample_rate=16000, segment=None)
+        self.noise_df = pd.read_csv(noise_csv_path)
+
+    def __getitem__(self, idx:int) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
+        row = self.df.iloc[idx]
+        source_path = row['source']
+        if self.seg_len is not None:
+            start = random.randint(0, row["length"] - self.seg_len)
+            stop = start + self.seg_len
+        else:
+            start = 0
+            stop = -1
+        assert os.path.exists(source_path)
+        source, sr = torchaudio.load(source_path)
+        source = source[start:stop]
+
+        source_speaker = int(row['index'])
+        filtered = self.enroll_df.query('index == @source_speaker')
+        enroll = filtered.iloc[randint(0, len(filtered)-1)]['source']
+        enroll = enroll[start:stop]
+
+        noise_row = self.noise_df[random.randint(0, len(self.noise_df))]
+        self.noise_path = noise_row['noise']
+        if self.seg_len is not None:
+            start = random.randint(0, row["length"] - self.seg_len)
+            stop = start + sele.seg_len
+        else:
+            start = random.randint(0, row["length"] - len(source))
+            stop = start + len(source)
+        if os.path.exists(noise_path):
+            noise, sr = torchaudio.load(noise_path)
+            noise = noise[start:stop]
+        else:
+            noise=None
+
+        return source, noise, enroll, source_speaker
+'''
+
 def data_processing(data:Tuple[Tensor,Tensor,Tensor,Tensor]) -> Tuple[Tensor, Tensor, Tensor, list, list]:
     mixtures = []
     sources = []
@@ -130,6 +133,7 @@ def data_processing(data:Tuple[Tensor,Tensor,Tensor,Tensor]) -> Tuple[Tensor, Te
 
     return mixtures, sources, enrolls, lengths, speakers
 
+'''
 class SpeechDataLiveModule(SpeechDataModule):
     def __init__(self, config:dict) -> None:
         super().__init__(config)
@@ -156,13 +160,15 @@ class SpeechDataLiveModule(SpeechDataModule):
         self.config['train']['sample_rate'],
         self.config['train']['segment']
         )
+'''
 
 class SpeechDataModule(pl.LightningModule):
     def __init__(self, config:dict) -> None:
         super().__init__()
         self.config=config
-
-    def setup(self) -> None:
+        self.batch_size=8
+        
+    def setup(self, stage:str) -> None:
         self.train_dataset=SpeechDataset(
             self.config['dataset']['train'],
             self.config['dataset']['train_enroll'],
@@ -196,7 +202,7 @@ class SpeechDataModule(pl.LightningModule):
                 batch_size = self.config['train']['batch_size'],
                 collate_fn=lambda x: data_processing(x)
             )
-    def test_dataloader(self):data.DataLoader:
+    def test_dataloader(self) -> data.DataLoader:
         return data.DataLoader(
                 self.test_dataset,
                 batch_size = self.config['train']['batch_size'],

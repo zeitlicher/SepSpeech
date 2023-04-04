@@ -27,8 +27,8 @@ class PositionEncoding(nn.Module):
         pe = torch.zeros(config['sepformer']['max_len'], config['sepformer']['d_model'])
         position = torch.arange(0, config['sepformer']['max_len'], dtype=torch.float)
         div_term = torch.exp(torch.arange(0, config['sepformer']['d_model'], 2).float() * (-math.log(10000.0)/config['sepformer']['d_model']))
-        pe[:, 0::2] = torch.sin(position * div_term)
-        pe[:, 1::2] = torch.cos(position * div_term)
+        pe[:, 0::2] = torch.sin(position.unsqueeze(-1) * div_term.unsqueeze(0))
+        pe[:, 1::2] = torch.cos(position.unsqueeze(-1) * div_term.unsqueeze(0))
 
         pe = reshape(pe).unsqueeze(0) # (b, t, c)
         self.register_buffer('pe', pe)
@@ -69,7 +69,7 @@ class Decoder(nn.Module):
             config['sepformer']['kernel_size'],
             config['sepformer']['stride'],
             config['sepformer']['kernel_size']//4,
-            padding=0, output_padding=0 #padding
+            output_padding=0 #padding
         )
     def forward(self, x:Tensor) -> Tensor:
         assert x.dim() == 3 # (B, C, T)
@@ -205,9 +205,9 @@ class Separator(nn.Module):
         self.masking = MaskingNetwork(config)
         self.decoder = Decoder(config)
         spk_encoder = Encoder(config)
-        from speaker import SpeakerNetwork
+        from models.speaker import SpeakerNetwork
         self.speaker = SpeakerNetwork(spk_encoder, config['sepformer']['channels'], config['sepformer']['d_model'], config['sepformer']['kernel_size'], config['sepformer']['num_speakers'])
-        from speaker import SpeakerAdaptationLayer
+        from models.speaker import SpeakerAdaptationLayer
         self.adpt = SpeakerAdaptationLayer()
 
     def forward(self, x:Tensor, s:Tensor) -> Tuple[Tensor, Tensor]:

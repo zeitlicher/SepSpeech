@@ -2,13 +2,13 @@
 dataset:
   # csv format, source_speaker_index must be < n_speakers
   # mixture_path, source_path, length, source_speaker, source_speaker_index
-  train: ''
+  train: 'audio/csv/test.csv'
   # source_path, length, source_speaker, source_speaker_index
-  train_enroll: ''
-  valid: ''
-  valid_enroll: ''
-  test: ''
-  test_enroll: ''
+  train_enroll: 'audio/csv/removed.csv'
+  valid: 'audio/csv/test.csv'
+  valid_enroll: 'audio/csv/removed.csv'
+  test: 'audio/csv/test.csv'
+  test_enroll: 'audio/csv/test.csv'
 
 # training parameters
 train:

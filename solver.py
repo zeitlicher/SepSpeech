@@ -1,5 +1,6 @@
 import torch
 from torch import Tensor
+import torch.nn as nn
 import pytorch_lightning as pl
 from models.sepformer import Separator
 from sdr import NegativeSISDR
@@ -38,7 +39,7 @@ class LitSepSpeaker(pl.LightningModule):
 
         return values
 
-    def training_epoch_end(outputs:Tensor):
+    def on_train_epoch_end(outputs:Tensor):
         agv_loss = torch.stack([x['loss'] for x in outputs]).mean()
         tensorboard_logs={'loss': agv_loss}
         return {'avg_loss': avg_loss, 'log': tensorboard_logs}
@@ -53,7 +54,7 @@ class LitSepSpeaker(pl.LightningModule):
         #self.log_dict(values)
         return values
 
-    def validation_epoch_end(outputs:Tensor):
+    def on_validation_epoch_end(outputs:Tensor):
         agv_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
         tensorboard_logs={'val_loss': agv_loss}
         return {'avg_loss': avg_loss, 'log': tensorboard_logs}
@@ -61,3 +62,6 @@ class LitSepSpeaker(pl.LightningModule):
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
         return optimizer
+    
+    def get_model(self):
+        return self.model

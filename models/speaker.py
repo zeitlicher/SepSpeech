@@ -13,7 +13,7 @@ from typing import Tuple
 class SpeakerNetwork(nn.Module):
     def __init__(self, encoder, in_channels:int, out_channels:int, kernel_size:int, num_speakers:int) -> None:
         super(SpeakerNetwork, self).__init__()
-        from sepformer import Encoder
+        from models.sepformer import Encoder
         self.encoder = encoder
         self.conv = nn.Conv1d(
             in_channels,      # 256
