@@ -17,8 +17,10 @@ train:
   precision: 16
   accelerator: 'gpu'
   batch_size: 16
+  learning_rate: 1.e-4
   sample_rate: 16000
   segment: 3
+  output: ./model.pt
 
 # sepformer parameters
 sepformer:
@@ -42,6 +44,8 @@ sepformer:
   num_speakers: 256
   # dropout (all modules)
   dropout: 0.1
+  lambda1: 1.0
+  lambda2: 1.0
 tasnet:
   kernel_size: 20
   in_channels: 256

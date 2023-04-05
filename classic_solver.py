@@ -69,8 +69,10 @@ def test(model, loader, loss_funcs, iterm, epoch, writer, config):
                 bar.set_postfix_str(f'{np.mean(loss):.3f}')
                 bar.update(len(mixtures))
 
-                if writer:
-                    writer.add_scalar('test_loss', np.mean(loss), iterm.get())
+    avg_loss = np.mean(loss_seq)
+    if writer:
+        writer.add_scalar('test_loss', avg_loss, iterm.get())
+    return avg_loss
 
 def evaluate(model, mixtures, enrolls, config):
     model.eval()
