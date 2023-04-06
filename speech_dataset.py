@@ -4,18 +4,19 @@ import random
 import torch
 import torch.nn as nn
 import torch.utils.data as data
-import pytorch_lightning as pl
 import pandas as pd
 from typing import Tuple
 from torch import Tensor
+import torchaudio
 
 class SpeechDataset(torch.utils.data.Dataset):
 
-    def __init__(self, csv_path:str, enroll_path:str, sample_rate=16000, segment=None) -> None:
+    def __init__(self, csv_path:str, enroll_path:str, sample_rate=16000, segment=0) -> None:
         super(SpeechDataset, self).__init__()
 
         self.df = pd.read_csv(csv_path)
         self.segment = segment if segment > 0 else None
+        self.sample_rate = sample_rate
         if self.segment is not None:
             max_len = len(self.df)
             self.seg_len = int(self.segment * self.sample_rate)
@@ -54,19 +55,19 @@ class SpeechDataset(torch.utils.data.Dataset):
         source_path = row['source']
         if os.path.exists(source_path):
             source, sr = torchaudio.load(source_path)
-            source = source[start:stop]
+            source = source[:, start:stop]
         else:
             source = None
-        mixture, sr = torchaudio.load(mixture_path)
-        mixture = mixture[start:stop]
-
+        mixture, sr = torchaudio.load(self.mixture_path)
+        mixture = mixture[:, start:stop]
         source_speaker = int(row['index'])
         filtered = self.enroll_df.query('index == @source_speaker')
 
-        enroll = filtered.iloc[randint(0, len(filtered)-1)]['source']
-        enroll = enroll[start:stop]
-
-        return mixture, source, enroll, source_speaker
+        enroll_path = filtered.iloc[random.randint(0, len(filtered)-1)]['source']
+        if os.path.exists(enroll_path):
+            enroll, sr = torchaudio.load(enroll_path)
+            enroll = enroll[:, start:stop]
+        return torch.t(mixture), torch.t(source), torch.t(enroll), source_speaker
 
 '''
 class SpeechDatasetLive(SpeechDataset):
@@ -112,8 +113,8 @@ class SpeechDatasetLive(SpeechDataset):
 def data_processing(data:Tuple[Tensor,Tensor,Tensor,Tensor]) -> Tuple[Tensor, Tensor, Tensor, list, list]:
     mixtures = []
     sources = []
-    enrolls=[]
-    lengths=[]
+    enrolls = []
+    lengths = []
     speakers = []
 
     for mixture, source, enroll, speaker in data:
@@ -127,11 +128,12 @@ def data_processing(data:Tuple[Tensor,Tensor,Tensor,Tensor]) -> Tuple[Tensor, Te
         speakers.append(speaker)
 
     mixtures = nn.utils.rnn.pad_sequence(mixtures, batch_first=True)
-    if sources.empty() is not True:
+    if len(sources) > 0:
         sources = nn.utils.rnn.pad_sequence(sources, batch_first=True)
     enrolls = nn.utils.rnn.pad_sequence(enrolls, batch_first=True)
+    speakers = torch.from_numpy(np.array(speakers)).clone()
 
-    return mixtures, sources, enrolls, lengths, speakers
+    return mixtures.squeeze(), sources.squeeze(), enrolls.squeeze(), lengths, speakers
 
 '''
 class SpeechDataLiveModule(SpeechDataModule):
@@ -161,7 +163,7 @@ class SpeechDataLiveModule(SpeechDataModule):
         self.config['train']['segment']
         )
 '''
-
+'''
 class SpeechDataModule(pl.LightningModule):
     def __init__(self, config:dict) -> None:
         super().__init__()
@@ -208,3 +210,4 @@ class SpeechDataModule(pl.LightningModule):
                 batch_size = self.config['train']['batch_size'],
                 collate_fn=lambda x: data_processing(x)
             )
+'''

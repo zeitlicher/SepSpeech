@@ -100,7 +100,7 @@ class OverlapAddLayer(nn.Module):
         assert self.chunk_size % 2 == 0
 
     def forward(self,x:Tensor) -> Tensor:
-        y = torch.zeros(x.shape)
+        y = torch.zeros(x.shape).cuda()
         _batch, _, _, _channel= x.shape
         y[:, :self.chunk_size//2,:, :] =  x[:, :self.chunk_size//2,:, :]
         y[:, self.chunk_size//2:,:, :] += x[:, self.chunk_size//2:,:, :]

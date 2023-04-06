@@ -42,9 +42,9 @@ def main(args):
                 spk2id[spk] = id
                 id+=1
             if df is None:
-                df = pd.DataFrame(index=None, columns=['source', 'lengths', 'speaker', 'index', 'utt'], data=[[path, wavlen, spk, spk2id[spk], utt]])
+                df = pd.DataFrame(index=None, columns=['source', 'length', 'speaker', 'index', 'utt'], data=[[path, wavlen, spk, spk2id[spk], utt]])
             else:
-                df2 = pd.DataFrame(index=None, columns=['source', 'lengths', 'speaker', 'index', 'utt'], data=[[path, wavlen, spk, spk2id[spk], utt]])
+                df2 = pd.DataFrame(index=None, columns=['source', 'length', 'speaker', 'index', 'utt'], data=[[path, wavlen, spk, spk2id[spk], utt]])
                 df = pd.concat([df, df2], ignore_index=True, axis=0)
     df.to_csv(args.output_csv, index=False)
  

@@ -16,12 +16,12 @@ train:
   gradient_clip_val: 5.
   precision: 16
   accelerator: 'gpu'
-  batch_size: 16
-  learning_rate: 1.e-4
+  batch_size: 4
+  learning_rate: 1.e-5
   sample_rate: 16000
   segment: 3
   output: ./model.pt
-
+  logdir: ./logs
 # sepformer parameters
 sepformer:
   # positional encoding
@@ -39,7 +39,7 @@ sepformer:
   layer_norm_eps: 1.e-8
   num_layers: 4 #8
   # sepformers
-  num_sepformer_layers: 1 #2
+  num_sepformer_layers: 2
   # speakers
   num_speakers: 256
   # dropout (all modules)
