@@ -2,7 +2,7 @@
 dataset:
   # csv format, source_speaker_index must be < n_speakers
   # mixture_path, source_path, length, source_speaker, source_speaker_index
-  train: 'audio/csv/train.csv'
+  train: 'audio/csv/test.csv'
   # source_path, length, source_speaker, source_speaker_index
   train_enroll: 'audio/csv/train_enr.csv'
   valid: 'audio/csv/valid.csv'
@@ -16,8 +16,8 @@ train:
   gradient_clip_val: 5.
   precision: 16
   accelerator: 'gpu'
-  batch_size: 2
-  learning_rate: 1.e-5
+  batch_size: 1
+  learning_rate: 1.e-4
   sample_rate: 16000
   segment: 3
   output: ./output/model.pt
@@ -27,19 +27,19 @@ sepformer:
   # positional encoding
   max_len: 80000
   # encoder/decoder conv filters
-  channels: 128 #256
+  channels: 256 #128
   kernel_size: 16
   stride: 8
   # chunking samples
   chunk_size: 250
   # intra- & inter- Transformers
-  d_model: 128 #256
+  d_model: 256 #128
   nhead: 8
   dim_feedforward: 1024
   layer_norm_eps: 1.e-8
-  num_layers: 4 #8
+  num_layers: 8 #4
   # sepformers
-  num_sepformer_layers: 2
+  num_sepformer_layers: 2 #1
   # speakers
   num_speakers: 307
   # dropout (all modules)
