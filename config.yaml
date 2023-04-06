@@ -2,24 +2,26 @@
 dataset:
   # csv format, source_speaker_index must be < n_speakers
   # mixture_path, source_path, length, source_speaker, source_speaker_index
-  train: 'audio/csv/test.csv'
+  train: 'audio/csv/train.csv'
   # source_path, length, source_speaker, source_speaker_index
-  train_enroll: 'audio/csv/removed.csv'
-  valid: 'audio/csv/test.csv'
-  valid_enroll: 'audio/csv/removed.csv'
-  test: 'audio/csv/test.csv'
-  test_enroll: 'audio/csv/test.csv'
+  train_enroll: 'audio/csv/train_enr.csv'
+  valid: 'audio/csv/valid.csv'
+  valid_enroll: 'audio/csv/valid_enr.csv'
+  test: 'audio/csv/valid.csv'
+  test_enroll: 'audio/csv/valid_enr.csv'
 
 # training parameters
 train:
-  max_epochs: 100
+  max_epochs: 10
   gradient_clip_val: 5.
   precision: 16
   accelerator: 'gpu'
-  batch_size: 16
+  batch_size: 2
+  learning_rate: 1.e-5
   sample_rate: 16000
   segment: 3
-
+  output: ./output/model.pt
+  logdir: ./logs
 # sepformer parameters
 sepformer:
   # positional encoding
@@ -37,11 +39,13 @@ sepformer:
   layer_norm_eps: 1.e-8
   num_layers: 4 #8
   # sepformers
-  num_sepformer_layers: 1 #2
+  num_sepformer_layers: 2
   # speakers
-  num_speakers: 256
+  num_speakers: 307
   # dropout (all modules)
   dropout: 0.1
+  lambda1: 1.0
+  lambda2: 1.0
 tasnet:
   kernel_size: 20
   in_channels: 256

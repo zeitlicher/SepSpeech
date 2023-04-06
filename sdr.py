@@ -11,6 +11,7 @@ class NegativeSISDR(_Loss):
 
     def forward(self, est_target:Tensor, target:Tensor) -> Tensor:
         assert target.size() == est_target.size()
+        target=target.cuda()
         if self.zero_mean :
             mean_source = torch.mean(target, dim=1, keepdim=True)
             mean_estimate = torch.mean(est_target, dim=1, keepdim=True)
@@ -22,7 +23,7 @@ class NegativeSISDR(_Loss):
         scaled_target = dot * target / s_target_energy
 
         e_noise = est_target - target
-        losses = torch.sum(scaled_target**2, dim=1) / (torch.sum(e_noise**2, dim=1) + self.EPS)
+        losses = torch.sum(scaled_target**2, dim=1) / (torch.sum(e_noise**2, dim=1) + self.eps)
         if self.take_log:
             losses = 10 * torch.log10(losses + self.eps)
         losses = losses.mean() if self.reduction == "mean" else losses
