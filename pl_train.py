@@ -1,10 +1,10 @@
-from argparse import ArgumentParser
-import yaml
+import pytorch_lightning as pl
+import torchaudio
 from solver import LitSepSpeaker
 from speech_dataset import SpeechDataset, SpeechDataModule
-import torchaudio
 import models.sepformer
-import pytorch_lightning as pl
+from argparse import ArgumentParser
+import yaml
 
 def main(config:dict):
     model = LitSepSpeaker(config)

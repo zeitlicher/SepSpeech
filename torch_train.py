@@ -1,16 +1,16 @@
 import torch
 import torch.nn as nn
-from argparse import ArgumentParser
-import yaml
+import torch.optim as optim
+import torch.utils.data as data
+from torch.utils.tensorboard import SummaryWriter
+import torchaudio
 import speech_dataset
 from speech_dataset import SpeechDataset
-import torch.utils.data as data
-import torchaudio
 from models.sepformer import Separator
 from sdr import NegativeSISDR
-from torch.utils.tensorboard import SummaryWriter
-import torch.optim as optim
-import classic_solver
+import torch_solver
+from argparse import ArgumentParser
+import yaml
 
 class IterMeter(object):
     """keeps track of total iterations"""
@@ -29,7 +29,7 @@ def main(config:dict):
 
     model = Separator(config)
     model.to(device)
-    ce = nn.CrossEntropyLoss(reduce=False)
+    ce = nn.CrossEntropyLoss(reduction='none')
     sdr = NegativeSISDR()
 
     train_dataset = SpeechDataset(config['dataset']['train'], config['dataset']['train_enroll'], segment=config['train']['segment'])
@@ -45,8 +45,8 @@ def main(config:dict):
     
     min_loss = 1.e10
     for epoch in range(1, config['train']['max_epochs']+1):
-        classic_solver.train(model, train_loader, optimizer, [sdr, ce], iterm, epoch, writer, config)
-        avg_loss = classic_solver.test(model, valid_loader, [sdr, ce], iterm, epoch, writer, config)
+        torch_solver.train(model, train_loader, optimizer, [sdr, ce], iterm, epoch, writer, config)
+        avg_loss = torch_solver.test(model, valid_loader, [sdr, ce], iterm, epoch, writer, config)
         if min_loss > avg_loss:
             min_loss = avg_loss
             torch.save(model.to('cpu').state_dict(), config['train']['output'])

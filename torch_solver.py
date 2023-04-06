@@ -3,13 +3,13 @@ import torch.nn as nn
 import torch.utils.data as data
 import torch.optim as optim
 import torch.nn.functional as F
+from torch import Tensor
+import torchaudio
 import speech_dataset
 from speech_dataset import SpeechDataset
 import numpy as np
 from tqdm import tqdm
-from torch import Tensor
 from typing import Tuple
-import torchaudio
 
 def padding(x:Tensor, stride:int, chunk_size:int) -> Tuple[Tensor, int]:
     length = x.shape[-1]

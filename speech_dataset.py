@@ -55,18 +55,26 @@ class SpeechDataset(torch.utils.data.Dataset):
         source_path = row['source']
         if os.path.exists(source_path):
             source, sr = torchaudio.load(source_path)
+            std, mean = torch.std_mean(source, dim=-1)
+            source = (source - mean)/std
             source = source[:, start:stop]
         else:
             source = None
         mixture, sr = torchaudio.load(self.mixture_path)
+        std, mean = torch.std_mean(mixture, dim=-1)
+        mixture = (mixture - mean)/std
         mixture = mixture[:, start:stop]
         source_speaker = int(row['index'])
         filtered = self.enroll_df.query('index == @source_speaker')
-
         enroll_path = filtered.iloc[random.randint(0, len(filtered)-1)]['source']
-        if os.path.exists(enroll_path):
-            enroll, sr = torchaudio.load(enroll_path)
-            enroll = enroll[:, start:stop]
+        assert os.path.exists(enroll_path)
+        enroll, sr = torchaudio.load(enroll_path)
+        std, mean = torch.std_mean(enroll, dim=-1)
+        enroll = (enroll - mean)/std
+        #enroll = enroll[:, start:stop]
+        #if enroll.shape[1] == 0:
+        #    print("%s %d %d" % (enroll_path, start, stop))
+        #print('%s %s %s' % (mixture.shape, source.shape, enroll.shape))
         return torch.t(mixture), torch.t(source), torch.t(enroll), source_speaker
 
 '''
@@ -133,7 +141,16 @@ def data_processing(data:Tuple[Tensor,Tensor,Tensor,Tensor]) -> Tuple[Tensor, Te
     enrolls = nn.utils.rnn.pad_sequence(enrolls, batch_first=True)
     speakers = torch.from_numpy(np.array(speakers)).clone()
 
-    return mixtures.squeeze(), sources.squeeze(), enrolls.squeeze(), lengths, speakers
+    mixtures = mixtures.squeeze()
+    sources = sources.squeeze()
+    enrolls = enrolls.squeeze()
+
+    if mixtures.dim() == 1:
+        mixtures = mixtures.unsqueeze(0)
+        sources = sources.unsqueeze(0)
+        enrolls = enrolls.unsqueeze(0)
+        
+    return mixtures, sources, enrolls, lengths, speakers
 
 '''
 class SpeechDataLiveModule(SpeechDataModule):
