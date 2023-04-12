@@ -20,7 +20,8 @@ class SpeechDataset(torch.utils.data.Dataset):
         if self.segment is not None:
             max_len = len(self.df)
             self.seg_len = int(self.segment * self.sample_rate)
-            self.df = self.df[self.df["length"] >= self.seg_len]
+            #self.df = self.df[self.df["length"] >= self.seg_len]
+            self.df = self.df[self.df['length'] <= self.seg_len]
             print(
                 f"Drop {max_len - len(self.df)} utterances from {max_len} "
                 f"(shorter than {segment} seconds)"
@@ -30,13 +31,14 @@ class SpeechDataset(torch.utils.data.Dataset):
 
         self.enroll_df = pd.read_csv(enroll_path)
         if self.segment is not None:
-            max_len = len(self.enroll_df)
-            self.seg_len = int(self.segment * self.sample_rate)
-            self.enroll_df = self.enroll_df[self.enroll_df['length'] >= self.seg_len]
-            print(
-                f"Drop {max_len - len(self.enroll_df)} utterances from {max_len} "
-                f"(shorter than {segment} seconds)"
-            )
+            pass
+            #max_len = len(self.enroll_df)
+            #self.seg_len = int(self.segment * self.sample_rate)
+            #self.enroll_df = self.enroll_df[self.enroll_df['length'] >= self.seg_len]
+            #print(
+            #    f"Drop {max_len - len(self.enroll_df)} utterances from {max_len} "
+            #    f"(shorter than {segment} seconds)"
+            #)
 
     def __len__(self) -> int:
         return len(self.df)
@@ -45,12 +47,12 @@ class SpeechDataset(torch.utils.data.Dataset):
         row = self.df.iloc[idx]
         # mixture path
         self.mixture_path = row['mixture']
-        if self.seg_len is not None:
-            start = random.randint(0, row["length"] - self.seg_len)
-            stop = start + self.seg_len
-        else:
-            start = 0
-            stop = -1
+        #if self.seg_len is not None:
+        #    start = random.randint(0, row["length"] - self.seg_len)
+        #    stop = start + self.seg_len
+        #else:
+        start = 0
+        stop = -1
 
         source_path = row['source']
         if os.path.exists(source_path):
