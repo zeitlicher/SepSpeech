@@ -3,8 +3,22 @@ from typing import Tuple
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
+from torch import Tensor
 import math
+from einops import rearrange
 
+class TFEncoder(nn.Module):
+    def __init__(self, dim, n_layers=5, n_heads=8):
+        super(TFEncoder, self).__init__()
+        encoder_layer = nn.TransformerEncoderLayer(d_model=dim,
+                                                   nhead=n_heads,
+                                                   batch_first=True)
+        self.encoder = nn.TransformerEncoder(encoder_layer,
+                                             num_layers=n_layers)
+
+    def forward(self, x, mask=None, padding_mask=None):
+        return self.encoder(x, mask, padding_mask)
+    
 def sinc(t):
     """sinc.
     :param t: the input tensor
@@ -41,7 +55,7 @@ def upsample2(x, zeros=56):
     *other, time = x.shape
     kernel = kernel_upsample2(zeros).to(x)
     out = F.conv1d(x.view(-1, 1, time), kernel, padding=zeros)[..., 1:].view(*other, time)
-    y = th.stack([x, out], dim=-1)
+    y = torch.stack([x, out], dim=-1)
     return y.view(*other, -1)
 
 def kernel_downsample2(zeros=56):
@@ -87,7 +101,10 @@ class BLSTM(nn.Module):
     def __init__(self, dim, layers=2, bi=True):
         super().__init__()
         klass = nn.LSTM
-        self.lstm = klass(bidirectional=bi, num_layers=layers, hidden_size=dim, input_size=dim)
+        self.lstm = klass(bidirectional=bi,
+                          num_layers=layers,
+                          hidden_size=dim,
+                          input_size=dim)
         self.linear = None
         if bi:
             self.linear = nn.Linear(2 * dim, dim)
@@ -146,25 +163,64 @@ class UNet(nn.Module):
 
         self.encoder = nn.ModuleList()
         self.decoder = nn.ModuleList()
+        self.transform = nn.ModuleList()
+        #self.transform_d = nn.ModuleList()
         for index in range(self.depth):
-            self.encoder.append(EncoderBlock(in_channels, mid_channels, self.kernel_size, self.stride))
+            encode = []
+            encode += [
+                nn.Conv1d(in_channels, mid_channels, self.kernel_size, self.stride),
+                nn.ReLU(),
+                nn.Conv1d(mid_channels, mid_channels, 1), nn.ReLU(),
+            ]
+            self.encoder.append(nn.Sequential(*encode))
+
+            transf = []
+            transf += [
+                nn.ReLU(),
+                nn.Linear(mid_channels, mid_channels)
+            ]
+            self.transform.append(nn.Sequential(*transf))
+
+            #transf_d = []
+            #transf_d += [
+                #nn.ReLU(),
+                #nn.Linear(mid_channels, mid_channels)
+                #]
+            #self.transform_d.append(nn.Sequential(*transf_d))
+
+            decode = []
+            decode += [
+                nn.Conv1d(mid_channels, mid_channels, 1), nn.ReLU(),
+                nn.ConvTranspose1d(mid_channels,
+                                   out_channels,
+                                   self.kernel_size,
+                                   self.stride),
+            ]
             if index > 0:
-                self.decoder.append(DecoderBlock(mid_channels, out_channels, self.kernel_size, self.stride, True))
-            else:
-                self.decoder.append(DecoderBlock(mid_channels, out_channels, self.kernel_size, self.stride, False))
+                decode.append(nn.ReLU())
+            self.decoder.insert(0, nn.Sequential(*decode))
             out_channels = mid_channels
             in_channels = mid_channels
-            mid_channels = min(int(growth*mid_channels), max_channels)
+            mid_channels = min(int(growth * mid_channels), max_channels)
 
-        self.lstm = BLSTM(in_channels, bi=not config['unet']['causal'])
-
-        if rescale:
+        self.lstm=None
+        self.attention=None
+        if config['unet']['attention'] is False:
+            self.lstm = BLSTM(in_channels, bi=not config['unet']['causal'])
+        else:
+            self.attention = TFEncoder(in_channels)
+            
+        if self.rescale:
             rescale_module(self, reference=reference)
-        from sepformer import Encoder
+        from models.sepformer import Encoder
         spk_encoder = Encoder(config)
-        from speaker import SpeakerNetwork
-        self.speaker = SpeakerNetwork(spk_encoder, config['unet']['in_channels'], config['sepformer']['mid_channels'], config['unet']['kernel_size'], config['unet']['num_speakers'])
-        from speaker import SpeakerAdaptationLayer
+        from models.speaker import SpeakerNetwork
+        self.speaker = SpeakerNetwork(spk_encoder,
+                                      config['unet']['mid_channels'],
+                                      config['unet']['mid_channels'],
+                                      config['unet']['kernel_size'],
+                                      config['unet']['num_speakers'])
+        from models.speaker import SpeakerAdaptationLayer
         self.adpt = SpeakerAdaptationLayer()
             
     def valid_length(self, length):
@@ -174,7 +230,7 @@ class UNet(nn.Module):
             length = max(length, 1)
         for idx in range(self.depth):
             length = (length - 1) * self.stride + self.kernel_size
-            length = int(math.ceil(length/self.resample))
+        length = int(math.ceil(length/self.resample))
         return int(length)
     
     @property
@@ -200,27 +256,43 @@ class UNet(nn.Module):
             x = upsample2(x)
             x = upsample2(x)
         skips = []
-        enc_s, y = None
+        enc_s, y = None,None
         if enr is not None:
             enc_s, y = self.speaker(enr)
-        for n, encode in enumerate(self.encoder):
-            if n == 1 and enc_s is not None:
-                x = self.adpt(x, enc_s)
+        for n, [encode, transform] in enumerate(zip(self.encoder, self.transform)):
+            #if n == 1 and enc_s is not None:
+            #    x = self.adpt(x, enc_s)
             x = encode(x)
+            if enc_s is not None:
+                x = rearrange(x, 'b c t -> b t c')
+                x = transform(x)
+                x = rearrange(x, 'b t c -> b c t')
+                x = self.adpt(x, enc_s)
             skips.append(x)
-        x = x.permute(2, 0, 1)
-        x, _ = self.lstm(x)
-        x = x.permute(1, 2, 0)
+        if self.lstm is not None:
+            x = x.permute(2, 0, 1)
+            x, _ = self.lstm(x)
+            x = x.permute(1, 2, 0)
+        else:
+            x = x.permute(0, 2, 1)
+            x = self.attention(x)
+            x = x.permute(0, 2, 1)
+        #for decode, transform in zip(self.decoder, self.transform_d):
         for decode in self.decoder:
             skip = skips.pop(-1)
             x = x + skip[...,:x.shape[-1]]
+            #if enc_s is not None:
+            #    x = rearrange(x, 'b c t -> b t c')
+            #    x = transform(x)
+            #    x = rearrange(x, 'b t c -> b c t')
+            #    x = self.adpt(x, enc_s)
             x = decode(x)
         if self.resample == 2:
             x = downsample2(x)
         elif self.resample == 4:
             x = downsample2(x)
             x = downsample2(x)
-
+        x = rearrange(x, 'b c t -> b (c t)')
         x = x[..., :length]
         return std * x, y
         

@@ -6,11 +6,14 @@ from torch.utils.tensorboard import SummaryWriter
 import torchaudio
 import speech_dataset
 from speech_dataset import SpeechDataset
-from models.sepformer import Separator
+#from models.sepformer import Separator
+from models.unet import UNet
 from sdr import NegativeSISDR
+from stft_loss import MultiResolutionSTFTLoss
 import torch_solver
 from argparse import ArgumentParser
 import yaml
+import sys, os
 
 class IterMeter(object):
     """keeps track of total iterations"""
@@ -27,11 +30,16 @@ def main(config:dict):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = Separator(config)
+    #model = Separator(config)
+    model = UNet(config)
+    if os.path.exists(config['train']['saved']):
+        model.load_state_dict(torch.load(config['train']['saved'], map_location=torch.device('cpu')), strict=False)
     model.to(device)
-    ce = nn.CrossEntropyLoss(reduction='none')
-    sdr = NegativeSISDR()
-
+        
+    ce = nn.CrossEntropyLoss(reduction='none').to(device)
+    #sdr = NegativeSISDR()
+    sdr = MultiResolutionSTFTLoss().to(device)
+    
     train_dataset = SpeechDataset(config['dataset']['train'], config['dataset']['train_enroll'], segment=config['train']['segment'])
     train_loader = data.DataLoader(dataset=train_dataset, batch_size=config['train']['batch_size'],
                                    shuffle=True, collate_fn=lambda x: speech_dataset.data_processing(x))

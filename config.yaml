@@ -4,22 +4,23 @@ dataset:
   # mixture_path, source_path, length, source_speaker, source_speaker_index
   train: 'audio/csv/test.csv'
   # source_path, length, source_speaker, source_speaker_index
-  train_enroll: 'audio/csv/train_enr.csv'
-  valid: 'audio/csv/valid.csv'
-  valid_enroll: 'audio/csv/valid_enr.csv'
-  test: 'audio/csv/valid.csv'
-  test_enroll: 'audio/csv/valid_enr.csv'
+  train_enroll: 'audio/csv/mix2_enroll.csv'
+  valid: 'audio/csv/test.csv'
+  valid_enroll: 'audio/csv/mix2_enroll.csv'
+  test: 'audio/csv/test.csv'
+  test_enroll: 'audio/csv/mix2_enroll.csv'
 
 # training parameters
 train:
-  max_epochs: 10
+  max_epochs: 400
   gradient_clip_val: 5.
   precision: 16
   accelerator: 'gpu'
   batch_size: 1
   learning_rate: 1.e-4
   sample_rate: 16000
-  segment: 3
+  segment: 0
+  saved: none
   output: ./output/model.pt
   logdir: ./logs
 # sepformer parameters
@@ -27,7 +28,7 @@ sepformer:
   # positional encoding
   max_len: 80000
   # encoder/decoder conv filters
-  channels: 256 #128
+  channels: 512 #128
   kernel_size: 16
   stride: 8
   # chunking samples
@@ -45,7 +46,7 @@ sepformer:
   # dropout (all modules)
   dropout: 0.1
   lambda1: 1.0
-  lambda2: 1.0
+  lambda2: 0.1
 tasnet:
   kernel_size: 20
   in_channels: 256
@@ -62,17 +63,20 @@ diffusion:
   lambda1: 1.0
   lambda2: 1.0
 unet:
-  normalize: True
-  floor: 1e-3
-  resample: 4
+  attention: True
+  normalize: False #True
+  floor: 0.001
+  resample: 2
   depth: 5
   in_channels: 1
-  mid_channels: 48
+  mid_channels: 512 #48
   out_channels: 1
   max_channels: 10000
   kernel_size: 8
-  growth: 2
+  growth: 1 #2
   rescale: 0.1
   stride: 4
   reference: 0.1
   causal: True
+  num_speakers: 307
+  
