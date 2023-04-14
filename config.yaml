@@ -29,7 +29,7 @@ sepformer:
   max_len: 80000
   #max_len: 10
   # encoder/decoder conv filters
-  channels: 512 #128
+  channels: 256 #512 #128
   kernel_size: 16
   stride: 8
   # chunking samples
@@ -52,11 +52,11 @@ tasnet:
   kernel_size: 20
   in_channels: 256
   enc_channels: 256
-  conv_channels: 512
+  conv_channels: 256 #512
   num_blocks: 8
   block_kernel_size: 3
   num_repeats: 4
-  num_speakers: 256
+  num_speakers: 307
 diffusion:
   timesteps: 200
   beta_start: 0.001
@@ -70,7 +70,7 @@ unet:
   resample: 2
   depth: 5
   in_channels: 1
-  mid_channels: 512 #48
+  mid_channels: 256 #512 #48
   out_channels: 1
   max_channels: 10000
   kernel_size: 8
