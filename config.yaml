@@ -16,10 +16,11 @@ train:
   gradient_clip_val: 5.
   precision: 16
   accelerator: 'gpu'
-  batch_size: 1
+  batch_size: 8
   learning_rate: 1.e-4
   sample_rate: 16000
-  segment: 15
+  segment: 10
+  enroll_segment: 20
   saved: none
   output: ./output/model.pt
   logdir: ./logs

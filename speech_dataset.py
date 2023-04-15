@@ -11,7 +11,7 @@ import torchaudio
 
 class SpeechDataset(torch.utils.data.Dataset):
 
-    def __init__(self, csv_path:str, enroll_path:str, sample_rate=16000, segment=0) -> None:
+    def __init__(self, csv_path:str, enroll_path:str, sample_rate=16000, segment=0, enroll_segment=0) -> None:
         super(SpeechDataset, self).__init__()
 
         self.df = pd.read_csv(csv_path)
@@ -30,15 +30,16 @@ class SpeechDataset(torch.utils.data.Dataset):
             self.seg_len = None
 
         self.enroll_df = pd.read_csv(enroll_path)
-        if self.segment is not None:
-            pass
-            #max_len = len(self.enroll_df)
-            #self.seg_len = int(self.segment * self.sample_rate)
-            #self.enroll_df = self.enroll_df[self.enroll_df['length'] >= self.seg_len]
-            #print(
-            #    f"Drop {max_len - len(self.enroll_df)} utterances from {max_len} "
-            #    f"(shorter than {segment} seconds)"
-            #)
+        self.enroll_segment = enroll_segment if enroll_segment > 0 else None
+        if self.enroll_segment is not None:
+            #pass
+            max_len = len(self.enroll_df)
+            self.seg_len = int(self.enroll_segment * self.sample_rate)
+            self.enroll_df = self.enroll_df[self.enroll_df['length'] <= self.seg_len]
+            print(
+                f"Drop {max_len - len(self.enroll_df)} utterances from {max_len} "
+                f"(shorter than {enroll_segment} seconds)"
+            )
 
     def __len__(self) -> int:
         return len(self.df)
