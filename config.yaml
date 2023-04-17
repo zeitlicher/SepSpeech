@@ -81,4 +81,5 @@ unet:
   reference: 0.1
   causal: True
   num_speakers: 307
+  adpt_type: none
   

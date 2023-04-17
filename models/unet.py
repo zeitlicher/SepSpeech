@@ -221,7 +221,7 @@ class UNet(nn.Module):
                                       config['unet']['kernel_size'],
                                       config['unet']['num_speakers'])
         from models.speaker import SpeakerAdaptationLayer
-        self.adpt = SpeakerAdaptationLayer()
+        self.adpt = SpeakerAdaptationLayer(config)
             
     def valid_length(self, length):
         length = math.ceil(length * self.resample)
