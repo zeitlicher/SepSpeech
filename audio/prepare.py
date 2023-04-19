@@ -12,8 +12,9 @@ def main(args):
     #else:
     #    df = pd.DataFrame(index=None, columns=['source', 'length', 'speaker', 'index', 'utt'])
     spk2id={}
-    id=1
+    id=args.speaker_index
 
+    # recursive search for WAVE files
     for path in glob.glob(os.path.join(args.root, '**/*.wav'), recursive=True):
         if args.relative:
             path=os.path.relpath(path)
@@ -42,11 +43,14 @@ def main(args):
                 spk2id[spk] = id
                 id+=1
             if df is None:
-                df = pd.DataFrame(index=None, columns=['source', 'length', 'speaker', 'index', 'utt'], data=[[path, wavlen, spk, spk2id[spk], utt]])
+                df = pd.DataFrame(index=None, columns=['source', 'length', 'speaker', 'index', 'utt'],
+                                  data=[[path, wavlen, spk, spk2id[spk], utt]])
             else:
-                df2 = pd.DataFrame(index=None, columns=['source', 'length', 'speaker', 'index', 'utt'], data=[[path, wavlen, spk, spk2id[spk], utt]])
+                df2 = pd.DataFrame(index=None, columns=['source', 'length', 'speaker', 'index', 'utt'],
+                                   data=[[path, wavlen, spk, spk2id[spk], utt]])
                 df = pd.concat([df, df2], ignore_index=True, axis=0)
     df.to_csv(args.output_csv, index=False)
+    print("number of unieq speakers: %d max speaker index: %d" % (len(spk2id.values()), max(spk2id.values()) ))
  
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -54,7 +58,7 @@ if __name__ == '__main__':
     parser.add_argument('--relative', action='store_true')
     parser.add_argument('--noise', action='store_true')
     parser.add_argument('--output-csv', type=str, required=True)
-
+    parser.add_argument('--speaker-index', type=int, default=1)
     args=parser.parse_args()
 
     main(args)
