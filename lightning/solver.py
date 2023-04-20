@@ -3,7 +3,7 @@ from torch import Tensor
 import torch.nn as nn
 import pytorch_lightning as pl
 from models.sepformer import Separator
-from sdr import NegativeSISDR
+from loss.sdr import NegativeSISDR
 from typing import Tuple
 
 class LitSepSpeaker(pl.LightningModule):

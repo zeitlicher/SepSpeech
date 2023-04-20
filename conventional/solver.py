@@ -5,8 +5,8 @@ import torch.optim as optim
 import torch.nn.functional as F
 from torch import Tensor
 import torchaudio
-import speech_dataset
-from speech_dataset import SpeechDataset
+import conventional.speech_dataset
+from conventional.speech_dataset import SpeechDataset
 import numpy as np
 from tqdm import tqdm
 from typing import Tuple
