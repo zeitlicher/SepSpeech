@@ -34,6 +34,24 @@ class SpeakerNetwork(nn.Module):
         return y, z
 
 class SpeakerAdaptationLayer(nn.Module):
+    def __init__(self, config:dict) -> None:
+        super(SpeakerAdaptationLayer, self).__init__()
+        self.linear=None
+        if config['adpt_type'] is 'residual':
+            self.linear = nn.Linear(channels*2, channels)
+
+    def forward(self, x:torch.Tensor, s:torch.Tensor) -> torch.Tensor:
+        if self.linear is None:
+            # (B, C, T) x (B, C)
+            y = x * s.unsqueeze(-1)
+            return y
+        else:
+            s = s.unsqueeze(-1).repeat((1, 1, x.shape[-1]))
+            y = self.linear(torch.cat((x, s), dim=-1))
+            return x + y
+
+'''        
+class SpeakerAdaptationLayer(nn.Module):
     def __init__(self) -> None:
         super(SpeakerAdaptationLayer, self).__init__()
 
@@ -41,3 +59,14 @@ class SpeakerAdaptationLayer(nn.Module):
         # (B, C, T) x (B, C)
         y = x * s.unsqueeze(-1)
         return y
+
+class ResSpeakerAdaptationLayer(nn.Module):
+    def __init__(self, channels) -> None:
+        super(ResSpeakerAdaptationLayer, self).__init__()
+        self.linear = nn.Linear(channels*2, channels)
+        
+    def forward(self, x:torch.Tensor, s:torch.Tensor) -> torch.Tensor:
+        s = s.unsqueeze(-1).repeat((1, 1, x.shape[-1]))
+        y = self.linear(torch.cat((x, s), dim=-1))
+        return x + y
+'''

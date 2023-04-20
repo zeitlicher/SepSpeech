@@ -23,9 +23,9 @@ def main(args):
         if speaker not in done:
             df_train = df_mix.query('speaker==@speaker')
             df_valid = df_train.sample(args.num_valid, replace=False)
-            df_train.drop(df_valid.index)
+            df_train.drop(df_valid.index, inplace=True)
             df_removed_enr = df_train.sample(args.num_enroll, replace=False)
-            df_train.drop(df_removed_enr.index)
+            df_train.drop(df_removed_enr.index, inplace=True)
             df_enr_filt = df_src.query('speaker==@speaker')
             for _, rrow in df_removed_enr.iterrows():
                 source = rrow['source']
@@ -45,13 +45,10 @@ def main(args):
                 
             done.append(speaker)
 
-    output_dir = os.path.dirname(args.mixture_csv)
-    df_train_thru.to_csv(os.path.join(output_dir, args.output_train),
-                         index=False)
-    df_valid_thru.to_csv(os.path.join(output_dir, args.output_valid),
-                         index=False)
-    df_enr_thru.to_csv(os.path.join(output_dir, args.output_enroll),
-                       index=False)
+    #output_dir = os.path.dirname(args.mixture_csv)
+    df_train_thru.to_csv(args.output_train, index=False)
+    df_valid_thru.to_csv(args.output_valid, index=False)
+    df_enr_thru.to_csv(args.output_enroll,  index=False)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
