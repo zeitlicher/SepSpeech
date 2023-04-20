@@ -12,6 +12,7 @@ dataset:
 
 # training parameters
 train:
+  model_type: tasnet
   max_epochs: 400
   gradient_clip_val: 5.
   precision: 16
@@ -81,5 +82,5 @@ unet:
   reference: 0.1
   causal: True
   num_speakers: 307
-  adpt_type: none
+  adpt_type: residual
   

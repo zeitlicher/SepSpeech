@@ -230,7 +230,9 @@ class ConvTasNet(nn.Module):
         self.non_linear_type = non_linear
         self.non_linear = supported_nonlinear[non_linear]
         # n x S => n x N x T, S = 4s*8000 = 32000
-        self.encoder_1d = Conv1D(1, config['tasnet']['enc_channels'], config['tasnet']['kernel_size'], stride=config['tasnet']['kernel_size']// 2, padding=0)
+        self.encoder_1d = Conv1D(1, config['tasnet']['enc_channels'],
+                                 config['tasnet']['kernel_size'],
+                                 stride=config['tasnet']['kernel_size']// 2, padding=0)
         # keep T not change
         # T = int((xlen - L) / (L // 2)) + 1
         # before repeat blocks, always cLN
@@ -248,7 +250,10 @@ class ConvTasNet(nn.Module):
             norm=norm,
             causal=causal)
         spk_encoder = Encoder(config['tasnet']['in_channels'], config['tasnet']['kernel_size'])
-        self.spk_net = SpeakerNetwork(spk_encoder, config['tasnet']['in_channels'], config['tasnet']['in_channels'], config['tasnet']['block_kernel_size'], config['tasnet']['num_speakers'])
+        self.spk_net = SpeakerNetwork(spk_encoder, config['tasnet']['in_channels'],
+                                      config['tasnet']['in_channels'],
+                                      config['tasnet']['block_kernel_size'],
+                                      config['tasnet']['num_speakers'])
         self.adpt = SpeakerAdaptationLayer()
         self.repeats = self._build_repeats(
             config['tasnet']['num_repeats']-1,
@@ -268,7 +273,9 @@ class ConvTasNet(nn.Module):
         # using ConvTrans1D: n x N x T => n x 1 x To
         # To = (T - 1) * L // 2 + L
         self.decoder_1d = ConvTrans1D(
-            config['tasnet']['enc_channels'], 1, kernel_size=config['tasnet']['kernel_size'], stride=config['tasnet']['kernel_size'] // 2, bias=True)
+            config['tasnet']['enc_channels'], 1,
+            kernel_size=config['tasnet']['kernel_size'],
+            stride=config['tasnet']['kernel_size'] // 2, bias=True)
 
     def _build_blocks(self, num_blocks, **block_kwargs):
         """
