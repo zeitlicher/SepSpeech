@@ -12,7 +12,7 @@ dataset:
 
 # training parameters
 train:
-  model_type: unet
+  model_type: tasnet
   max_epochs: 400
   gradient_clip_val: 5.
   precision: 16
@@ -25,6 +25,7 @@ train:
   saved: none
   output: ./output/model.pt
   logdir: ./logs
+  checkpoint: 100000
 # sepformer parameters
 sepformer:
   # positional encoding

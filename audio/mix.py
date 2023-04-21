@@ -50,7 +50,7 @@ def main(args):
         noise = wave.open(noise_path, 'r')
         noise_amp = cal_amp(noise)
 
-        # len(speech) << len(noise)
+        # 仮定：len(speech) << len(noise)
         start = random.randint(0, len(noise_amp) - len(speech_amp))
         div_noise_amp = noise_amp[start:start+len(speech_amp)]
         noise_rms = cal_rms(div_noise_amp)

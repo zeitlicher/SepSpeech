@@ -33,7 +33,7 @@ def main(config:dict):
     if config['train']['model_type'] == 'unet':
         model = UNet(config)
     elif config['train']['model_type'] == 'tasnet':
-        model = ConvTasnet(config)
+        model = ConvTasNet(config)
     else:
         raise ValueError('wrong parameter: '+config['train']['model_type'])
     
@@ -43,7 +43,7 @@ def main(config:dict):
         
     ce = nn.CrossEntropyLoss(reduction='none').to(device)
     #sdr = NegativeSISDR()
-    sdr = MultiResolutionSTFTLoss().to(device)
+    stft_loss = MultiResolutionSTFTLoss().to(device)
     
     train_dataset = SpeechDataset(config['dataset']['train'],
                                   config['dataset']['train_enroll'],
@@ -65,18 +65,14 @@ def main(config:dict):
     min_loss = 1.e10
     for epoch in range(1, config['train']['max_epochs']+1):
         conventional.solver.train(model, train_loader, optimizer,
-                                  [sdr, ce], iterm, epoch, writer, config)
+                                  [stft_loss, ce], iterm, epoch, writer, config)
         avg_loss = conventional.solver.test(model, valid_loader,
-                                            [sdr, ce], iterm,
+                                            [stft_loss, ce], iterm,
                                             epoch, writer, config)
         if min_loss > avg_loss:
             min_loss = avg_loss
             torch.save(model.to('cpu').state_dict(), config['train']['output'])
             model.to(device)
-
-        chk_point = os.path.join(os.path.dirname(config['train']['output']), 'checkpoint.pt')
-        torch.save(model.to('cpu').state_dict(), chk_point)
-        model.to(device)
         
 if __name__ == '__main__':
     parser = ArgumentParser()

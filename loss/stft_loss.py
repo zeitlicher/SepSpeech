@@ -8,6 +8,10 @@
 # Original copyright 2019 Tomoki Hayashi
 #  MIT License (https://opensource.org/licenses/MIT)
 
+'''
+ denoiserから拝借
+'''
+
 """STFT-based Loss modules."""
 
 import torch

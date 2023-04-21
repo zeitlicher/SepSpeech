@@ -3,6 +3,7 @@ import torch.nn.functional as F
 import torchaudio
 #from models.sepformer import Separator
 from models.unet import UNet
+from models.conv_tasnet import ConvTasNet
 from argparse import ArgumentParser
 import yaml
   
@@ -11,7 +12,11 @@ def main(config, args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     #model = Separator(config)
-    model = UNet(config)
+    if config['model_type'] == 'unet':
+        model = UNet(config)
+    else:
+        model = ConvTasNet(config)
+    
     model.load_state_dict(torch.load(args.saved_params, map_location=torch.device('cpu')), strict=False)
     model.to(device)
     model.eval()

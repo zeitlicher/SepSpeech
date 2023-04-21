@@ -18,13 +18,10 @@ def main(args):
         else:
             df_out = pd.concat([df_out, df_spk])
     df_out.to_csv(args.output, index=False)
-    #df_rand = df.sample(args.num, replace=False)
-    #df_rand.to_csv(args.output, index=False)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--csv', type=str, required=True)
-    #parser.add_argument('--num', type=int, default=5000)
     parser.add_argument('--speakers', type=str, nargs='*')
     parser.add_argument('--output', type=str, required=True)
     args=parser.parse_args()

@@ -1,3 +1,6 @@
+'''
+ Facebook (fair) Denoiser から拝借。
+'''
 import pytorch_lightning as pt
 from typing import Tuple
 import torch

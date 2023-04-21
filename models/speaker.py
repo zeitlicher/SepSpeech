@@ -1,3 +1,6 @@
+'''
+ 話者情報のモデル
+'''
 import math
 import sys
 import numpy as np

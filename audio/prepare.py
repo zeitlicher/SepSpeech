@@ -7,10 +7,6 @@ import re
 def main(args):
 
     df=None
-    #if args.noise:
-    #    df = pd.DataFrame(index=None, columns=['noise', 'length'])
-    #else:
-    #    df = pd.DataFrame(index=None, columns=['source', 'length', 'speaker', 'index', 'utt'])
     spk2id={}
     id=args.speaker_index
 

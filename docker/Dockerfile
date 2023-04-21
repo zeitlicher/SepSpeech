@@ -1,3 +1,4 @@
+# 必要な場合はproxy設定を追加する
 # nvidia-driver >= 515 && pytorch-2.0 binary-build
 ARG CUDA="11.8.0"  
 ARG CUDNN="8"

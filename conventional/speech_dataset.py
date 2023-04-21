@@ -20,7 +20,6 @@ class SpeechDataset(torch.utils.data.Dataset):
         if self.segment is not None:
             max_len = len(self.df)
             self.seg_len = int(self.segment * self.sample_rate)
-            #self.df = self.df[self.df["length"] >= self.seg_len]
             self.df = self.df[self.df['length'] <= self.seg_len]
             print(
                 f"Drop {max_len - len(self.df)} utterances from {max_len} "

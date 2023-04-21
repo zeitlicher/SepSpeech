@@ -7,6 +7,9 @@ import wave
 import pandas as pd
 
 
+'''
+発話集合により発話を振り分ける：例 ATR Bset & Cset
+'''
 def main(args):
 
     df_new = None

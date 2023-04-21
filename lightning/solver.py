@@ -6,6 +6,9 @@ from models.sepformer import Separator
 from loss.sdr import NegativeSISDR
 from typing import Tuple
 
+'''
+ PyTorch Lightning用 将来変更する予定
+'''
 class LitSepSpeaker(pl.LightningModule):
     def __init__(self, config:dict) -> None:
         super().__init__()
