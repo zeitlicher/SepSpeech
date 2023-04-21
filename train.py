@@ -50,7 +50,7 @@ def main(config:dict):
                                   segment=config['train']['segment'])
     train_loader = data.DataLoader(dataset=train_dataset,
                                    batch_size=config['train']['batch_size'],
-                                   shuffle=True, collate_fn=lambda x: conentional.speech_dataset.data_processing(x))
+                                   shuffle=True, collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
     valid_dataset = SpeechDataset(config['dataset']['valid'],
                                   config['dataset']['valid_enroll'],
                                   segment=config['train']['segment'])
@@ -74,7 +74,7 @@ def main(config:dict):
             torch.save(model.to('cpu').state_dict(), config['train']['output'])
             model.to(device)
 
-        chk_point = os.path.join(os.path.dir_name(config['train']['output']), 'checkpoint.pt')
+        chk_point = os.path.join(os.path.dirname(config['train']['output']), 'checkpoint.pt')
         torch.save(model.to('cpu').state_dict(), chk_point)
         model.to(device)
         

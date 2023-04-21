@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
-from speaker import SpeakerNetwork, SpeakerAdaptationLayer
+from models.speaker import SpeakerNetwork, SpeakerAdaptationLayer
 from typing import Tuple
 import argparse
 import yaml
@@ -232,13 +232,15 @@ class ConvTasNet(nn.Module):
         # n x S => n x N x T, S = 4s*8000 = 32000
         self.encoder_1d = Conv1D(1, config['tasnet']['enc_channels'],
                                  config['tasnet']['kernel_size'],
-                                 stride=config['tasnet']['kernel_size']// 2, padding=0)
+                                 stride=config['tasnet']['kernel_size']// 2,
+                                 padding=0)
         # keep T not change
         # T = int((xlen - L) / (L // 2)) + 1
         # before repeat blocks, always cLN
         self.ln = ChannelWiseLayerNorm(config['tasnet']['enc_channels'])
         # n x N x T => n x B x T
-        self.proj = Conv1D(config['tasnet']['enc_channels'], config['tasnet']['in_channels'], 1)
+        self.proj = Conv1D(config['tasnet']['enc_channels'],
+                           config['tasnet']['in_channels'], 1)
         # repeat blocks
         # n x B x T => n x B x T
         self.first_block = self._build_repeats(
@@ -249,12 +251,14 @@ class ConvTasNet(nn.Module):
             kernel_size=config['tasnet']['block_kernel_size'],
             norm=norm,
             causal=causal)
-        spk_encoder = Encoder(config['tasnet']['in_channels'], config['tasnet']['kernel_size'])
-        self.spk_net = SpeakerNetwork(spk_encoder, config['tasnet']['in_channels'],
+        spk_encoder = Encoder(config['tasnet']['in_channels'],
+                              config['tasnet']['kernel_size'])
+        self.spk_net = SpeakerNetwork(spk_encoder,
+                                      config['tasnet']['in_channels'],
                                       config['tasnet']['in_channels'],
                                       config['tasnet']['block_kernel_size'],
                                       config['tasnet']['num_speakers'])
-        self.adpt = SpeakerAdaptationLayer()
+        self.adpt = SpeakerAdaptationLayer(config)
         self.repeats = self._build_repeats(
             config['tasnet']['num_repeats']-1,
             config['tasnet']['num_blocks'],
@@ -269,7 +273,8 @@ class ConvTasNet(nn.Module):
         # self.conv1x1_2 = torch.nn.ModuleList(
         #     [Conv1D(B, N, 1) for _ in range(num_spks)])
         # n x B x T => n x 2N x T
-        self.mask = Conv1D(config['tasnet']['in_channels'], config['tasnet']['enc_channels'], 1)
+        self.mask = Conv1D(config['tasnet']['in_channels'],
+                           config['tasnet']['enc_channels'], 1)
         # using ConvTrans1D: n x N x T => n x 1 x To
         # To = (T - 1) * L // 2 + L
         self.decoder_1d = ConvTrans1D(
