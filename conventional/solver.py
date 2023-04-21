@@ -55,8 +55,7 @@ def train(model, loader, optimizer, loss_funcs, iterm, epoch, writer, config) ->
                 writer.add_scalar('loss', loss.item(), iterm.get())
 
             if iterm.get() % config['train']['checkpoint'] == 0:
-                ckpt_path = os.path.join(os.path.dirname(config['train']['output']), 'checkpoint_')
-                ckpt_path = chk_pint + '{:09d}'.format(iterm.get())
+                ckpt_path = os.path.join(os.path.dirname(config['train']['output']), 'checkpoint_'+'{:09d}'.format(iterm.get()))
                 torch.save(model.to('cpu').state_dict(), ckpt_path)
                 model.to(device)
 
