@@ -1,3 +1,4 @@
+import sys,os
 import torch
 import torch.nn as nn
 import torch.utils.data as data
@@ -22,6 +23,7 @@ def truncate(x:Tensor, length:int) -> Tensor:
 
 def train(model, loader, optimizer, loss_funcs, iterm, epoch, writer, config) -> None:
     model.train()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     loss_seq=[]
     sdr_loss_seq=[]
@@ -47,9 +49,16 @@ def train(model, loader, optimizer, loss_funcs, iterm, epoch, writer, config) ->
             loss_seq.append(loss.item())
             sdr_loss_seq.append(sdr_loss_mean.item())
             optimizer.step()
-
+            iterm.step()
+            
             if writer:
                 writer.add_scalar('loss', loss.item(), iterm.get())
+
+            if iterm.get() % config['train']['checkpoint'] == 0:
+                ckpt_path = os.path.join(os.path.dirname(config['train']['output']), 'checkpoint_')
+                ckpt_path = chk_pint + '{:09d}'.format(iterm.get())
+                torch.save(model.to('cpu').state_dict(), ckpt_path)
+                model.to(device)
 
             bar.set_description("[Epoch %d]" % epoch)
             bar.set_postfix_str(f'{loss.item():.3e}, sdr={sdr_loss_mean.item():.3e}, ce={ce_loss_mean.item():.3e}')

@@ -73,10 +73,6 @@ def main(config:dict):
             min_loss = avg_loss
             torch.save(model.to('cpu').state_dict(), config['train']['output'])
             model.to(device)
-
-        chk_point = os.path.join(os.path.dirname(config['train']['output']), 'checkpoint.pt')
-        torch.save(model.to('cpu').state_dict(), chk_point)
-        model.to(device)
         
 if __name__ == '__main__':
     parser = ArgumentParser()
