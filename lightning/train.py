@@ -1,7 +1,7 @@
 import pytorch_lightning as pl
 import torchaudio
-from solver import LitSepSpeaker
-from speech_dataset import SpeechDataset, SpeechDataModule
+from lightning.solver import LitSepSpeaker
+from conventional.speech_dataset import SpeechDataset, SpeechDataModule
 import models.sepformer
 from argparse import ArgumentParser
 import yaml
