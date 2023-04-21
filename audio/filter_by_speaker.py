@@ -6,7 +6,9 @@ import random
 import wave
 import pandas as pd
 
-
+'''
+ 話者名（話者情報）をもとに振り分ける
+'''
 def main(args):
 
     speakers=[]

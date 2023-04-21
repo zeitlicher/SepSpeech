@@ -1,3 +1,6 @@
+'''
+ 以下より拝借
+'''
 # https://github.com/funcwj/conv-tasnet/blob/master/nnet/conv_tas_net.py
 
 import torch

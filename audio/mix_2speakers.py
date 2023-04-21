@@ -30,6 +30,9 @@ def save_waveform(output_path, params, amp):
     output_file.writeframes(array.array('h', amp.astype(np.int16)).tobytes() )
     output_file.close()
 
+'''
+  JNASなどの二人の話者音声を混合する
+'''    
 def main(args):
     assert args.max_snr >= args.min_snr
 

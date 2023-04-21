@@ -11,6 +11,9 @@ import torchaudio
 import yaml
 from typing import Tuple
 
+'''
+ 動作するがおそらく使わない
+'''
 class Reshape:
   def __init__(self, shape):
     self.shape = shape

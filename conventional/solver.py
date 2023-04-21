@@ -26,7 +26,7 @@ def train(model, loader, optimizer, loss_funcs, iterm, epoch, writer, config) ->
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     loss_seq=[]
-    sdr_loss_seq=[]
+    stft_loss_seq=[]
     with tqdm(total=len(loader.dataset), leave=False) as bar:
         for batch_idx, _data in enumerate(loader):
             mixtures, sources, enrolls, lengths, speakers = _data
@@ -37,17 +37,17 @@ def train(model, loader, optimizer, loss_funcs, iterm, epoch, writer, config) ->
             est_src, est_spk = model(mixtures.cuda(), enrolls.cuda())
             #est_src = truncate(est_src, length)
 
-            sdr_loss1, sdr_loss2 = loss_funcs[0](est_src, sources)
-            sdr_loss = sdr_loss1 + sdr_loss2
+            stft_loss1, stft_loss2 = loss_funcs[0](est_src, sources)
+            stft_loss = stft_loss1 + stft_loss2
             ce_loss = loss_funcs[1](est_spk, speakers.cuda())
 
-            loss = torch.mean(float(config['sepformer']['lambda1']) * sdr_loss
+            loss = torch.mean(float(config['sepformer']['lambda1']) * stft_loss
                               + float(config['sepformer']['lambda2']) * ce_loss)
-            sdr_loss_mean = torch.mean(sdr_loss)
+            stft_loss_mean = torch.mean(stft_loss)
             ce_loss_mean = torch.mean(ce_loss)
             loss.backward()
             loss_seq.append(loss.item())
-            sdr_loss_seq.append(sdr_loss_mean.item())
+            stft_loss_seq.append(stft_loss_mean.item())
             optimizer.step()
             iterm.step()
             
@@ -61,42 +61,44 @@ def train(model, loader, optimizer, loss_funcs, iterm, epoch, writer, config) ->
                 model.to(device)
 
             bar.set_description("[Epoch %d]" % epoch)
-            bar.set_postfix_str(f'{loss.item():.3e}, sdr={sdr_loss_mean.item():.3e}, ce={ce_loss_mean.item():.3e}')
+            bar.set_postfix_str(f'{loss.item():.3e}, stft={stft_loss_mean.item():.3e}, ce={ce_loss_mean.item():.3e}')
             bar.update(len(mixtures))
 
             del loss
 
             torch.cuda.empty_cache()
-    print(f"train loss: {np.mean(loss_seq):.3e} {np.mean(sdr_loss_seq):.3e}")
+    print(f"train loss: {np.mean(loss_seq):.3e} {np.mean(stft_loss_seq):.3e}")
     
 def test(model, loader, loss_funcs, iterm, epoch, writer, config):
     model.eval()
 
     loss_seq=[]
-    sdr_loss_seq=[]
+    stft_loss_seq=[]
     with tqdm(total=len(loader.dataset), leave=False) as bar:
         with torch.no_grad():
             for i, _data in enumerate(loader):
                 mixtures, sources, enrolls, lengths, speakers = _data
-                pd_mix, length = padding(mixtures, config['sepformer']['stride'], config['sepformer']['chunk_size'])
+                pd_mix, length = padding(mixtures, config['sepformer']['stride'],
+                                         config['sepformer']['chunk_size'])
 
                 est_src, est_spk = model(pd_mix.cuda(), enrolls.cuda())
                 est_src = truncate(est_src, length)
 
-                sdr_loss1, sdr_loss2 = loss_funcs[0](est_src, sources)
-                sdr_loss = sdr_loss1+sdr_loss2
+                stft_loss1, stft_loss2 = loss_funcs[0](est_src, sources)
+                stft_loss = stft_loss1+stft_loss2
                 ce_loss = loss_funcs[1](est_spk, speakers.cuda())
 
-                loss = torch.mean(float(config['sepformer']['lambda1']) * sdr_loss + float(config['sepformer']['lambda2']) * ce_loss)
+                loss = torch.mean(float(config['sepformer']['lambda1']) * stft_loss
+                                  + float(config['sepformer']['lambda2']) * ce_loss)
                 loss_seq.append(loss.item())
-                sdr_loss_seq.append(torch.mean(sdr_loss).item())
+                stft_loss_seq.append(torch.mean(stft_loss).item())
                 bar.set_description("[Epoch %d]" % epoch)
                 bar.set_postfix_str(f'{np.mean(loss_seq):.3e}')
                 bar.update(len(mixtures))
 
     avg_loss = np.mean(loss_seq)
-    avg_sdr_loss = np.mean(sdr_loss_seq)
-    print(f"valid loss: {np.mean(loss_seq):.3e} {np.mean(sdr_loss_seq):.3e}")
+    avg_stft_loss = np.mean(stft_loss_seq)
+    print(f"valid loss: {np.mean(loss_seq):.3e} {np.mean(stft_loss_seq):.3e}")
     if writer:
         writer.add_scalar('test_loss', avg_loss, iterm.get())
     return avg_loss

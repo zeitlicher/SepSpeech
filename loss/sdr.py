@@ -2,6 +2,10 @@ import torch
 from torch import Tensor
 from torch.nn.modules.loss import _Loss
 
+'''
+ 損失関数：Signal-to-Distorion Ratio
+ おそらく使わない
+'''
 class NegativeSISDR(_Loss):
     def __init__(self, zero_mean=True, take_log=True, reduction='none', eps=1.e-8):
         super().__init__(reduction=reduction)

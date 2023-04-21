@@ -45,7 +45,6 @@ def main(args):
                 
             done.append(speaker)
 
-    #output_dir = os.path.dirname(args.mixture_csv)
     df_train_thru.to_csv(args.output_train, index=False)
     df_valid_thru.to_csv(args.output_valid, index=False)
     df_enr_thru.to_csv(args.output_enroll,  index=False)
