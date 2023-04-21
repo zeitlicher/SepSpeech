@@ -33,7 +33,7 @@ def main(config:dict):
     if config['train']['model_type'] == 'unet':
         model = UNet(config)
     elif config['train']['model_type'] == 'tasnet':
-        model = ConvTasnet(config)
+        model = ConvTasNet(config)
     else:
         raise ValueError('wrong parameter: '+config['train']['model_type'])
     

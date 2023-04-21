@@ -328,7 +328,7 @@ class ConvTasNet(nn.Module):
             m = self.non_linear(torch.stack(e, dim=0))
         # spks x [n x N x T]
         s = w * m
-        out = self.decoder_1d(x, squeeze=True)
+        out = self.decoder_1d(y, squeeze=True)
         # spks x n x S
         return out, z
 
