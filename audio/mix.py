@@ -34,7 +34,8 @@ def main(args):
     assert args.max_snr >= args.min_snr
 
     range = args.max_snr - args.min_snr
-    df_mix = pd.DataFrame(index=None, columns=['mixture', 'source', 'noise', 'length', 'speaker', 'index', 'snr'])
+    df_mix = pd.DataFrame(index=None,
+                          columns=['mixture', 'source', 'noise', 'length', 'speaker', 'index', 'snr'])
     df_speech = pd.read_csv(args.speech_csv)
     df_noise = pd.read_csv(args.noise_csv)
     rand_noise = df_noise.sample(len(df_speech), replace=True)
@@ -66,9 +67,12 @@ def main(args):
             else :
                 reduction_rate = min_int16 / mixed_amp.min(axis=0)
             mixed_amp = mixed_amp * (reduction_rate)
-        mix_path = os.path.join(args.output_dir, os.path.splitext(os.path.basename(speech_path))[0])+ '_mix.wav'
+        mix_path = os.path.join(args.output_dir,
+                                os.path.splitext(os.path.basename(speech_path))[0])+ '_mix.wav'
         save_waveform(mix_path, speech.getparams(), mixed_amp)
-        df2 = pd.DataFrame(index=None, columns=['mixture', 'source', 'noise', 'length', 'speaker', 'index', 'snr'],data=[[mix_path, speech_path, noise_path, len(speech_amp), speaker, id, snr]])
+        df2 = pd.DataFrame(index=None,
+                           columns=['mixture', 'source', 'noise', 'length', 'speaker', 'index', 'snr'],
+                           data=[[mix_path, speech_path, noise_path, len(speech_amp), speaker, id, snr]])
         df_mix = pd.concat([df_mix, df2], ignore_index=True)
     df_mix.to_csv(args.output_csv, index=False)
 
