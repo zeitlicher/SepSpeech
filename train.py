@@ -61,13 +61,14 @@ def main(config:dict):
                                    batch_size=config['train']['batch_size'],
                                    shuffle=True, collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
 
+    scaler = torch.cuda.amp.GradScaler(enabled=True)
     optimizer = optim.Adam(model.parameters(), config['train']['learning_rate'])
     iterm = IterMeter()
     writer = SummaryWriter(log_dir=config['train']['logdir'])
     
     min_loss = 1.e10
     for epoch in range(1, config['train']['max_epochs']+1):
-        conventional.solver.train(model, train_loader, optimizer,
+        conventional.solver.train(model, train_loader, optimizer, scaler,
                                   [stft_loss, ce], iterm, epoch, writer, config)
         avg_loss = conventional.solver.test(model, valid_loader,
                                             [stft_loss, ce], iterm,

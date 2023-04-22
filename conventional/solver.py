@@ -26,7 +26,7 @@ def truncate(x:Tensor, length:int) -> Tensor:
     ルートディレクトリのtrain.pyから呼び出される学習プログラムの実体
     2023.4.23 モデルの実装はConvTasNet，DenoiserスタイルのUNet
 '''
-def train(model, loader, optimizer, loss_funcs, iterm, epoch, writer, config) -> None:
+def train(model, loader, optimizer, scaler, loss_funcs, iterm, epoch, writer, config) -> None:
     model.train()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -39,21 +39,24 @@ def train(model, loader, optimizer, loss_funcs, iterm, epoch, writer, config) ->
             #config['sepformer']['stride'],
             #config['sepformer']['chunk_size'])
             optimizer.zero_grad()
-            est_src, est_spk = model(mixtures.cuda(), enrolls.cuda())
-            #est_src = truncate(est_src, length)
+            with torch.cuda.amp.autocast(enabled=True):
+               est_src, est_spk = model(mixtures.cuda(), enrolls.cuda())
+               #est_src = truncate(est_src, length)
+               stft_loss1, stft_loss2 = loss_funcs[0](est_src, sources)
+               stft_loss = stft_loss1 + stft_loss2
+               ce_loss = loss_funcs[1](est_spk, speakers.cuda())
 
-            stft_loss1, stft_loss2 = loss_funcs[0](est_src, sources)
-            stft_loss = stft_loss1 + stft_loss2
-            ce_loss = loss_funcs[1](est_spk, speakers.cuda())
-
-            loss = torch.mean(float(config['train']['lambda1']) * stft_loss
-                              + float(config['train']['lambda2']) * ce_loss)
-            stft_loss_mean = torch.mean(stft_loss)
-            ce_loss_mean = torch.mean(ce_loss)
-            loss.backward()
+               loss = torch.mean(float(config['train']['lambda1']) * stft_loss
+                                   + float(config['train']['lambda2']) * ce_loss)
+               stft_loss_mean = torch.mean(stft_loss)
+               ce_loss_mean = torch.mean(ce_loss)
+                
+               scaler.scale(loss).backward()
+               scaler.step(optimizer)
+               scaler.update()
             loss_seq.append(loss.item())
             stft_loss_seq.append(stft_loss_mean.item())
-            optimizer.step()
+            #optimizer.step()
             iterm.step()
             
             if writer:
