@@ -13,7 +13,7 @@ dataset:
 # training parameters
 train:
   model_type: tasnet
-  max_epochs: 400
+  max_epochs: 100
   gradient_clip_val: 5.
   precision: 16
   accelerator: 'gpu'
@@ -60,7 +60,7 @@ tasnet:
   block_kernel_size: 3
   num_repeats: 4
   num_speakers: 307
-  resample: 4
+  resample: 1
 diffusion:
   timesteps: 200
   beta_start: 0.001
