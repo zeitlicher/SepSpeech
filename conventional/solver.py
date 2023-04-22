@@ -21,6 +21,11 @@ def padding(x:Tensor, stride:int, chunk_size:int) -> Tuple[Tensor, int]:
 def truncate(x:Tensor, length:int) -> Tensor:
     return x[:, :length]
 
+'''
+    音声強調モデルの学習
+    ルートディレクトリのtrain.pyから呼び出される学習プログラムの実体
+    2023.4.23 モデルの実装はConvTasNet，DenoiserスタイルのUNet
+'''
 def train(model, loader, optimizer, loss_funcs, iterm, epoch, writer, config) -> None:
     model.train()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -67,7 +72,10 @@ def train(model, loader, optimizer, loss_funcs, iterm, epoch, writer, config) ->
 
             torch.cuda.empty_cache()
     print(f"train loss: {np.mean(loss_seq):.3e} {np.mean(stft_loss_seq):.3e}")
-    
+
+'''
+    音声強調モデルの開発データ評価...モデルの実装はConvTasNet，DenoiserスタイルのUNet
+'''    
 def test(model, loader, loss_funcs, iterm, epoch, writer, config):
     model.eval()
 

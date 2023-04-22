@@ -1,6 +1,3 @@
-'''
- 以下より拝借
-'''
 # https://github.com/funcwj/conv-tasnet/blob/master/nnet/conv_tas_net.py
 
 import torch
@@ -11,6 +8,11 @@ from models.speaker import SpeakerNetwork, SpeakerAdaptationLayer
 from typing import Tuple
 import argparse
 import yaml
+
+'''
+    ConvTasNet
+    SpeakerBeam等で使われる一般的な音源分離アプローチの実装
+'''
 
 def param(nnet, Mb=True):
     """

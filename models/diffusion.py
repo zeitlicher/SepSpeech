@@ -4,7 +4,7 @@ import torch
 import torch.nn.functional as F
 
 '''
- 将来利用予定（未完成）
+    拡散モデル
 '''
 class DiffusionSolver(pl.LightningModule):
     def __init__(self, config:dict, model) -> None:

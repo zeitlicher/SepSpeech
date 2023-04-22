@@ -15,6 +15,9 @@ from argparse import ArgumentParser
 import yaml
 import sys, os
 
+'''
+    繰り返し(iteration object)カウンター
+'''
 class IterMeter(object):
     """keeps track of total iterations"""
     def __init__(self):

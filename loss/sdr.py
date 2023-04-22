@@ -3,8 +3,9 @@ from torch import Tensor
 from torch.nn.modules.loss import _Loss
 
 '''
- 損失関数：Signal-to-Distorion Ratio
- おそらく使わない
+    損失関数：Signal-to-Distorion Ratio
+    従来法でのConvTasNetの損失関数として使われる
+    今回は統一的に多重解像度STFT損失を用いるのでこちらは使用しない
 '''
 class NegativeSISDR(_Loss):
     def __init__(self, zero_mean=True, take_log=True, reduction='none', eps=1.e-8):

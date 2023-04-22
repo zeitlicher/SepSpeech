@@ -9,6 +9,12 @@ from typing import Tuple
 from torch import Tensor
 import torchaudio
 
+'''
+    音声強調用データの抽出
+    入力: 音声CSV，エンロールCSV
+    出力: 混合音声，ソース音声，エンロール音声，話者インデックス
+        音声はtorch.Tensor
+'''
 class SpeechDataset(torch.utils.data.Dataset):
 
     def __init__(self, csv_path:str, enroll_path:str, sample_rate=16000, segment=0, enroll_segment=0) -> None:

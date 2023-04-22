@@ -12,7 +12,7 @@ import yaml
 from typing import Tuple
 
 '''
- 動作するがおそらく使わない
+    Sepformer
 '''
 class Reshape:
   def __init__(self, shape):
@@ -224,7 +224,7 @@ class Separator(nn.Module):
         return out, y
 
 '''
-    for module testing
+    モジュールテスト
 '''
 def padding(x:Tensor, padding:Tensor) -> Tensor:
     return F.pad(x, padding)
