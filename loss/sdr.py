@@ -3,6 +3,7 @@ from torch import Tensor
 from torch.nn.modules.loss import _Loss
 
 '''
+    asteroidから拝借
     損失関数：Signal-to-Distorion Ratio
     従来法でのConvTasNetの損失関数として使われる
     今回は統一的に多重解像度STFT損失を用いるのでこちらは使用しない

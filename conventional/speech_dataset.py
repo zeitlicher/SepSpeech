@@ -13,7 +13,7 @@ import torchaudio
     音声強調用データの抽出
     入力: 音声CSV，エンロールCSV
     出力: 混合音声，ソース音声，エンロール音声，話者インデックス
-        音声はtorch.Tensor
+        音声データはtorch.Tensor
 '''
 class SpeechDataset(torch.utils.data.Dataset):
 

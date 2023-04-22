@@ -9,7 +9,8 @@
 #  MIT License (https://opensource.org/licenses/MIT)
 
 '''
- denoiserから拝借
+    denoiserから拝借
+    多重解像度STFT損失
 '''
 
 """STFT-based Loss modules."""

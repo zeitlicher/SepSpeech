@@ -1,6 +1,3 @@
-'''
- 話者情報のモデル
-'''
 import math
 import sys
 import numpy as np
@@ -13,6 +10,9 @@ from einops import rearrange
 import torchaudio
 from typing import Tuple
 
+'''
+    エンロール話者
+'''
 class SpeakerNetwork(nn.Module):
     def __init__(self, encoder, in_channels:int, out_channels:int, kernel_size:int, num_speakers:int) -> None:
         super(SpeakerNetwork, self).__init__()
