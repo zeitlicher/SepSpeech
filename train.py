@@ -43,7 +43,8 @@ def main(config:dict):
     if os.path.exists(config['train']['saved']):
         model.load_state_dict(torch.load(config['train']['saved'], map_location=torch.device('cpu')), strict=False)
     model.to(device)
-        
+    torch.compile(model)
+            
     ce = nn.CrossEntropyLoss(reduction='none').to(device)
     #sdr = NegativeSISDR()
     stft_loss = MultiResolutionSTFTLoss().to(device)
