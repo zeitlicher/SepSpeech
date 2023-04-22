@@ -312,11 +312,11 @@ class ConvTasNet(nn.Module):
         return nn.Sequential(*repeats)
 
     def valid_length(self, length):
+        length = int(math.ceil(length*self.resample))
         length = int(math.ceil(length/self.resample))
         return int(length)
     
     def upsample(self, x):
-        x = F.pad(x, (0, self.valid_length(x.shape[-1]) - x.shape[-1]))
         if self.resample == 2:
             x = unet.upsample2(x)
         elif self.resample ==4:
@@ -342,7 +342,8 @@ class ConvTasNet(nn.Module):
             x = torch.unsqueeze(x, 0)
 
         # updample
-        x = self.upsample(x)
+        #x = F.pad(x, (0, self.valid_length(x.shape[-1]) - x.shape[-1]))
+        #x = self.upsample(x)
 
         # n x 1 x S => n x N x T
         w = F.relu(self.encoder_1d(x))
@@ -364,7 +365,7 @@ class ConvTasNet(nn.Module):
         s = w * m
         out = self.decoder_1d(y, squeeze=True)
         # downsample
-        out = self.downsample(out)
+        #out = self.downsample(out)
         
         # spks x n x S
         return out, z

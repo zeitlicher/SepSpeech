@@ -46,8 +46,8 @@ def train(model, loader, optimizer, loss_funcs, iterm, epoch, writer, config) ->
             stft_loss = stft_loss1 + stft_loss2
             ce_loss = loss_funcs[1](est_spk, speakers.cuda())
 
-            loss = torch.mean(float(config['sepformer']['lambda1']) * stft_loss
-                              + float(config['sepformer']['lambda2']) * ce_loss)
+            loss = torch.mean(float(config['train']['lambda1']) * stft_loss
+                              + float(config['train']['lambda2']) * ce_loss)
             stft_loss_mean = torch.mean(stft_loss)
             ce_loss_mean = torch.mean(ce_loss)
             loss.backward()
@@ -95,8 +95,8 @@ def test(model, loader, loss_funcs, iterm, epoch, writer, config):
                 stft_loss = stft_loss1+stft_loss2
                 ce_loss = loss_funcs[1](est_spk, speakers.cuda())
 
-                loss = torch.mean(float(config['sepformer']['lambda1']) * stft_loss
-                                  + float(config['sepformer']['lambda2']) * ce_loss)
+                loss = torch.mean(float(config['train']['lambda1']) * stft_loss
+                                  + float(config['train']['lambda2']) * ce_loss)
                 loss_seq.append(loss.item())
                 stft_loss_seq.append(torch.mean(stft_loss).item())
                 bar.set_description("[Epoch %d]" % epoch)

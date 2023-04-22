@@ -26,6 +26,8 @@ train:
   output: ./output/model.pt
   logdir: ./logs
   checkpoint: 100000
+  lambda1: 1.0
+  lambda2: 0.1
 # sepformer parameters
 sepformer:
   # positional encoding
@@ -49,8 +51,6 @@ sepformer:
   num_speakers: 307
   # dropout (all modules)
   dropout: 0.1
-  lambda1: 1.0
-  lambda2: 0.1
 tasnet:
   kernel_size: 20
   in_channels: 256
@@ -65,8 +65,6 @@ diffusion:
   timesteps: 200
   beta_start: 0.001
   beta_end: 0.02
-  lambda1: 1.0
-  lambda2: 1.0
 unet:
   attention: True
   normalize: False #True
