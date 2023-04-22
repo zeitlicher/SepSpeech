@@ -54,13 +54,13 @@ def main(config:dict):
                                   config['dataset']['train_enroll'],
                                   segment=config['train']['segment'])
     train_loader = data.DataLoader(dataset=train_dataset,
-                                   batch_size=config['train']['batch_size'], num_workers=2, pin_memory=True,
+                                   batch_size=config['train']['batch_size'], num_workers=1, pin_memory=True,
                                    shuffle=True, collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
     valid_dataset = SpeechDataset(config['dataset']['valid'],
                                   config['dataset']['valid_enroll'],
                                   segment=config['train']['segment'])
     valid_loader = data.DataLoader(dataset=valid_dataset,
-                                   batch_size=config['train']['batch_size'], num_workers=2, pin_memory=True,
+                                   batch_size=config['train']['batch_size'], num_workers=1, pin_memory=True,
                                    shuffle=True, collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
 
     scaler = torch.cuda.amp.GradScaler(enabled=True)
