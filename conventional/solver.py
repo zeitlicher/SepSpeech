@@ -85,11 +85,11 @@ def test(model, loader, loss_funcs, iterm, epoch, writer, config):
         with torch.no_grad():
             for i, _data in enumerate(loader):
                 mixtures, sources, enrolls, lengths, speakers = _data
-                pd_mix, length = padding(mixtures, config['sepformer']['stride'],
-                                         config['sepformer']['chunk_size'])
+                #pd_mix, length = padding(mixtures, config['sepformer']['stride'],
+                #                         config['sepformer']['chunk_size'])
 
-                est_src, est_spk = model(pd_mix.cuda(), enrolls.cuda())
-                est_src = truncate(est_src, length)
+                est_src, est_spk = model(mixtures.cuda(), enrolls.cuda())
+                #est_src = truncate(est_src, length)
 
                 stft_loss1, stft_loss2 = loss_funcs[0](est_src, sources)
                 stft_loss = stft_loss1+stft_loss2
@@ -113,8 +113,8 @@ def test(model, loader, loss_funcs, iterm, epoch, writer, config):
 def evaluate(model, mixtures, enrolls, config):
     model.eval()
     with torch.no_grad():
-        d_mix, length = padding(mixtures, config['sepformer']['stride'])
-        est_src, est_spk = model(pd_mix.cuda(), enrolls.cuda())
-        est_src = truncate(est_src, length)
+        #d_mix, length = padding(mixtures, config['sepformer']['stride'])
+        est_src, est_spk = model(mixtures.cuda(), enrolls.cuda())
+        #est_src = truncate(est_src, length)
 
         return est_src, est_spk

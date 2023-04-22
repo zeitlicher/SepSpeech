@@ -8,6 +8,8 @@ from models.speaker import SpeakerNetwork, SpeakerAdaptationLayer
 from typing import Tuple
 import argparse
 import yaml
+import math
+import models.unet as unet
 
 '''
     ConvTasNet
@@ -286,6 +288,8 @@ class ConvTasNet(nn.Module):
             config['tasnet']['enc_channels'], 1,
             kernel_size=config['tasnet']['kernel_size'],
             stride=config['tasnet']['kernel_size'] // 2, bias=True)
+        
+        self.resample = config['tasnet']['resample']
 
     def _build_blocks(self, num_blocks, **block_kwargs):
         """
@@ -307,6 +311,27 @@ class ConvTasNet(nn.Module):
         ]
         return nn.Sequential(*repeats)
 
+    def valid_length(self, length):
+        length = int(math.ceil(length/self.resample))
+        return int(length)
+    
+    def upsample(self, x):
+        x = F.pad(x, (0, self.valid_length(x.shape[-1]) - x.shape[-1]))
+        if self.resample == 2:
+            x = unet.upsample2(x)
+        elif self.resample ==4:
+            x = unet.upsample2(x)
+            x = unet.upsample2(x)
+        return x
+    
+    def downsample(self, x):
+        if self.resample == 2:
+            x = unet.downsample2(x)
+        elif self.resample == 4:
+            x = unet.downsample2(x)
+            x = unet.downsample2(x)
+        return x
+               
     def forward(self, x:Tensor, s:Tensor) -> Tuple[Tensor, Tensor]:
         if x.dim() >= 3:
             raise RuntimeError(
@@ -315,6 +340,10 @@ class ConvTasNet(nn.Module):
         # when inference, only one utt
         if x.dim() == 1:
             x = torch.unsqueeze(x, 0)
+
+        # updample
+        x = self.upsample(x)
+
         # n x 1 x S => n x N x T
         w = F.relu(self.encoder_1d(x))
         # n x B x T
@@ -334,6 +363,9 @@ class ConvTasNet(nn.Module):
         # spks x [n x N x T]
         s = w * m
         out = self.decoder_1d(y, squeeze=True)
+        # downsample
+        out = self.downsample(out)
+        
         # spks x n x S
         return out, z
 

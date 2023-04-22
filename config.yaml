@@ -60,6 +60,7 @@ tasnet:
   block_kernel_size: 3
   num_repeats: 4
   num_speakers: 307
+  resample: 4
 diffusion:
   timesteps: 200
   beta_start: 0.001
