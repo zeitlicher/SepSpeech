@@ -60,7 +60,7 @@ def main(config:dict):
                                   config['dataset']['valid_enroll'],
                                   segment=config['train']['segment'])
     valid_loader = data.DataLoader(dataset=valid_dataset,
-                                   batch_size=config['train']['batch_size'], p
+                                   batch_size=config['train']['batch_size'], 
                                    shuffle=True, collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
 
     scaler = torch.cuda.amp.GradScaler(enabled=True)
