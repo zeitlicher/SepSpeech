@@ -4,6 +4,7 @@ ARG CUDA="11.8.0"
 ARG CUDNN="8"
 ARG UBUNTU="22.04"
 FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-devel-ubuntu${UBUNTU}
+# rootで実行
 USER root
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends emacs python3.9 python3-pip libsndfile1-dev
