@@ -10,41 +10,37 @@ import yaml
  PyTorch Lightning用 将来変更する予定
 '''
 def main(config:dict):
-    model = LitSepSpeaker(config)
-    '''
-    nnet = model.get_model()
+    #torch.backends.cudnn.benchmark=True
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    mix_path = './samples/sample.wav'
-    spk_path = './samples/sample.wav'
-
-    mix, sr = torchaudio.load(mix_path)
-    original_len = mix.shape[-1]
-
-    len = config['sepformer']['stride'] * config['sepformer']['chunk_size']
-    pad_value = len - mix.shape[-1] % len -1
-    print(mix.shape)
-    mix = models.sepformer.padding(mix, (0, pad_value))
-
-    spk, sr = torchaudio.load(spk_path)
-    len = config['sepformer']['stride']
-    print(spk.shape)
-    pad_value = len - spk.shape[-1] % len - 1
-    spk = models.sepformer.padding(spk, (0, pad_value))
-
-    out, y = nnet(mix, spk)
-    out = out[:, :original_len]
-    print(out.shape)
-
-    exit(1)
-    '''
-    data = SpeechDataModule(config)
-    trainer = pl.Trainer(
-        max_epochs=config['train']['max_epochs'],
-        gradient_clip_val=config['train']['gradient_clip_val'],
-        precision=config['train']['precision']
-    )
-    trainer.fit(model, data)
-
+    if config['train']['model_type'] == 'unet':
+        model = UNet(config)
+    elif config['train']['model_type'] == 'tasnet':
+        model = ConvTasNet(config)
+    else:
+        raise ValueError('wrong parameter: '+config['train']['model_type'])
+    
+    if os.path.exists(config['train']['saved']):
+        model.load_state_dict(torch.load(config['train']['saved'], map_location=torch.device('cpu')), strict=False)
+    model.to(device)
+    torch.compile(model)
+            
+    ce = nn.CrossEntropyLoss(reduction='none').to(device)
+    stft_loss = MultiResolutionSTFTLoss().to(device)
+    
+    train_dataset = SpeechDataset(config['dataset']['train'],
+                                  config['dataset']['train_enroll'],
+                                  segment=config['train']['segment'])
+    train_loader = data.DataLoader(dataset=train_dataset,
+                                   batch_size=config['train']['batch_size'], num_workers=2, pin_memory=True,
+                                   shuffle=True, collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
+    valid_dataset = SpeechDataset(config['dataset']['valid'],
+                                  config['dataset']['valid_enroll'],
+                                  segment=config['train']['segment'])
+    valid_loader = data.DataLoader(dataset=valid_dataset,
+                                   batch_size=config['train']['batch_size'], num_workers=2, pin_memory=True,
+                                   shuffle=True, collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
+           
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--config', type=str, required=True)

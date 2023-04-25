@@ -2,65 +2,67 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 import pytorch_lightning as pl
-from models.sepformer import Separator
-from loss.sdr import NegativeSISDR
+from models.unet import UNet
+from models.conv_tasnet import ConvTasNet
+from loss.stft_loss import MultiResolutionSTFTLoss
 from typing import Tuple
 
 '''
- PyTorch Lightning用 将来変更する予定
+ PyTorch Lightning 用 solver
 '''
 class LitSepSpeaker(pl.LightningModule):
     def __init__(self, config:dict) -> None:
         super().__init__()
         self.config = config
-        self.model = Separator(self.config)
-        self.ce = nn.CrossEntropyLoss()
-        self.sdr = NegativeSISDR()
+        if config['train']['model_type'] == 'unet':
+            self.model = UNet(config)
+        elif config['train']['model_type'] == 'tasnet':
+            self.model = ConvTasNet(config)
+        else:
+            raise ValueError('wrong parameter: '+config['train']['model_type'])
 
-    def padding(self, x:Tensor) -> Tensor:
-        self.org_len = x.shape[-1]
-        pads=self.config['model']['stride'] - x.shape[-1] % self.config['model']['stride'] - 1
-        return F.pad(x, (0, pads))
+        self.lambda1 = config['train']['lambda1']
+        self.lambda2 = config['train']['lambda2']
 
-    def truncate(self, x:Tensor) -> Tensor:
-        return x[:, :self.org_len]
+        self.ce_loss = nn.CrossEntropyLoss(reduction='none')
+        self.stft_loss = MultiResolutionSTFTLoss()
 
     def forward(self, mix:Tensor, enr:Tensor) -> Tuple[Tensor, Tensor]:
         return self.model(mix, enr)
 
     def training_step(self, batch, batch_idx:int) -> Tensor:
-        mix, src, enr, _, spk = batch
-        mix = padding(mix)
-        est_src, est_spk = self.model(mix, enr)
-        # TODO solve tensor-size mismatching
-        est_src = truncate(est_src)
-        sdr_loss = self.sdr(est_src, src)
-        ce_loss = self.ce(est_spk, spk)
-        loss = self.lambda1 * sdr_loss + self.lambda2 * ce_loss
-        values = {'loss': loss, 'sdr': sdr_loss, 'ce': ce_loss}
-        #self.log_dict(values)
+        mixtures, sources, enrolls, lengths, speakers = batch
 
-        return values
+        src_hat, spk_hat = self.forward(mixtures, enrolls)
+        _stft_loss = self.stft_loss(src_hat, sources)
+        _ce_loss = self.ce_loss(spk_hat, speakers)
+
+        _loss = self.lambda1 * _stft_loss + self.lambda2 * _ce_loss
+        self.log_dict({'train_loss': _loss, 'train_stft_loss': _stft_loss, 'train_ce_loss': _ce_loss})
+
+        return _loss
 
     def on_train_epoch_end(outputs:Tensor):
-        agv_loss = torch.stack([x['loss'] for x in outputs]).mean()
-        tensorboard_logs={'loss': agv_loss}
-        return {'avg_loss': avg_loss, 'log': tensorboard_logs}
+        #agv_loss = torch.stack([x['loss'] for x in outputs]).mean()
+        #tensorboard_logs={'loss': agv_loss}
+        #return {'avg_loss': avg_loss, 'log': tensorboard_logs}
 
     def validation_step(self, batch, batch_idx, dataloader_idx):
-        mix, src, enr, len, spk = batch
-        est_src, est_spk = self.model(mix, enr)
-        sdr_loss = self.sdr(est_src, src, len)
-        ce_loss = self.ce(est_spk, spk)
-        loss = self.lambda1 * sdr_loss + self.lambda2 * ce_loss
-        values = {'val_loss': loss, 'val_sdr': sdr_loss, 'val_ce': ce_loss}
-        #self.log_dict(values)
-        return values
+        mixtures, sources, enrolls, lengths, speakers = batch
+
+        src_hat, spk_hat = self.forward(mixtures, enrolls)
+        _stft_loss = self.stft_loss(src_hat, sources)
+        _ce_loss = self.ce_loss(spk_hat, speakers)
+
+        _loss = self.lambda1 * _stft_loss + self.lambda2 * _ce_loss
+        self.log_dict({'valid_loss': _loss, 'valid_stft_loss': _stft_loss, 'valid_ce_loss': _ce_loss})
+
+        return _loss
 
     def on_validation_epoch_end(outputs:Tensor):
-        agv_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
-        tensorboard_logs={'val_loss': agv_loss}
-        return {'avg_loss': avg_loss, 'log': tensorboard_logs}
+        #agv_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
+        #tensorboard_logs={'val_loss': agv_loss}
+        #return {'avg_loss': avg_loss, 'log': tensorboard_logs}
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
