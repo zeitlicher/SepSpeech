@@ -13,20 +13,20 @@ def main(config:dict):
     #torch.backends.cudnn.benchmark=True
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    if config['train']['model_type'] == 'unet':
-        model = UNet(config)
-    elif config['train']['model_type'] == 'tasnet':
-        model = ConvTasNet(config)
-    else:
-        raise ValueError('wrong parameter: '+config['train']['model_type'])
+    #if config['train']['model_type'] == 'unet':
+    #    model = UNet(config)
+    #elif config['train']['model_type'] == 'tasnet':
+    #    model = ConvTasNet(config)
+    #else:
+    #    raise ValueError('wrong parameter: '+config['train']['model_type'])
     
-    if os.path.exists(config['train']['saved']):
-        model.load_state_dict(torch.load(config['train']['saved'], map_location=torch.device('cpu')), strict=False)
-    model.to(device)
-    torch.compile(model)
+    #if os.path.exists(config['train']['saved']):
+    #    model.load_state_dict(torch.load(config['train']['saved'], map_location=torch.device('cpu')), strict=False)
+    #model.to(device)
+    #torch.compile(model)
             
-    ce = nn.CrossEntropyLoss(reduction='none').to(device)
-    stft_loss = MultiResolutionSTFTLoss().to(device)
+    #ce = nn.CrossEntropyLoss(reduction='none').to(device)
+    #stft_loss = MultiResolutionSTFTLoss().to(device)
     
     train_dataset = SpeechDataset(config['dataset']['train'],
                                   config['dataset']['train_enroll'],

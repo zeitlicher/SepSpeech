@@ -86,6 +86,7 @@ class SpeechDataset(torch.utils.data.Dataset):
         return torch.t(mixture), torch.t(source), torch.t(enroll), source_speaker
 
 '''
+# On-the-fly ミキシング
 class SpeechDatasetLive(SpeechDataset):
     def __init__(self, csv_path:str, noise_csv_path:str, enroll_path:str, sample_rate=16000, segment=None) -> None:
         super().__init__(csv_path, enroll_path, sample_rate=16000, segment=None)
@@ -159,80 +160,3 @@ def data_processing(data:Tuple[Tensor,Tensor,Tensor,Tensor]) -> Tuple[Tensor, Te
         enrolls = enrolls.unsqueeze(0)
         
     return mixtures, sources, enrolls, lengths, speakers
-
-'''
-class SpeechDataLiveModule(SpeechDataModule):
-    def __init__(self, config:dict) -> None:
-        super().__init__(config)
-    
-    def setup(self) -> None:
-        self.train_dataset=SpeechDatasetLive(
-            self.config['dataset']['train'],
-            self.config['dataset']['noise'],
-            self.config['dataset']['train_enroll'],
-            self.config['train']['sample_rate'],
-            self.config['train']['segment']
-        )
-        self.valid_dataset=SpeechDatasetLive(
-            self.config['dataset']['valid'],
-            self.config['dataset']['valid_noise'],
-            self.config['dataset']['valid_enroll'],
-            self.config['train']['sample_rate'],
-            self.config['train']['segment']
-        )
-        self.test_dataset=SpeechDatasetLive(
-        self.config['dataset']['test'],
-        self.config['dataset']['test_noise'],
-        self.config['dataset']['test_enroll'],
-        self.config['train']['sample_rate'],
-        self.config['train']['segment']
-        )
-'''
-'''
-class SpeechDataModule(pl.LightningModule):
-    def __init__(self, config:dict) -> None:
-        super().__init__()
-        self.config=config
-        self.batch_size=8
-        
-    def setup(self, stage:str) -> None:
-        self.train_dataset=SpeechDataset(
-            self.config['dataset']['train'],
-            self.config['dataset']['train_enroll'],
-            self.config['train']['sample_rate'],
-            self.config['train']['segment']
-        )
-        self.valid_dataset=SpeechDataset(
-            self.config['dataset']['valid'],
-            self.config['dataset']['valid_enroll'],
-            self.config['train']['sample_rate'],
-            self.config['train']['segment']
-        )
-        self.test_dataset=SpeechDataset(
-        self.config['dataset']['test'],
-        self.config['dataset']['test_enroll'],
-        self.config['train']['sample_rate'],
-        self.config['train']['segment']
-        )
-
-    def train_dataloader(self) -> data.DataLoader:
-        return data.DataLoader(
-                self.train_dataset,
-                batch_size = self.config['train']['batch_size'],
-                shuffle = True,
-                collate_fn=lambda x: data_processing(x)
-            )
-
-    def val_dataloader(self) -> data.DataLoader:
-        return data.DataLoader(
-                self.valid_dataset,
-                batch_size = self.config['train']['batch_size'],
-                collate_fn=lambda x: data_processing(x)
-            )
-    def test_dataloader(self) -> data.DataLoader:
-        return data.DataLoader(
-                self.test_dataset,
-                batch_size = self.config['train']['batch_size'],
-                collate_fn=lambda x: data_processing(x)
-            )
-'''

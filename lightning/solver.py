@@ -42,10 +42,12 @@ class LitSepSpeaker(pl.LightningModule):
 
         return _loss
 
+    '''
     def on_train_epoch_end(outputs:Tensor):
         #agv_loss = torch.stack([x['loss'] for x in outputs]).mean()
         #tensorboard_logs={'loss': agv_loss}
         #return {'avg_loss': avg_loss, 'log': tensorboard_logs}
+    '''
 
     def validation_step(self, batch, batch_idx, dataloader_idx):
         mixtures, sources, enrolls, lengths, speakers = batch
@@ -59,11 +61,13 @@ class LitSepSpeaker(pl.LightningModule):
 
         return _loss
 
+    '''
     def on_validation_epoch_end(outputs:Tensor):
         #agv_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
         #tensorboard_logs={'val_loss': agv_loss}
         #return {'avg_loss': avg_loss, 'log': tensorboard_logs}
-
+    '''
+    
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
         return optimizer
