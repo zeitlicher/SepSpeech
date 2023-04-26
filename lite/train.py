@@ -40,9 +40,10 @@ def main(config:dict, checkpoint_path=None):
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--config', type=str, required=True)
+    parser.add_argument('--checkpoint', type=str, default=None)
     args=parser.parse_args()
 
     with open(args.config, 'r') as yf:
         config = yaml.safe_load(yf)
 
-    main(config)
+    main(config, args.checkpoint)
