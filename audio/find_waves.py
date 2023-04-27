@@ -46,7 +46,8 @@ def main(args):
                                    data=[[path, wavlen, spk, spk2id[spk], utt]])
                 df = pd.concat([df, df2], ignore_index=True, axis=0)
     df.to_csv(args.output_csv, index=False)
-    print("number of unieq speakers: %d max speaker index: %d" % (len(spk2id.values()), max(spk2id.values()) ))
+    if args.noise is False:
+        print("number of unieq speakers: %d max speaker index: %d" % (len(spk2id.values()), max(spk2id.values()) ))
  
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -2,20 +2,22 @@
 dataset:
   # csv format, source_speaker_index must be < n_speakers
   # mixture_path, source_path, length, source_speaker, source_speaker_index
-  train: 'audio/csv/mix3_train.csv'
+  train: 'audio/csv/train_3p.csv'
   # source_path, length, source_speaker, source_speaker_index
-  train_enroll: 'audio/csv/mix3_enroll.csv'
-  valid: 'audio/csv/mix3_valid.csv'
-  valid_enroll: 'audio/csv/mix3_enroll.csv'
-  test: 'audio/csv/test.csv'
-  test_enroll: 'audio/csv/mix3_enroll.csv'
+  train_enroll: 'audio/csv/enroll_3p.csv'
+  valid: 'audio/csv/valid_3p.csv'
+  valid_enroll: 'audio/csv/enroll_3p.csv'
+  test: 'audio/csv/valid_3p.csv'
+  test_enroll: 'audio/csv/enroll_3p.csv'
 
 # training parameters
 train:
-  model_type: tasnet
+  model_type: unet
+  default_root_dir: ./
   max_epochs: 100
+  accumulate_grad_batches: 5
   gradient_clip_val: 5.
-  precision: 16
+  precision: 16-mixed
   accelerator: 'gpu'
   batch_size: 8
   learning_rate: 1.e-4
