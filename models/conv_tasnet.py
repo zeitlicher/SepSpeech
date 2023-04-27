@@ -364,6 +364,8 @@ class ConvTasNet(nn.Module):
         # spks x [n x N x T]
         s = w * m
         out = self.decoder_1d(y, squeeze=True)
+        if out.dim() == 1: # in case of batch size = 1
+            out = torch.unsqueeze(out, 0)
         # downsample
         #out = self.downsample(out)
         
