@@ -12,7 +12,7 @@ def main(config, args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     #model = Separator(config)
-    if config['model_type'] == 'unet':
+    if config['train']['model_type'] == 'unet':
         model = UNet(config)
     else:
         model = ConvTasNet(config)
