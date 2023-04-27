@@ -73,7 +73,8 @@ class LitSepSpeaker(pl.LightningModule):
     '''
     
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
+        optimizer = torch.optim.Adam(self.parameters(),
+                                     lr=self.config['train']['learning_rate'])
         return optimizer
     
     def get_model(self):
