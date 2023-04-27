@@ -24,7 +24,7 @@ class LitSepSpeaker(pl.LightningModule):
         self.lambda1 = config['train']['lambda1']
         self.lambda2 = config['train']['lambda2']
 
-        self.ce_loss = nn.CrossEntropyLoss(reduction='none')
+        self.ce_loss = nn.CrossEntropyLoss(reduction='sum')
         self.stft_loss = MultiResolutionSTFTLoss()
 
     def forward(self, mix:Tensor, enr:Tensor) -> Tuple[Tensor, Tensor]:
@@ -34,11 +34,13 @@ class LitSepSpeaker(pl.LightningModule):
         mixtures, sources, enrolls, lengths, speakers = batch
 
         src_hat, spk_hat = self.forward(mixtures, enrolls)
-        _stft_loss = self.stft_loss(src_hat, sources)
+        _stft_loss1, _stft_loss2 = self.stft_loss(src_hat, sources)
+        _stft_loss = _stft_loss1 + _stft_loss2
         _ce_loss = self.ce_loss(spk_hat, speakers)
-
         _loss = self.lambda1 * _stft_loss + self.lambda2 * _ce_loss
-        self.log_dict({'train_loss': _loss, 'train_stft_loss': _stft_loss, 'train_ce_loss': _ce_loss})
+        self.log_dict({'train_loss': _loss,
+                       'train_stft_loss': _stft_loss,
+                       'train_ce_loss': _ce_loss})
 
         return _loss
 
@@ -49,15 +51,17 @@ class LitSepSpeaker(pl.LightningModule):
         #return {'avg_loss': avg_loss, 'log': tensorboard_logs}
     '''
 
-    def validation_step(self, batch, batch_idx, dataloader_idx):
+    def validation_step(self, batch, batch_idx, dataloader_idx=0):
         mixtures, sources, enrolls, lengths, speakers = batch
 
         src_hat, spk_hat = self.forward(mixtures, enrolls)
-        _stft_loss = self.stft_loss(src_hat, sources)
+        _stft_loss1, _stft_loss2 = self.stft_loss(src_hat, sources)
+        _stft_loss = _stft_loss1 + _stft_loss2
         _ce_loss = self.ce_loss(spk_hat, speakers)
-
         _loss = self.lambda1 * _stft_loss + self.lambda2 * _ce_loss
-        self.log_dict({'valid_loss': _loss, 'valid_stft_loss': _stft_loss, 'valid_ce_loss': _ce_loss})
+        self.log_dict({'valid_loss': _loss,
+                       'valid_stft_loss': _stft_loss,
+                       'valid_ce_loss': _ce_loss})
 
         return _loss
 

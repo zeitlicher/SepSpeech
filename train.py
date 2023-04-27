@@ -1,54 +1,22 @@
 import torch
-import torch.nn as nn
-import torch.optim as optim
 import torch.utils.data as data
-from torch.utils.tensorboard import SummaryWriter
-import torchaudio
-import conventional.speech_dataset
+import pytorch_lightning as pl
+from lite.solver import LitSepSpeaker
+import conventional
 from conventional.speech_dataset import SpeechDataset
-from models.unet import UNet
-from models.conv_tasnet import ConvTasNet
-from loss.sdr import NegativeSISDR
-from loss.stft_loss import MultiResolutionSTFTLoss
-import conventional.solver
+import models.sepformer
 from argparse import ArgumentParser
 import yaml
-import sys, os
 
 '''
-    繰り返し(iteration object)カウンター
+ PyTorch Lightning用 将来変更する予定
 '''
-class IterMeter(object):
-    """keeps track of total iterations"""
-    def __init__(self):
-        self.val = 0
+def main(config:dict, checkpoint_path=None):
 
-    def step(self):
-        self.val += 1
-
-    def get(self):
-        return self.val
-    
-def main(config:dict):
-
-    #torch.backends.cudnn.benchmark=True
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    if config['train']['model_type'] == 'unet':
-        model = UNet(config)
-    elif config['train']['model_type'] == 'tasnet':
-        model = ConvTasNet(config)
+    if checkpoint_path is not None:
+        model = LitSepSpeaker.load_from_checkpoint(checkpoint_path, config=config)
     else:
-        raise ValueError('wrong parameter: '+config['train']['model_type'])
-    
-    if os.path.exists(config['train']['saved']):
-        model.load_state_dict(torch.load(config['train']['saved'], map_location=torch.device('cpu')), strict=False)
-    model.to(device)
-    torch.compile(model)
-            
-    ce = nn.CrossEntropyLoss(reduction='none').to(device)
-    #sdr = NegativeSISDR()
-    stft_loss = MultiResolutionSTFTLoss().to(device)
+        model = LitSepSpeaker(config)
     
     train_dataset = SpeechDataset(config['dataset']['train'],
                                   config['dataset']['train_enroll'],
@@ -62,30 +30,23 @@ def main(config:dict):
     valid_loader = data.DataLoader(dataset=valid_dataset,
                                    batch_size=config['train']['batch_size'], num_workers=2, pin_memory=True,
                                    shuffle=True, collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
+    trainer = pl.Trainer(
+        accelerator='auto',
+        accumulate_grad_batches=config['train']['accumulate_grad_batches'],
+        default_root_dir=config['train']['default_root_dir'],
+        max_epochs=config['train']['max_epochs'],
+        precision=config['train']['precision'],
+        profiler='simple',
+    )
+    trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
 
-    scaler = torch.cuda.amp.GradScaler(enabled=True)
-    optimizer = optim.Adam(model.parameters(), config['train']['learning_rate'])
-    iterm = IterMeter()
-    writer = SummaryWriter(log_dir=config['train']['logdir'])
-    
-    min_loss = 1.e10
-    for epoch in range(1, config['train']['max_epochs']+1):
-        conventional.solver.train(model, train_loader, optimizer, scaler,
-                                  [stft_loss, ce], iterm, epoch, writer, config)
-        avg_loss = conventional.solver.test(model, valid_loader,
-                                            [stft_loss, ce], iterm,
-                                            epoch, writer, config)
-        if min_loss > avg_loss:
-            min_loss = avg_loss
-            torch.save(model.to('cpu').state_dict(), config['train']['output'])
-            model.to(device)
-        
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--config', type=str, required=True)
+    parser.add_argument('--checkpoint', type=str, default=None)
     args=parser.parse_args()
 
     with open(args.config, 'r') as yf:
         config = yaml.safe_load(yf)
 
-    main(config)
+    main(config, args.checkpoint)
