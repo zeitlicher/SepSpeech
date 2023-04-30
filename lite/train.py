@@ -1,4 +1,5 @@
 import lightning.pytorch as pl
+from lightning.pytorch.loggers import TensorBoardLogger
 from lite.solver import LitSepSpeaker
 from conventional.speech_dataset import SpeechDataset
 import models.sepformer
@@ -15,27 +16,29 @@ def main(config:dict, checkpoint_path=None):
     else:
         model = LitSepSpeaker(config)
 
-    train_dataset = SpeechDataset(config['dataset']['train'],
-                                  config['dataset']['train_enroll'],
-                                  segment=config['train']['segment'])
+    train_dataset = SpeechDataset(**config['dataset']['train'], 
+                                  **config['dataset']['segment'])
     train_loader = data.DataLoader(dataset=train_dataset,
-                                   batch_size=config['train']['batch_size'], num_workers=2, pin_memory=True,
-                                   shuffle=True, collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
-    valid_dataset = SpeechDataset(config['dataset']['valid'],
-                                  config['dataset']['valid_enroll'],
-                                  segment=config['train']['segment'])
+                                   **config['dataset']['process'],
+                                   pin_memory=True,
+                                   shuffle=True, 
+                                   collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
+    valid_dataset = SpeechDataset(**config['dataset']['valid'],
+                                  **config['dataset']['segment'])
     valid_loader = data.DataLoader(dataset=valid_dataset,
-                                   batch_size=config['train']['batch_size'], num_workers=2, pin_memory=True,
-                                   shuffle=True, collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
-    trainer = pl.Trainer(
-        accelerator='auto',
-        accumulate_grad_batches=config['train']['accumulate_grad_batches'],
-        default_root_dir=config['train']['default_root_dir'],
-        max_epochs=config['train']['epochs'],
-        precision='16-mixed',
-        profiler='simple',
-    )
-    trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
+                                   **config['dataset']['process'],
+                                   pin_memory=True,
+                                   shuffle=False, 
+                                   collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
+    callbacks = [
+        pl.callbacks.ModelCheckpoint(
+        monitor="val_loss",
+        filename="checkpoint_{epoch}-{step}-{val_loss:.3f}"
+        )
+    ]
+    logger = TensorBoardLogger(**config['logger']['save_dir'])
+    trainer = pl.Trainer( callbacks=callbacks, **config['trainer'] )
+    trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=valid_loader, logger=logger)
 
 if __name__ == '__main__':
     parser = ArgumentParser()

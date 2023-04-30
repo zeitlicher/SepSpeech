@@ -10,7 +10,7 @@ def main(config, args):
 
     model = LitSepSpeaker.load_from_checkpoint(args.saved_params, config=config)
     model.eval()
-    
+
     mixture, sr = torchaudio.load(args.mixture)
     mx = torch.max(mixture)
     std, mean = torch.std_mean(mixture, dim=-1)
@@ -19,13 +19,9 @@ def main(config, args):
     std, mean = torch.std_mean(enroll, dim=-1)
     enroll = (enroll - mean)/std
     length = len(mixture.t())
-    #normalized = config['sepformer']['stride'] * config['sepformer']['chunk_size']
-    #pad_value = normalized - mixture.shape[-1] % normalized -1
-    #mixture = F.pad(mixture, (0, pad_value))
     with torch.no_grad():
         output, _ = model(mixture.cuda(), enroll.cuda())
     std, mean = torch.std_mean(output, dim=-1)
-    #output = (output[:, :length]-mean)/std
     output /= std
     output = output/torch.max(output) * mx
     torchaudio.save(filepath=args.output, src=output.to('cpu'), sample_rate=sr)

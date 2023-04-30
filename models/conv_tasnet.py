@@ -265,7 +265,7 @@ class ConvTasNet(nn.Module):
                                       config['tasnet']['in_channels'],
                                       config['tasnet']['block_kernel_size'],
                                       config['tasnet']['num_speakers'])
-        self.adpt = SpeakerAdaptationLayer(config)
+        self.adpt = SpeakerAdaptationLayer(**config['speaker']['adpt_type'])
         self.repeats = self._build_repeats(
             config['tasnet']['num_repeats']-1,
             config['tasnet']['num_blocks'],

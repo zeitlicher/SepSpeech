@@ -37,10 +37,10 @@ class SpeakerNetwork(nn.Module):
         return y, z
 
 class SpeakerAdaptationLayer(nn.Module):
-    def __init__(self, config:dict) -> None:
+    def __init__(self, adat_type) -> None:
         super(SpeakerAdaptationLayer, self).__init__()
         self.linear=None
-        if config['adpt_type'] is 'residual':
+        if adpt_type is 'residual':
             self.linear = nn.Linear(channels*2, channels)
 
     def forward(self, x:torch.Tensor, s:torch.Tensor) -> torch.Tensor:

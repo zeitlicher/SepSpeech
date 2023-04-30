@@ -14,18 +14,20 @@ class LitSepSpeaker(pl.LightningModule):
     def __init__(self, config:dict) -> None:
         super().__init__()
         self.config = config
-        if config['train']['model_type'] == 'unet':
+        if config['model_type'] == 'unet':
             self.model = UNet(config)
-        elif config['train']['model_type'] == 'tasnet':
+        elif config['model_type'] == 'tasnet':
             self.model = ConvTasNet(config)
         else:
-            raise ValueError('wrong parameter: '+config['train']['model_type'])
+            raise ValueError('wrong parameter: '+config['model_type'])
 
-        self.lambda1 = config['train']['lambda1']
-        self.lambda2 = config['train']['lambda2']
+        self.lambda1 = config['loss']['lambda1']
+        self.lambda2 = config['loss']['lambda2']
 
         self.ce_loss = nn.CrossEntropyLoss(reduction='none')
         self.stft_loss = MultiResolutionSTFTLoss()
+
+        self.save_hyperparameters()
 
     def forward(self, mix:Tensor, enr:Tensor) -> Tuple[Tensor, Tensor]:
         return self.model(mix, enr)
@@ -69,7 +71,7 @@ class LitSepSpeaker(pl.LightningModule):
     '''
     
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
+        optimizer = torch.optim.Adam(self.parameters(), **self.config['opeimizer'])
         return optimizer
     
     def get_model(self):
