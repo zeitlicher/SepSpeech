@@ -37,7 +37,7 @@ class SpeakerNetwork(nn.Module):
         return y, z
 
 class SpeakerAdaptationLayer(nn.Module):
-    def __init__(self, adat_type) -> None:
+    def __init__(self, adpt_type) -> None:
         super(SpeakerAdaptationLayer, self).__init__()
         self.linear=None
         if adpt_type is 'residual':

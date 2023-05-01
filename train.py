@@ -1,10 +1,14 @@
-import lightning.pytorch as pl
+import pytorch_lightning as pl
 from lightning.pytorch.loggers import TensorBoardLogger
+import torch.utils.data as data
 from lite.solver import LitSepSpeaker
+import torch.utils.data as dat
+import conventional
 from conventional.speech_dataset import SpeechDataset
-import models.sepformer
 from argparse import ArgumentParser
 import yaml
+import warnings
+warnings.filterwarnings('ignore')
 
 '''
  PyTorch Lightning用 将来変更する予定
@@ -34,8 +38,11 @@ def main(config:dict, checkpoint_path=None):
         pl.callbacks.ModelCheckpoint( **config['checkpoint'])
     ]
     logger = TensorBoardLogger(**config['logger'])
-    trainer = pl.Trainer( callbacks=callbacks, **config['trainer'] )
-    trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=valid_loader, logger=logger)
+    trainer = pl.Trainer( callbacks=callbacks,
+                          logger=logger,
+                          **config['trainer'] )
+    trainer.fit(model=model, train_dataloaders=train_loader,
+                val_dataloaders=valid_loader)
 
 if __name__ == '__main__':
     parser = ArgumentParser()
