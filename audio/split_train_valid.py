@@ -23,9 +23,9 @@ def main(args):
         if speaker not in done:
             df_train = df_mix.query('speaker==@speaker')
             df_valid = df_train.sample(args.num_valid, replace=False)
-            df_train.drop(df_valid.index, inplace=True)
+            df_train = df_train.drop(df_valid.index)
             df_removed_enr = df_train.sample(args.num_enroll, replace=False)
-            df_train.drop(df_removed_enr.index, inplace=True)
+            df_train = df_train.drop(df_removed_enr.index)
             df_enr_filt = df_src.query('speaker==@speaker')
             for _, rrow in df_removed_enr.iterrows():
                 source = rrow['source']
