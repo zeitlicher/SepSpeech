@@ -3,23 +3,20 @@ model_type: tasnet
 dataset:
   process:
     batch_size: 8
-    num_workers: 8
+    num_workers: 2
   segment:
     segment: 10
     enroll_segment: 20
     sample_rate: 16000
   train:
-    # csv format, source_speaker_index must be < n_speakers
-    # mixture_path, source_path, length, source_speaker, source_speaker_index
-    csv_path: 'audio/csv/mix3_train.csv'
-    # source_path, length, source_speaker, source_speaker_index
-    enroll_path: 'audio/csv/mix3_enroll.csv'
-  vaid:  
-    csv_path: 'audio/csv/mix3_valid.csv'
-    enroll_path: 'audio/csv/mix3_enroll.csv'
+    csv_path: 'audio/csv/train_3p.csv'
+    enroll_path: 'audio/csv/enroll_3p.csv'
+  valid:  
+    csv_path: 'audio/csv/valid_3p.csv'
+    enroll_path: 'audio/csv/enroll_3p.csv'
   test:
-    csv_path: 'audio/csv/test.csv'
-    enroll_path: 'audio/csv/mix3_enroll.csv'
+    csv_path: 
+    enroll_path: 
 # trainer parameters
 trainer:
   accelerator: 'auto'
@@ -33,7 +30,7 @@ optimizer:
 logger:
   save_dir: './'
   version: 1
-  name: 'ligtning_logs'
+  name: 'lightning_logs'
 checkpoint:
   monitor: 'val_loss'
   filename: 'checkpoint_{epoch}-{step}-{val_loss:.3f}'
