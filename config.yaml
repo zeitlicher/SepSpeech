@@ -1,35 +1,81 @@
+model_type: tasnet
 # dataset
 dataset:
-  # csv format, source_speaker_index must be < n_speakers
-  # mixture_path, source_path, length, source_speaker, source_speaker_index
-  train: 'audio/csv/train_3p.csv'
-  # source_path, length, source_speaker, source_speaker_index
-  train_enroll: 'audio/csv/enroll_3p.csv'
-  valid: 'audio/csv/valid_3p.csv'
-  valid_enroll: 'audio/csv/enroll_3p.csv'
-  test: 'audio/csv/valid_3p.csv'
-  test_enroll: 'audio/csv/enroll_3p.csv'
-
-# training parameters
-train:
-  model_type: unet
-  default_root_dir: ./
-  max_epochs: 100
+  process:
+    batch_size: 8
+    num_workers: 8
+  segment:
+    segment: 10
+    enroll_segment: 20
+    sample_rate: 16000
+  train:
+    # csv format, source_speaker_index must be < n_speakers
+    # mixture_path, source_path, length, source_speaker, source_speaker_index
+    csv_path: 'audio/csv/mix3_train.csv'
+    # source_path, length, source_speaker, source_speaker_index
+    enroll_path: 'audio/csv/mix3_enroll.csv'
+  vaid:  
+    csv_path: 'audio/csv/mix3_valid.csv'
+    enroll_path: 'audio/csv/mix3_enroll.csv'
+  test:
+    csv_path: 'audio/csv/test.csv'
+    enroll_path: 'audio/csv/mix3_enroll.csv'
+# trainer parameters
+trainer:
+  accelerator: 'auto'
   accumulate_grad_batches: 5
+  max_epochs: 100
+  precision: '16-mixed'
+  profiler: 'simple'
   gradient_clip_val: 5.
-  precision: 16-mixed
-  accelerator: 'gpu'
-  batch_size: 8
-  learning_rate: 1.e-4
-  sample_rate: 16000
-  segment: 10
-  enroll_segment: 20
-  saved: none
-  output: ./output/model.pt
-  logdir: ./logs
-  checkpoint: 100000
+optimizer:
+  lr: 1.e-4
+logger:
+  save_dir: './'
+  version: 1
+  name: 'ligtning_logs'
+checkpoint:
+  monitor: 'val_loss'
+  filename: 'checkpoint_{epoch}-{step}-{val_loss:.3f}'
+  save_top_k: 1
+  mode: 'min'
+# training parameters
+loss:
   lambda1: 1.0
   lambda2: 0.1
+speaker:
+  adpt_type: none
+tasnet:
+  kernel_size: 20
+  in_channels: 256
+  enc_channels: 256
+  conv_channels: 256 #512
+  num_blocks: 6 #
+  block_kernel_size: 3
+  num_repeats: 2 #4
+  num_speakers: 307
+  resample: 1
+unet:
+  attention: True
+  normalize: False #True
+  floor: 0.001
+  resample: 2
+  depth: 5
+  in_channels: 1
+  mid_channels: 256 #512 #48
+  out_channels: 1
+  max_channels: 10000
+  kernel_size: 8
+  growth: 1 #2
+  rescale: 0.1
+  stride: 4
+  reference: 0.1
+  causal: True
+  num_speakers: 307
+diffusion:
+  timesteps: 200
+  beta_start: 0.001
+  beta_end: 0.02
 # sepformer parameters
 sepformer:
   # positional encoding
@@ -53,36 +99,3 @@ sepformer:
   num_speakers: 307
   # dropout (all modules)
   dropout: 0.1
-tasnet:
-  kernel_size: 20
-  in_channels: 256
-  enc_channels: 256
-  conv_channels: 256 #512
-  num_blocks: 6 #
-  block_kernel_size: 3
-  num_repeats: 2 #4
-  num_speakers: 307
-  resample: 1
-diffusion:
-  timesteps: 200
-  beta_start: 0.001
-  beta_end: 0.02
-unet:
-  attention: True
-  normalize: False #True
-  floor: 0.001
-  resample: 2
-  depth: 5
-  in_channels: 1
-  mid_channels: 256 #512 #48
-  out_channels: 1
-  max_channels: 10000
-  kernel_size: 8
-  growth: 1 #2
-  rescale: 0.1
-  stride: 4
-  reference: 0.1
-  causal: True
-  num_speakers: 307
-adpt_type: none
-  
