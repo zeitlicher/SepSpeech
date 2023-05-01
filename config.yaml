@@ -2,7 +2,7 @@ model_type: tasnet
 # dataset
 dataset:
   process:
-    batch_size: 8
+    batch_size: 12
     num_workers: 2
   segment:
     segment: 10
@@ -36,6 +36,7 @@ checkpoint:
   filename: 'checkpoint_{epoch}-{step}-{valid_loss:.3f}'
   save_top_k: 1
   mode: 'min'
+  every_n_epochs: 1
 # training parameters
 loss:
   lambda1: 1.0

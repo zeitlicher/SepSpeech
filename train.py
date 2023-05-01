@@ -1,3 +1,4 @@
+import torch
 import pytorch_lightning as pl
 from lightning.pytorch.loggers import TensorBoardLogger
 import torch.utils.data as data
@@ -50,6 +51,7 @@ if __name__ == '__main__':
     parser.add_argument('--checkpoint', type=str, default=None)
     args=parser.parse_args()
 
+    torch.set_float32_matmul_precision('high')
     with open(args.config, 'r') as yf:
         config = yaml.safe_load(yf)
 
