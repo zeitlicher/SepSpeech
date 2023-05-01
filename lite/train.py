@@ -31,12 +31,9 @@ def main(config:dict, checkpoint_path=None):
                                    shuffle=False, 
                                    collate_fn=lambda x: conventional.speech_dataset.data_processing(x))
     callbacks = [
-        pl.callbacks.ModelCheckpoint(
-        monitor="val_loss",
-        filename="checkpoint_{epoch}-{step}-{val_loss:.3f}"
-        )
+        pl.callbacks.ModelCheckpoint( **config['checkpoint'])
     ]
-    logger = TensorBoardLogger(**config['logger']['save_dir'])
+    logger = TensorBoardLogger(**config['logger'])
     trainer = pl.Trainer( callbacks=callbacks, **config['trainer'] )
     trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=valid_loader, logger=logger)
 

@@ -34,6 +34,11 @@ logger:
   save_dir: './'
   version: 1
   name: 'ligtning_logs'
+checkpoint:
+  monitor: 'val_loss'
+  filename: 'checkpoint_{epoch}-{step}-{val_loss:.3f}'
+  save_top_k: 1
+  mode: 'min'
 # training parameters
 loss:
   lambda1: 1.0
