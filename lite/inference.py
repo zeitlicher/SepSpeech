@@ -5,10 +5,11 @@ import lightning.pytorch as pl
 from lite.solver import LitSepSpeaker
 from argparse import ArgumentParser
 import yaml
+
   
 def main(config, args):
 
-    model = LitSepSpeaker.load_from_checkpoint(args.saved_params, config=config)
+    model = LitSepSpeaker.load_from_checkpoint(args.checkpoint, config=config)
     model.eval()
 
     mixture, sr = torchaudio.load(args.mixture)
@@ -29,7 +30,7 @@ def main(config, args):
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--config', type=str, required=True)
-    parser.add_argument('--saved-params', type=str, required=True)
+    parser.add_argument('--checkpoint', type=str, required=True)
     parser.add_argument('--mixture', type=str, required=True)
     parser.add_argument('--enroll', type=str, required=True)
     parser.add_argument('--output', type=str, default='output.wav')
