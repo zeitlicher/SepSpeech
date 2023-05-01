@@ -32,7 +32,7 @@ logger:
   version: 1
   name: 'lightning_logs'
 checkpoint:
-  monitor: 'val_loss'
+  monitor: 'valid_loss'
   filename: 'checkpoint_{epoch}-{step}-{val_loss:.3f}'
   save_top_k: 1
   mode: 'min'

@@ -7,6 +7,8 @@ import conventional
 from conventional.speech_dataset import SpeechDataset
 from argparse import ArgumentParser
 import yaml
+import warnings
+warnings.filterwarnings('ignore')
 
 '''
  PyTorch Lightning用 将来変更する予定
