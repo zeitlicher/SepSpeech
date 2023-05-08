@@ -2,7 +2,7 @@ model_type: tasnet
 # dataset
 dataset:
   process:
-    batch_size: 12
+    batch_size: 8
     num_workers: 2
   segment:
     segment: 10
@@ -21,7 +21,7 @@ dataset:
 trainer:
   accelerator: 'auto'
   accumulate_grad_batches: 5
-  max_epochs: 100
+  max_epochs: 400
   precision: '16-mixed'
   profiler: 'simple'
   gradient_clip_val: 5.
@@ -29,7 +29,7 @@ optimizer:
   lr: 1.e-4
 logger:
   save_dir: './'
-  version: 1
+  version: 2
   name: 'lightning_logs'
 checkpoint:
   monitor: 'valid_loss'
@@ -47,10 +47,10 @@ tasnet:
   kernel_size: 20
   in_channels: 256
   enc_channels: 256
-  conv_channels: 256 #512
-  num_blocks: 6 #
+  conv_channels: 512
+  num_blocks: 6
   block_kernel_size: 3
-  num_repeats: 2 #4
+  num_repeats: 4
   num_speakers: 307
   resample: 1
 unet:
