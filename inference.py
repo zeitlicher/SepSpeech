@@ -10,6 +10,8 @@ import yaml
 def main(config, args):
 
     model = LitSepSpeaker.load_from_checkpoint(args.checkpoint, config=config)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
     model.eval()
 
     mixture, sr = torchaudio.load(args.mixture)
