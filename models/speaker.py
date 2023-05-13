@@ -40,7 +40,7 @@ class SpeakerAdaptationLayer(nn.Module):
     def __init__(self, adpt_type) -> None:
         super(SpeakerAdaptationLayer, self).__init__()
         self.linear=None
-        if adpt_type is 'residual':
+        if adpt_type == 'residual':
             self.linear = nn.Linear(channels*2, channels)
 
     def forward(self, x:torch.Tensor, s:torch.Tensor) -> torch.Tensor:
