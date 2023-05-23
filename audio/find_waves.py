@@ -31,7 +31,7 @@ def main(args):
                 spk = file[1:-3]
                 utt = file[len(file)-3:]
             elif file.startswith('M') or file.startswith('F'): # Deaf male/female balance sentences
-                spk = 'D'+file[0:5]
+                spk = 'D'+file[0:4]
                 utt = file[len(file)-3:]
             else:
                 continue
