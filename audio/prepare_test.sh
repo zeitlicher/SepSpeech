@@ -15,7 +15,8 @@ do
 	    python3 mix.py --speech-csv ${csvdir}/${speaker}B.csv \
 		    --noise-csv ${csvdir}/noise_${gender}_3p.csv \
 		    --output-csv ${csvdir}/mix/${speaker}_${gender}_${snr}.csv \
-		    --max-snr ${snr} --min-snr ${snr}
+		    --max-snr ${snr} --min-snr ${snr} \
+		    --output-dir $outdir
 	done
     done
 done
