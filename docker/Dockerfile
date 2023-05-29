@@ -8,11 +8,12 @@ FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-devel-ubuntu${UBUNTU}
 USER root
 RUN apt-get update -y && apt-get upgrade -y && apt-get autoremove -y
 RUN apt-get install -y --no-install-recommends emacs python3.9 python3-pip libsndfile1-dev
+RUN apt-get install -y cython3 ffmpeg
 # unfortunatelly, we do not use CUDA 12.0
 RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 RUN pip3 install torchmetrics lightning einops numpy tqdm pandas scipy numba h5py seaborn wave librosa
 RUN pip3 install tensorboard
-RUN pip3 install torchmetrics[audio] ffmpeg
+RUN pip3 install torchmetrics[audio] ffmpeg pesq
 # syntax=docker/dockerfile:1
 ARG GIT_VERSION=2.38.0
 RUN apt-get install -y gettext libcurl4-gnutls-dev libexpat1-dev libghc-zlib-dev libssl-dev make wget
