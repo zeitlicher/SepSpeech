@@ -50,6 +50,7 @@ def main(args):
     with open(args.config, 'r') as yf:
         config = yaml.safe_load(yf)
 
+    config['model_type'] = args.model_type
     assert args.checkpoint is not None
     model = LitSepSpeaker.load_from_checkpoint(args.checkpoint,
                                                config=config)
@@ -143,6 +144,7 @@ if __name__ == '__main__':
     parser.add_argument('--enroll_csv', type=str)
     parser.add_argument('--output_csv', type=str)
     parser.add_argument('--output_dir')
+    parser.add_argument('--model_type', type=str, default='tasnet')
     args = parser.parse_args()
 
     main(args)
