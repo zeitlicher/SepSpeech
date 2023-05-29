@@ -62,13 +62,15 @@ def main(args):
     _sdr = ScaleInvariantSignalDistortionRatio()
     
     df_out = pd.DataFrame(index=None, 
-                          columns=['key', 'mixture', 'source', 'estimate', 'mix_result', 'est_result', 'mix_pesq', 'mix_stoi', 'mix_sdr', 'est_pesq', 'est_stoi', 'est_sdr'])
+                          columns=['key', 'mixture', 'source', 'enroll', 'estimate', 'mix_result', 'est_result', 'mix_pesq', 'mix_stoi', 'mix_sdr', 'est_pesq', 'est_stoi', 'est_sdr'])
     keys = []
     est_pesq, est_stoi, est_sdr = [], [], []
     mix_pesq, mix_stoi, mix_sdr = [], [], []
-    mixtures, sources, estimates = [], [], []
+    mixtures, sources, enrolls, estimates = [], [], [], []
     mix_decoded, est_decoded = [], [], []
     df = pd.read_csv(args.input_csv)
+    df_enroll = pd.read_csv(args.enroll_csv)
+    rand_enroll = df_enroll.sample(len(df), replace=True)
     with torch.no_grad():
         for index, row in df.iterrows():
 
@@ -81,8 +83,10 @@ def main(args):
             mixture_original_length = mixture.shape[-1]
             source_original_length = source.shape[-1]
             assert mixture_original_length == source_original_length
-            
-            enroll = read_audio(row['enroll'])
+
+            enroll_path = df_enroll.iloc[df_enroll[index]]['source']
+            enroll = read_audio(enroll_path)
+            enrolls.append(enroll)
 
             # padding
             if divisor > 0 and mixture_original_length % divisor > 0:
@@ -118,7 +122,7 @@ def main(args):
             mix_stoi.append(_stoi(mixture[:, :mixture_original_length], source).cpu().detach().numpy())
             mix_sdr.append(_sdr(mixture[:, :mixture_original_length], source).cpu().detach().numpy())
             
-    df_out['key'], df_out['mixture'], df_out['source'], df_out['estimate'] = keys, mixtures, sources, estimates
+    df_out['key'], df_out['mixture'], df_out['source'], df_out['enroll'], df_out['estimate'] = keys, mixtures, sources, enrolls, estimates
     df_out['mix_pesq'], df_out['mix_stoi'], df_out['mix_sdr'] = mix_pesq, mix_stoi, mix_sdr
     df_out['est_pesq'], df_out['est_stoi'], df_out['est_sdr'] = est_pesq, est_stoi, est_sdr
     df_out['mix_result'], df_out['est_result'] = mix_decoded, est_decoded
@@ -136,6 +140,7 @@ if __name__ == '__main__':
     parser.add_argument('--config', type=str, required=True)
     parser.add_argument('--checkpoint', type=str, default=None)
     parser.add_argument('--input_csv', type=str)
+    parser.add_argument('--enroll_csv', type=str)
     parser.add_argument('--output_csv', type=str)
     parser.add_argument('--output_dir')
     args = parser.parse_args()
