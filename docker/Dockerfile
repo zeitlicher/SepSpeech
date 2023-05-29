@@ -16,6 +16,6 @@ RUN pip3 install torchmetrics[audio] ffmpeg
 # syntax=docker/dockerfile:1
 ARG GIT_VERSION=2.38.0
 RUN apt-get install -y gettext libcurl4-gnutls-dev libexpat1-dev libghc-zlib-dev libssl-dev make wget
-RUN wget https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz && tar -xzf v${GIT_VERSION}}.tar.gz \
+RUN wget https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz && tar -xzf v${GIT_VERSION}.tar.gz \
     && cd git-* && make prefix=/usr/local all && make prefix=/usr/local install
 RUN pip3 install git+https://github.com/openai/whisper.git
