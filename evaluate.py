@@ -83,6 +83,10 @@ def main(args):
             sources.append(row['source'])
 
             mixture, source = read_audio(row['mixture']).t(),read_audio(row['source']).t()
+            mix_pesq.append(_pesq(mixture.cuda(), source.cuda()).cpu().detach().numpy())
+            mix_stoi.append(_stoi(mixture.cuda(), source.cuda()).cpu().detach().numpy())
+            mix_sdr.append(_sdr(mixture.cuda(), source.cuda()).cpu().detach().numpy())
+            
             mixture_original_length = mixture.shape[-1]
             source_original_length = source.shape[-1]
             assert mixture_original_length == source_original_length
@@ -118,17 +122,12 @@ def main(args):
             est_pesq.append(_pesq(estimate.cuda(), source.cuda()).cpu().detach().numpy())
             est_stoi.append(_stoi(estimate.cuda(), source.cuda()).cpu().detach().numpy())
             est_sdr.append(_sdr(estimate.cuda(), source.cuda()).cpu().detach().numpy())
-
-            
-            mix_pesq.append(_pesq(mixture.cuda(), source.cuda()).cpu().detach().numpy())
-            mix_stoi.append(_stoi(mixture.cuda(), source.cuda()).cpu().detach().numpy())
-            mix_sdr.append(_sdr(mixture.cuda(), source.cuda()).cpu().detach().numpy())
             
     df_out['key'], df_out['mixture'], df_out['source'], df_out['enroll'], df_out['estimate'] = keys, mixtures, sources, enrolls, estimates
     df_out['mix_pesq'], df_out['mix_stoi'], df_out['mix_sdr'] = mix_pesq, mix_stoi, mix_sdr
     df_out['est_pesq'], df_out['est_stoi'], df_out['est_sdr'] = est_pesq, est_stoi, est_sdr
     df_out['mix_result'], df_out['est_result'] = mix_decoded, est_decoded
-
+    
     pesq, stoi, sdr = np.mean(mix_pesq), np.mean(mix_stoi), np.mean(mix_sdr)
     print("mixture:  PESQ = %.4f , STOI = %.4f, SI-SDR = %.4f" % (pesq, stoi, sdr))
     
