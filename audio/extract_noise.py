@@ -22,11 +22,6 @@ def save_waveform(output_path, params, amp):
     output_file.close()
 
 def main(args):
-    assert args.max_snr >= args.min_snr
-
-    range = args.max_snr - args.min_snr
-    #df_mix = pd.DataFrame(index=None,
-    #                      columns=['mixture', 'source', 'noise', 'length', 'speaker', 'index', 'snr'])
     part_noise_list = {'source': [], 'noise': [], 'length': [], 'speaker': [], 'index': []}
     df_speech = pd.read_csv(args.speech_csv)
     df_noise = pd.read_csv(args.noise_csv)
