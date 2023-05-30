@@ -79,7 +79,6 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--speech-csv', type=str, required=True)
-    parser.add_argument('--noise-csv', type=str, required=True)
     parser.add_argument('--output-csv', type=str, required=True)
     parser.add_argument('--output-dir', type=str, required=True)
     parser.add_argument('--max-snr', type=float, default=30.0)
