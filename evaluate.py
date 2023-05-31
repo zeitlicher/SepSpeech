@@ -39,9 +39,12 @@ def padding(x, divisor):
 
 def read_audio(path):
     wave, sr = torchaudio.load(path)
-    std, mean = torch.std_mean(wave, dim=-1)
+    #mx = torch.max(torch.abs(wave))
+    #wave = wave/torch.max(torch.abs(wave))
+    std, mean = torch.std_mean(wave)
     wave = (wave - mean)/std
-    return torch.t(wave)
+    return wave
+    #return torch.t(wave)
 
 def main(args):
 
@@ -82,7 +85,7 @@ def main(args):
             mixtures.append(row['mixture'])
             sources.append(row['source'])
 
-            mixture, source = read_audio(row['mixture']).t(),read_audio(row['source']).t()
+            mixture, source = read_audio(row['mixture']),read_audio(row['source'])
             mix_pesq.append(_pesq(mixture.cuda(), source.cuda()).cpu().detach().numpy())
             mix_stoi.append(_stoi(mixture.cuda(), source.cuda()).cpu().detach().numpy())
             mix_sdr.append(_sdr(mixture.cuda(), source.cuda()).cpu().detach().numpy())
@@ -92,7 +95,7 @@ def main(args):
             assert mixture_original_length == source_original_length
 
             enroll_path = row_enr['source']
-            enroll = read_audio(enroll_path).t()
+            enroll = read_audio(enroll_path)
             enrolls.append(enroll_path)
 
             # padding
@@ -101,12 +104,20 @@ def main(args):
 
             estimate, _ = model(mixture.to(device), enroll.to(device))
             estimate = estimate[:, :mixture_original_length]
+
+            std, mean = torch.std_mean(estimate)
+            estimate = (estimate-mean)/std
+            #estimate = estimate/torch.max(torch.abs(estimate)) * torch.max(torch.abs(mixture))
+            estimate = torchaudio.functional.gain(estimate / torch.max(torch.abs(estimate)), -6.0)
             
             estimate_outdir = args.output_dir
             if not os.path.exists(estimate_outdir):
                 os.path.mkdir(estimate_outdir)
             outpath = os.path.join(estimate_outdir, key) + '_estimate.wav'
-            torchaudio.save(filepath=outpath, src=estimate.to('cpu'), sample_rate=sample_rate)
+            torchaudio.save(filepath=outpath, src=estimate.to('cpu'),
+                            sample_rate=sample_rate)
+#                            encoding='PCM_S', bits_per_sample=16 
+#                            )
             estimates.append(outpath)
 
             decoded = decoder.transcribe(outpath, verbose=None, language='ja')
@@ -114,9 +125,6 @@ def main(args):
             decoded = decoder.transcribe(row['mixture'], verbose=False, language='ja')
             mix_decoded.append(decoded['text'])
             
-            #source = source.cpu().detach().numpy()
-            #estimate = estimate.cpu().detach().numpy()
-            #mixture = mixture[:, :mixture_original_length].cpu().detach().numpy()
             mixture = mixture[:, :mixture_original_length]
             
             est_pesq.append(_pesq(estimate.cuda(), source.cuda()).cpu().detach().numpy())
