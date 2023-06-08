@@ -3,6 +3,7 @@ from torch import Tensor
 import torch.nn as nn
 import pytorch_lightning as pl
 from models.unet import UNet
+from models.unet2 import UNet2
 from models.conv_tasnet import ConvTasNet
 from loss.stft_loss import MultiResolutionSTFTLoss
 from typing import Tuple
@@ -16,6 +17,8 @@ class LitSepSpeaker(pl.LightningModule):
         self.config = config
         if config['model_type'] == 'unet':
             self.model = UNet(config)
+        elif config['model_type'] == 'unet2':
+            self.model = UNet2(config)
         elif config['model_type'] == 'tasnet':
             self.model = ConvTasNet(config)
         else:
