@@ -167,7 +167,7 @@ class UNet2(nn.Module):
         self.encoder = nn.ModuleList()
         self.decoder = nn.ModuleList()
         self.transform = nn.ModuleList()
-        #self.transform_d = nn.ModuleList()
+        self.transform_d = nn.ModuleList()
         for index in range(self.depth):
             encode = []
             encode += [
