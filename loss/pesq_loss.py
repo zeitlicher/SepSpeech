@@ -1,4 +1,4 @@
-# from https://github.com/audiolabs/torch-pesq/blob/main/torch_pesq/bark.py
+# from https://github.com/audiolabs/torch-pesq/blob/main/torch_pesq/loss.py
 
 import torch
 import math
