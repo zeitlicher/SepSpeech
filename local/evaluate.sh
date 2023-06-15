@@ -3,12 +3,17 @@
 rootdir=/media/fujie/hdd1/Speech/test
 csvdir=audio/csv/deaf/
 
+# conv-asnet
 #config=tasnet_logs/version_2/hparams.yaml
 #model_type=tasnet
 #checkpoint=tasnet_logs/version_2/checkpoints/checkpoint_epoch\=394-step\=308890-valid_loss\=0.047.ckpt
+
+# unet
 #config=lightning_logs/version_3/hparams.yaml
 #model_type=unet
 #checkpoint=lightning_logs/version_3/checkpoints/checkpoint_epoch\=371-step\=290904-valid_loss\=0.042.ckpt
+
+# unet2
 config=lightning_logs/version_5/hparams.yaml
 model_type=unet2
 checkpoint=lightning_logs/version_5/checkpoints/checkpoint_epoch=394-step=308890-valid_loss=0.043.ckpt
@@ -31,7 +36,7 @@ do
 		mkdir -p $output_dir
 	    fi
 	    
-	    python3 evaluate.py --input_csv $input_csv \
+	    python3 -m bin.evaluate --input_csv $input_csv \
 		    --enroll_csv $enroll_csv \
 		    --output_csv $output_csv \
 		    --output_dir $output_dir \

@@ -10,5 +10,6 @@ do
 	mkdir -p $output_csv_dir
     fi
     output_csv=${output_csv_dir}/${speaker}B_output.csv
-    python3 evaluate_source.py --input_csv $input_csv --output_csv $output_csv 
+    python3 -m bin.evaluate_source --input_csv $input_csv \
+	    --output_csv $output_csv 
 done

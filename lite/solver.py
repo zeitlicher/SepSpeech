@@ -29,7 +29,8 @@ class LitSepSpeaker(pl.LightningModule):
 
         self.ce_loss = nn.CrossEntropyLoss(reduction='sum')
         self.stft_loss = MultiResolutionSTFTLoss()
-
+        self.padding_value = self.get_padding_value()
+        
         self.save_hyperparameters()
 
     def forward(self, mix:Tensor, enr:Tensor) -> Tuple[Tensor, Tensor]:
@@ -46,7 +47,6 @@ class LitSepSpeaker(pl.LightningModule):
         self.log_dict({'train_loss': _loss,
                        'train_stft_loss': _stft_loss,
                        'train_ce_loss': _ce_loss})
-
         return _loss
 
     '''
@@ -67,7 +67,6 @@ class LitSepSpeaker(pl.LightningModule):
         self.log_dict({'valid_loss': _loss,
                        'valid_stft_loss': _stft_loss,
                        'valid_ce_loss': _ce_loss})
-
         return _loss
 
     '''
@@ -81,6 +80,20 @@ class LitSepSpeaker(pl.LightningModule):
         optimizer = torch.optim.Adam(self.parameters(),
                                      **self.config['optimizer'])
         return optimizer
-    
-    def get_model(self):
-        return self.model
+
+    def get_padding_value(self):
+        self.model.cuda()
+        start = -1
+        end = -1
+        s = torch.rand(4, 1000).cuda()
+        with torch.no_grad():
+            for n in range(1000, 1100):
+                x = torch.rand(4, n)
+                o, _ = self.model(x.cuda(), s)
+                if x.shape[-1] == o.shape[-1]:
+                    if start < 0:
+                        start = n
+                    else:
+                        end = n
+                        break
+        return end - start

@@ -34,7 +34,7 @@ do
 	    for model_type in unet2;
 	    do
 		#for typ in mix_result est_result;
-		for typ in est_result;
+		for typ in mix_result est_result;
 		do
 		    decode_csv_dir=${csvdir}/mix/output/${model_type}
 		    decode_csv=${decode_csv_dir}/${speaker}_${gender}_${snr}_output.csv
