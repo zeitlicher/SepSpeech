@@ -54,8 +54,8 @@ def main(args):
     decoder = whisper.load_model("large").to(device)
 
     with open(args.config, 'r') as yf:
-        config = yaml.safe_load(yf)
-
+        config = yaml.safe_load(yf)['config']
+    
     config['model_type'] = args.model_type
     assert args.checkpoint is not None
     model = LitSepSpeaker.load_from_checkpoint(args.checkpoint,

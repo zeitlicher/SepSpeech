@@ -15,18 +15,16 @@ def main(args):
     df_new = None
     df = pd.read_csv(args.csv)
     for tag in args.utterance_set:
-        utt = tag+'01'
-        df_utt = df.query('utt==@utt')
-        for _, row in df_utt.iterrows():
-            speaker = row['speaker']
-            if args.remove is True:
-                df = df[df['speaker'] != speaker]
+        #utt = tag+'01'
+        #df_utt = df.query('utt==@utt')
+        df_utt = df.query('utt.str.contains(@tag)')
+        if args.remove is True:
+            df.drop(index=df_utt.index, inplace=True)
+        else:
+            if df_new is None:
+                df_new = df_utt
             else:
-                d = df[df['speaker'] == speaker]
-                if df_new is None:
-                    df_new = d
-                else:
-                    df_new = pd.concat([df_new, d])
+                df_new = pd.concat([df_new, df_utt])
     if args.remove is True:
         df.to_csv(args.output_csv, index=False)
     else:
