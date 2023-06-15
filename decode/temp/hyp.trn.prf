@@ -1,0 +1,367 @@
+NIST_TEXT_ALIGNMENT
+VERSION 0.1
+
+
+		DUMP OF SYSTEM ALIGNMENT STRUCTURE
+
+System name:   temp/hyp.trn
+Ref file:      temp/ref.trn
+Hyp file:      temp/hyp.trn
+Creation date: "Wed May 31 00:26:50 2023"
+
+Speaker Count: 1
+Speakers: 
+    0:  
+
+
+Speaker sentences   0:     utt# 0 of 50
+id: (m024b01)
+Scores: (#C #S #D #I) 1 34 0 2
+REF:  *** 予 防 や 健 康 管 理 リ ハ ビ リ テ ー シ ョ ン の た め の *** 制 度 を 充 実 し て い く 必 要 が あ ろ う 
+HYP:  お よ く わ か ん な い 聞 い て ん の ど こ で 聞 い て ん の だ か ら マ ル チ ス レ ッ ド で 聞 い て ん の 
+Eval: I   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S       I   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 1 of 50
+id: (m024b02)
+Scores: (#C #S #D #I) 6 14 0 35
+REF:  *** *** *** *** *** *** *** *** *** *** *** *** 老 若 男 女 が 火 を *** *** 囲 ん *** *** *** *** *** *** *** *** *** *** *** *** *** *** で *** *** *** *** *** *** 飲 み 手 を つ な い で *** 歌 う 
+HYP:  ト ミ ー 言 わ な く て よ い ん だ よ な ト ミ ー 気 を か か う ん じ ゃ な い か ト ミ ー そ う シ ャ ー プ で し ょ ト ミ ー シ ャ ー プ じ ゃ な い で 言 っ た 
+Eval: I   I   I   I   I   I   I   I   I   I   I   I   S   S   S   S   S   S       I   I   S       I   I   I   I   I   I   I   I   I   I   I   I   I   I       I   I   I   I   I   I   S   S   S   S   S               I   S   S   
+
+Speaker sentences   0:     utt# 2 of 50
+id: (m024b03)
+Scores: (#C #S #D #I) 20 7 2 3
+REF:  出 口 の な い 飛 行 中 の 航 空 機 の 異 変 は *** 恐 怖 の 極 限 状 況 と い っ て よ い *** *** 
+HYP:  出 口 の な い *** 高 級 の 航 空 機 の 異 変 は 航 空 機 の 逆 転 状 況 と な っ て *** い ま す 
+Eval:                     D   S   S                                   I   S   S       S   S               S           D       I   I   
+
+Speaker sentences   0:     utt# 3 of 50
+id: (m024b04)
+Scores: (#C #S #D #I) 14 12 1 0
+REF:  わ ず か な 収 入 を や り く り し て 現 金 で サ ー ビ ス を 利 用 し て い る 
+HYP:  わ ず か な 注 入 を や り く *** る と 現 金 の タ イ ム が 降 り 落 ち て い る 
+Eval:                 S                       D   S   S           S   S   S   S   S   S   S   S   S               
+
+Speaker sentences   0:     utt# 4 of 50
+id: (m024b05)
+Scores: (#C #S #D #I) 7 21 1 0
+REF:  難 し い 食 事 療 法 か ら 下 痢 の 世 話 ま で ２ ４ 時 間 介 護 の 日 々 が 続 い た 
+HYP:  難 し い 特 殊 情 報 か ら 行 く の か よ 嘘 半 熟 と 半 熟 じ ゃ 全 然 違 わ な い *** 
+Eval:             S   S   S   S           S   S       S   S   S   S   S   S   S   S   S   S   S   S   S   S   S       D   
+
+Speaker sentences   0:     utt# 5 of 50
+id: (m024b06)
+Scores: (#C #S #D #I) 2 29 0 3
+REF:  *** 倒 れ て 道 路 を 塞 ぐ 恐 れ が *** *** あ る ブ ロ ッ ク 塀 や 石 塀 を 点 検 し 改 善 し て お く 
+HYP:  な ん か 仕 事 し て て も 作 業 が プ ロ グ ラ ム 通 し て て も ア ウ ト ロ ッ ク と か が 素 早 く 
+Eval: I   S   S   S   S   S   S   S   S   S   S       I   I   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S       
+
+Speaker sentences   0:     utt# 6 of 50
+id: (m024b07)
+Scores: (#C #S #D #I) 13 8 0 2
+REF:  つ い で 財 務 省 が 専 門 家 を 集 め て 具 体 *** *** 案 を 練 っ た 
+HYP:  注 意 で 大 務 長 が 専 門 家 を 集 め て 具 体 的 な 話 を し ま す 
+Eval: S   S       S       S                                           I   I   S       S   S   S   
+
+Speaker sentences   0:     utt# 7 of 50
+id: (m024b08)
+Scores: (#C #S #D #I) 1 13 5 0
+REF:  こ う い う 絵 が や す や す と 描 け る は ず は な い 
+HYP:  *** *** *** *** L   D   織 ら し 数 と *** 悪 評 の た め 5   没 
+Eval: D   D   D   D   S   S   S   S   S   S       D   S   S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 8 of 50
+id: (m024b09)
+Scores: (#C #S #D #I) 13 7 5 4
+REF:  *** *** *** *** 背 の 高 さ は 1 7 0 c m ほ ど で 目 が 大 き く や や 太 っ て い る 
+HYP:  ネ タ バ レ し て る 方 は 1 7 0 c m ほ ど で 目 が *** 上 を や や *** *** *** *** と 
+Eval: I   I   I   I   S   S   S   S                                     D   S   S           D   D   D   D   S   
+
+Speaker sentences   0:     utt# 9 of 50
+id: (m024b10)
+Scores: (#C #S #D #I) 0 5 28 0
+REF:  懐 か し い プ ロ ペ ラ 機 で ふ わ り ふ わ り と 地 球 を 一 周 し た と こ ろ が す ば ら し い 
+HYP:  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ン ド ル ー ン 
+Eval: D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   D   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 10 of 50
+id: (m024b11)
+Scores: (#C #S #D #I) 25 1 1 0
+REF:  よ ほ ど 具 合 が 悪 く な け れ ば 昼 間 横 に な る な ん て 夢 の ま た 夢 だ 
+HYP:  よ ほ ど 具 合 が 悪 く な け れ ば *** 車 横 に な る な ん て 夢 の ま た 夢 だ 
+Eval:                                                 D   S                                                       
+
+Speaker sentences   0:     utt# 11 of 50
+id: (m024b12)
+Scores: (#C #S #D #I) 6 15 0 6
+REF:  * * * * * * 強 風 と 冷 え こ み の 強 い 神 宮 の グ ラ ウ ン ド で あ る 
+HYP:  S O M S T O P   S   E   も 踊 る と ね そ う 英 語 の ブ ラ ウ ン ド ら れ る 
+Eval: I I I I I I S   S   S   S   S   S   S   S   S   S   S   S       S                   S   S       
+
+Speaker sentences   0:     utt# 12 of 50
+id: (m024b13)
+Scores: (#C #S #D #I) 2 20 0 5
+REF:  *** *** *** ぶ ら ぶ ら と *** 球 場 ま で 十 分 足 ら ず の 道 を 歩 い *** て い く 
+HYP:  ブ ラ ブ ラ ド ル ク と か が 素 早 く 立 ち 上 が る あ あ そ う い う こ と か 
+Eval: I   I   I   S   S   S   S       I   S   S   S   S   S   S   S   S   S   S   S   S   S       I   S   S   S   
+
+Speaker sentences   0:     utt# 13 of 50
+id: (m024b14)
+Scores: (#C #S #D #I) 8 5 6 4
+REF:  *** 大 声 を 出 し す ぎ て *** か す れ *** *** 声 に な っ て し ま う 
+HYP:  こ の 声 を 出 し *** *** て る と 隠 れ る よ う に な *** *** *** *** る 
+Eval: I   S                   D   D       I   S   S       I   I   S           D   D   D   D   S   
+
+Speaker sentences   0:     utt# 14 of 50
+id: (m024b15)
+Scores: (#C #S #D #I) 7 11 0 3
+REF:  *** 足 し 算 引 き 算 は で き な く て も *** *** 絵 は 描 け る 
+HYP:  だ め じ ゃ ん 手 段 は で き な く て も そ れ で も う ち の 
+Eval: I   S   S   S   S   S   S                               I   I   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 15 of 50
+id: (m024b16)
+Scores: (#C #S #D #I) 0 21 3 0
+REF:  そ れ を か ば お う と し て 右 ひ ざ と ふ く ら は ぎ を や ら れ た 
+HYP:  *** *** *** シ ャ ー プ シ ャ ー プ 目 の 透 け ど こ ろ か 違 う で し ょ 
+Eval: D   D   D   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 16 of 50
+id: (m024b17)
+Scores: (#C #S #D #I) 2 29 8 0
+REF:  現 地 に 着 い て い ざ と い う と き お ぶ っ て く れ る 原 住 民 を 頼 ん だ が こ れ が ピ グ ミ ー で あ っ た 
+HYP:  *** ピ ー パ ー 上 が ん な い *** *** *** *** *** *** *** そ れ で も う ち の 研 究 室 で 使 っ て る の に 早 い か ら ね 
+Eval: D   S   S   S   S   S   S   S   S       D   D   D   D   D   D   D   S       S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 17 of 50
+id: (m024b18)
+Scores: (#C #S #D #I) 11 9 2 0
+REF:  ゆ ら ゆ ら 電 球 が 揺 れ て 影 が 草 の 上 を ち ら ち ら し た 
+HYP:  *** *** 裏 裏 電 球 が 揺 れ て 私 は 蓋 の 上 を チ ラ チ ラ し た 
+Eval: D   D   S   S                           S   S   S               S   S   S   S           
+
+Speaker sentences   0:     utt# 18 of 50
+id: (m024b19)
+Scores: (#C #S #D #I) 4 19 0 18
+REF:  僕 は ほ と *** *** *** *** *** *** *** ん *** *** *** ど 夢 中 で 駅 前 の *** *** *** 人 ご み の *** *** *** *** *** 間 を す り ぬ け た 
+HYP:  が い い と か そ う い う の な ん じ ゃ な い か な そ う な の か な ま あ 英 語 の 吸 収 率 が 違 う ん じ ゃ な い の 
+Eval: S   S   S       I   I   I   I   I   I   I       I   I   I   S   S   S   S   S   S       I   I   I   S   S   S       I   I   I   I   I   S   S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 19 of 50
+id: (m024b20)
+Scores: (#C #S #D #I) 1 21 1 1
+REF:  *** こ の 喜 び は む ろ ん 家 へ 帰 り 着 い て も 消 え ず に 続 い た 
+HYP:  普 通 の *** サ ー ビ ス を す る 際 は も ち ろ ん そ う だ け ど 快 適 
+Eval: I   S       D   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 20 of 50
+id: (m024b21)
+Scores: (#C #S #D #I) 10 8 1 1
+REF:  ど の 部 屋 の 意 匠 に も *** 遊 び 心 が 溢 れ て い て 楽しい 
+HYP:  ど れ 部 屋 の *** 人 に も は さ び 心 が 強 く て 楽 し い       
+Eval:     S               D   S           I   S               S   S       S   S   S         
+
+Speaker sentences   0:     utt# 21 of 50
+id: (m024b22)
+Scores: (#C #S #D #I) 5 9 3 3
+REF:  *** *** 飛 ぶ 自 由 を 得 る こ と は *** 人 類 の 夢 だ っ た 
+HYP:  お つ い ち 食 べ ら れ る *** 方 は ゲ ー ル の 夢 だ *** *** 
+Eval: I   I   S   S   S   S   S   S       D   S       I   S   S               D   D   
+
+Speaker sentences   0:     utt# 22 of 50
+id: (m024b23)
+Scores: (#C #S #D #I) 0 14 11 0
+REF:  育 ち の よ い 坊 っ ち ゃ ん の 良 さ と 逆 境 に 育 っ た 人 間 の 強 さ 
+HYP:  *** *** *** *** *** *** *** *** *** *** *** ぽ つ に か は 久 保 L   O   V   E   Y   O   U   
+Eval: D   D   D   D   D   D   D   D   D   D   D   S   S   S   S   S   S   S   S   S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 23 of 50
+id: (m024b24)
+Scores: (#C #S #D #I) 2 21 0 13
+REF:  *** 初 め て *** *** *** *** *** *** *** *** *** *** *** *** ル ー ブ ル 美 術 館 へ 入 っ た の は 十四 年 前 の こ と だ 
+HYP:  は じ め て う う う 年 を 設 定 を す る と 止 ま り が 好 き だ ろ う け ど ま ず 2   3      都 く ら い か ら 
+Eval: I   S           I   I   I   I   I   I   I   I   I   I   I   I   S   S   S   S   S   S   S   S   S   S   S   S   S   S      S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 24 of 50
+id: (m024b25)
+Scores: (#C #S #D #I) 15 5 1 10
+REF:  自 分 の *** 実 力 は 自 分 が 一 番 よ く 知 っ て い る *** *** *** *** *** *** *** *** *** は ず だ 
+HYP:  自 分 の 日 記 録 は 自 分 が 一 番 よ く 知 っ て *** る パ ナ ソ ニ ッ ク ド ナ シ ョ ナ ー 
+Eval:             I   S   S                                               D       I   I   I   I   I   I   I   I   I   S   S   S   
+
+Speaker sentences   0:     utt# 25 of 50
+id: (m024b26)
+Scores: (#C #S #D #I) 2 11 3 1
+REF:  *** 茶 色 の 眼 は 柔 和 な 輝 き を お び て い た 
+HYP:  富 士 通 自 体 は *** *** あ ん ま り 聞 か な い *** 
+Eval: I   S   S   S   S       D   D   S   S   S   S   S   S   S       D   
+
+Speaker sentences   0:     utt# 26 of 50
+id: (m024b27)
+Scores: (#C #S #D #I) 24 12 1 0
+REF:  今 流 行 の 単 身 赴 任 族 の 淋 し さ を ち ょ っ ぴ り 味 わ わ せ て も ら っ た の も 有 意 義 な 体 験 だ 
+HYP:  今 流 行 の 単 身 不 倫 族 の 寂 し さ を *** ざ っ く り 味 わ わ せ て も ら っ た の が 不 倫 族 の 単 身 だ 
+Eval:                         S   S           S               D   S       S                                               S   S   S   S   S   S   S       
+
+Speaker sentences   0:     utt# 27 of 50
+id: (m024b28)
+Scores: (#C #S #D #I) 10 8 0 18
+REF:  や は り 無 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** 表 情 の ま ま 何 も *** 言葉 が あ り ま せ ん 
+HYP:  や は り 無 用 じ ゃ ん そ れ ク ー ラ ー 変 え た ら い い ん じ ゃ な い の 何 も 言 葉    が あ る ま け ん 
+Eval:                 I   I   I   I   I   I   I   I   I   I   I   I   I   I   I   I   I   S   S   S   S   S           I   S              S       S       
+
+Speaker sentences   0:     utt# 28 of 50
+id: (m024b29)
+Scores: (#C #S #D #I) 0 0 8 0
+REF:  生 き た 潤 滑 油 で す 
+HYP:  *** *** *** *** *** *** *** *** 
+Eval: D   D   D   D   D   D   D   D   
+
+Speaker sentences   0:     utt# 29 of 50
+id: (m024b30)
+Scores: (#C #S #D #I) 21 15 0 19
+REF:  **** *** *** *** *** *** *** *** **** 彼 の 数 学 の 授 業 は 抜 群 に 面 白 く **** *** *** *** *** *** *** *** **** *** 試 験 前 に は 月 給 外 補 習 授 業 を す る ほ ど 熱 心 で あ る 
+HYP:  🖥 作 っ て も ら っ て 🌵 彼 の 中 学 の 時 代 は 自 分 に 面 白 く 🖥 作 っ て も ら っ て 🌵 ジ ャ イ ア ン は 劣 等 外 補 中 塗 料 を す る ほ ど 熱 中 で あ る 
+Eval: I    I   I   I   I   I   I   I   I            S           S   S       S   S                   I    I   I   I   I   I   I   I   I    I   S   S   S   S       S   S           S   S   S                           S               
+
+Speaker sentences   0:     utt# 30 of 50
+id: (m024b31)
+Scores: (#C #S #D #I) 5 20 4 11
+REF:  *** *** * * * * *** そ う で *** な *** *** *** く て も 寿 司 屋 の 職 人 は 減 ら ず 口 を き き た が る 人 間 が 多 い 
+HYP:  人 は 2 0 0 0 で し か で き な い と か っ て *** 言 っ て ま す ね 2   0   0   0   だ と で き *** *** る *** ん だ け ど 
+Eval: I   I   I I I I I   S   S       I       I   I   I   S       D   S   S   S   S   S   S   S   S   S   S   S   S   S       D   D       D   S   S   S   S   
+
+Speaker sentences   0:     utt# 31 of 50
+id: (m024b32)
+Scores: (#C #S #D #I) 11 10 2 8
+REF:  リ ー *** ド が 大 き *** *** *** *** *** *** *** け れ ば 牽 制 球 を 投 げ な け れ ば な ら な い 
+HYP:  ゆ ー だ ろ が 大 き い か ら は も う な が い た 人 で す よ 投 げ な け れ ば *** *** な っ 
+Eval: S       I   S               I   I   I   I   I   I   I   S   S   S   S   S   S   S                           D   D       S   
+
+Speaker sentences   0:     utt# 32 of 50
+id: (m024b33)
+Scores: (#C #S #D #I) 20 16 2 4
+REF:  ア メ リ カ が *** *** *** *** 風 邪 を ひ け ば 日 本 も く し ゃ み を す る と 言 わ れ る ほ ど で 日 本 経 済 も 不 況 で す 
+HYP:  ア メ リ カ が あ っ た じ ゃ ろ っ て の は 一 番 も く *** た み を 知 る と 言 わ れ る ほ ど で *** 二 番 絶 対 目 標 で す 
+Eval:                     I   I   I   I   S   S   S   S   S   S   S   S           D   S           S                                       D   S   S   S   S   S   S           
+
+Speaker sentences   0:     utt# 33 of 50
+id: (m024b34)
+Scores: (#C #S #D #I) 2 18 11 0
+REF:  ラ ッ パ も 鳴 ら な い し 笛 も 鳴 ら な い が ぞ ろ ぞ ろ と 起 き 出 し 洗 面 所 へ ゆ く 
+HYP:  *** *** *** *** *** 5   階 層 か 残 っ て た な *** *** *** *** *** *** あ れ 吸 収 し た ん じ ゃ な い 
+Eval: D   D   D   D   D   S   S   S   S   S   S   S   S       D   D   D   D   D   D   S   S   S   S       S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 34 of 50
+id: (m024b35)
+Scores: (#C #S #D #I) 12 13 5 6
+REF:  *** *** *** *** *** *** 主 人 に 甘 え 社 会 に 甘 え 自 分 に 甘 え て ぬ る ま 湯 に ど っ ぷ り 浸 っ て い る 
+HYP:  し ゅ じ ゅ ん の 何 故 か 親 は 世 界 に *** は 自 分 に 甘 え て 自 分 の 胃 に *** *** *** *** 立 っ て い る 
+Eval: I   I   I   I   I   I   S   S   S   S   S   S   S       D   S                           S   S   S   S       D   D   D   D   S                   
+
+Speaker sentences   0:     utt# 35 of 50
+id: (m024b36)
+Scores: (#C #S #D #I) 6 12 3 14
+REF:  *** *** 船 は 密 か に *** *** *** * *** *** *** *** *** *** *** *** 揺 れ つ つ 錨 を ひ き ず っ て 流 れ 続 け た 
+HYP:  兄 弟 船 は 茶 館 に お よ そ 1 回 旅 行 す る 予 定 の お 電 気 製 品 が 手 に 入 っ て *** *** *** い た 
+Eval: I   I           S   S       I   I   I   I I   I   I   I   I   I   I   I   S   S   S   S   S   S   S   S   S           D   D   D   S       
+
+Speaker sentences   0:     utt# 36 of 50
+id: (m024b37)
+Scores: (#C #S #D #I) 25 22 2 1
+REF:  こ れ ま で 少 年 野 球 マ マ さ ん バ レ ー な ど 地 域 ス *** ポ ー ツ を 支 え 市 民 に 密 着 し て き た の は 無 数 の ボ ラ ン テ ィ ア だ っ た 
+HYP:  こ れ ま で *** 当 然 な き 生 田 ん *** ば る ん が ロ ー ス 九 州 志 向 長 者 で 地 面 に 密 着 し て き た の は 夢 中 の ボ ラ ン テ ィ ア だ っ た 
+Eval:                 D   S   S   S   S   S   S       D   S   S   S   S   S   S       I   S   S   S   S   S   S   S   S                                       S   S                                           
+
+Speaker sentences   0:     utt# 37 of 50
+id: (m024b38)
+Scores: (#C #S #D #I) 2 13 0 11
+REF:  *** *** も ち ろ ん 調 査 後 は *** *** *** *** *** 元 通 *** *** *** *** り 密 閉 す る 
+HYP:  ン フ ー ン 僕 ら 京 都 語 は ぺ け た ん 無 知 通 製 品 使 っ て な い も ん 
+Eval: I   I   S   S   S   S   S   S   S       I   I   I   I   I   S       I   I   I   I   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 38 of 50
+id: (m024b39)
+Scores: (#C #S #D #I) 11 3 0 4
+REF:  冷 房 で は 冷 え 過 ぎ が 問 題 に な *** *** *** *** る 
+HYP:  冷 房 で は 冷 え き り が 問 題 に な っ て い ま す 
+Eval:                         S   S                       I   I   I   I   S   
+
+Speaker sentences   0:     utt# 39 of 50
+id: (m024b40)
+Scores: (#C #S #D #I) 17 16 3 4
+REF:  い ず れ は ハ ワ イ や カ リ フ ォ ル ニ ア な ど 日 本 人 が 多 く 住 む *** *** *** *** 暑 い 土 地 で 育 て て み た い 
+HYP:  ユ ズ ダ は ハ ワ イ や カ *** ル パ ル *** に あ る 日 本 人 が 多 く 積 む ア シ ュ ー ト 記 録 を 取 ら れ て み た *** 
+Eval: S   S   S                           D   S   S       D   S   S   S                           S       I   I   I   I   S   S   S   S   S   S   S               D   
+
+Speaker sentences   0:     utt# 40 of 50
+id: (m024b41)
+Scores: (#C #S #D #I) 12 17 0 10
+REF:  *** *** 最 近 の 不 調 を 理 由 に ソ ウ ル *** *** *** *** *** 五 輪 候 補 選 手 か ら 外 す こ と *** *** *** を 発 表 し た 
+HYP:  ペ ッ キ ン の フ タ を 理 由 に タ オ ル が あ る の を 考 慮 せ ず に し た ら 外 す こ と は な く て よ か っ た 
+Eval: I   I   S   S       S   S                   S   S       I   I   I   I   I   S   S   S   S   S   S   S                       I   I   I   S   S   S   S       
+
+Speaker sentences   0:     utt# 41 of 50
+id: (m024b42)
+Scores: (#C #S #D #I) 3 39 6 1
+REF:  *** 事 故 の 直 接 原 因 と な っ た 圧 力 隔 壁 の ず さ ん な 修 理 そ の ず さ ん さ を 見 落 と し た チ ェ ッ ク シ ス テ ム な ど が そ う だ 
+HYP:  シ リ ー ズ は 5   0   %   し か 使 え な い あ ー あ れ 切 ん な *** *** *** *** い っ て こ と あ れ 切 れ る の か な Y   シ *** *** リ ー ズ で 切 れ る 
+Eval: I   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S   S           D   D   D   D   S   S   S   S   S   S   S   S   S   S   S   S   S   S       D   D   S   S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 42 of 50
+id: (m024b43)
+Scores: (#C #S #D #I) 3 19 12 0
+REF:  女 性 と は 逆 で 何 と か 常 識 を 破 っ て め だ っ て や ろ う と 意 気 込 む 人 が ほ と ん ど だ 
+HYP:  *** *** *** *** *** そ れ と も う ち の 研 究 室 で 使 っ て *** *** *** *** *** *** *** る の に 早 い か ら ね 
+Eval: D   D   D   D   D   S   S       S   S   S   S   S   S   S   S   S           D   D   D   D   D   D   D   S   S   S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 43 of 50
+id: (m024b44)
+Scores: (#C #S #D #I) 1 21 6 0
+REF:  も っ と 広 い 議 場 を と い う 声 も あ っ た が チ ャ ー チ ル 首 相 が 抑 え た 
+HYP:  *** 1   で 1   0   0   0   く ら い *** *** *** *** *** 1   0   0   0   ち ょ っ と く ら い か な 
+Eval: D   S   S   S   S   S   S   S   S       D   D   D   D   D   S   S   S   S   S   S   S   S   S   S   S   S   S   
+
+Speaker sentences   0:     utt# 44 of 50
+id: (m024b45)
+Scores: (#C #S #D #I) 12 17 1 10
+REF:  ギ ン ザ ケ の *** *** 卵 を 輸 入 し て ふ 化 さ せ *** *** *** *** 海 中 で 育 て る *** *** *** 養 殖 も *** 始 ま っ て い る 
+HYP:  ゆ ん だ て の た ま ご を ゆ ぬ っ て *** か か せ は し ゅ う り ょ く あ て る よ う し ゅ く も は じ ま っ て い る 
+Eval: S   S   S   S       I   I   S       S   S   S       D   S   S       I   I   I   I   S   S   S   S           I   I   I   S   S       I   S                       
+
+Speaker sentences   0:     utt# 45 of 50
+id: (m024b46)
+Scores: (#C #S #D #I) 1 8 1 12
+REF:  *** *** *** *** *** *** *** *** *** * * *** 文 書 は 年 々 増 え て い く 
+HYP:  て る ん じ ゃ な い あ れ H T テ ク ノ ロ ジ ー 入 っ て *** る 
+Eval: I   I   I   I   I   I   I   I   I   I I I   S   S   S   S   S   S   S       D   S   
+
+Speaker sentences   0:     utt# 46 of 50
+id: (m024b47)
+Scores: (#C #S #D #I) 31 9 2 5
+REF:  お し ゃ れ と *** *** *** *** は 縁 が な く ジ *** ー パ ン に T シ ャ ツ ジ ャ ン パ ー と い っ た 格 好 で 駅 ま で 自 転 車 を 走 ら せ る 
+HYP:  お し ゃ れ と か な ん か 腹 立 っ て よ ジ ュ ー パ ン *** * の 昼 食 ジ ャ ン パ ー と い っ た 格 好 で 駅 前 で 自 転 車 を 走 ら せ る 
+Eval:                     I   I   I   I   S   S   S   S   S       I               D   D S   S   S                                                       S                                       
+
+Speaker sentences   0:     utt# 47 of 50
+id: (m024b48)
+Scores: (#C #S #D #I) 8 8 0 12
+REF:  *** *** 熱 で う る ん だ *** *** *** *** *** *** *** *** *** 青 い *** 空 に 積 乱 雲 が あ る 
+HYP:  ネ ッ ト で 売 る ん だ 電 気 大 手 は ど こ も で か い ク ラ イ ア ン ト が あ る 
+Eval: I   I   S       S               I   I   I   I   I   I   I   I   I   S       I   S   S   S   S   S               
+
+Speaker sentences   0:     utt# 48 of 50
+id: (m024b49)
+Scores: (#C #S #D #I) 26 11 4 3
+REF:  *** *** 富 者 は *** 貧 者 と 同 じ 栄 養 状 態 に 落 ち 込 み 貧 者 は 餓 死 ま で あ と 一 歩 と い う 状 態 へ 落 ち 込 ん で い く 
+HYP:  ペ ッ パ ー は ヒ ン ラ と 同 じ 栄 養 状 態 *** *** *** *** の 人 間 が 生 き ま で あ と 1   歩 と い う 状 態 へ 落 ち 込 ん で い く 
+Eval: I   I   S   S       I   S   S                               D   D   D   D   S   S   S   S   S   S                   S                                                           
+
+Speaker sentences   0:     utt# 49 of 50
+id: (m024b50)
+Scores: (#C #S #D #I) 10 16 0 31
+REF:  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** 販 売 関 係 の *** *** *** 企 業 の 代 表 者 は *** *** *** *** *** *** *** *** *** *** *** *** *** セ ミ ナ ー 終 了 後 会 議 室 に 集 ま れ 
+HYP:  販 売 関 係 の な い ビ デ オ の 代 表 者 は 販 売 関 係 の な い ビ デ オ の 代 表 者 は サ イ ン 用 が い い サ イ ン 用 が い い で も サ イ ン 用 が い い じ ゃ な い 
+Eval: I   I   I   I   I   I   I   I   I   I   I   I   I   I   I                       I   I   I   S   S                       I   I   I   I   I   I   I   I   I   I   I   I   I   S   S   S   S   S   S   S   S   S   S   S   S   S   S   
+
+
