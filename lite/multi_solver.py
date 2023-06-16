@@ -65,7 +65,8 @@ class LitMultiSepSpeaker(LitSepSpeaker):
             _loss += self.stft_loss_weight * _stft_loss
                 
         if self.pesq_loss:
-            _pesq_loss = torch.mean(self.pesq_loss(targets, estimates.to(torch.float32)))
+            with.torch.amp.autocast('cuda', dtype=torch.float32):
+                _pesq_loss = torch.mean(self.pesq_loss(targets, estimates))
             if valid:
                 d['valid_pesq_loss'] = _pesq_loss
             else:

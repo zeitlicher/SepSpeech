@@ -328,9 +328,10 @@ class PesqLoss(torch.nn.Module):
         return self.factor * (0.1 * d_symm + 0.0309 * d_asymm)
 
 if __name__ == "__main__":
-    _pesq = PesqLoss(factor=1.)
-    estimate = torch.randn(1, 100000)
-    target = torch.randn(1, 100000)
-    value = _pesq(target, estimate)
+    scaler=torch.cuda.amp.GradScaler()
+    _pesq = PesqLoss(factor=1.).cuda()
+    estimate = torch.randn(1, 100000).cuda()
+    target = torch.randn(1, 100000).cuda()
+    with torch.amp.autocast('cuda', dtype=torch.float32):
+        value = _pesq(target.float(), estimate.float())
     print(value.cpu().detach().numpy())
-    
