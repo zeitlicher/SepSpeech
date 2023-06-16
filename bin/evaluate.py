@@ -16,7 +16,7 @@ import yaml
 import numpy as np
 import whisper
 
-def get_divisor(model):
+def get_padding_value(model):
 
     start = -1
     end = -1
@@ -33,19 +33,13 @@ def get_divisor(model):
                     break
     return end - start
 
-def padding(x, divisor):
-    pad_value = divisor - x.shape[-1] % divisor -1
+def padding(x, padding_value):
+    pad_value = padding_value - x.shape[-1] % padding_value -1
     return F.pad (x, pad=(1, pad_value ), value=0.)
 
 def read_audio(path):
     wave, sr = torchaudio.load(path)
     return wave
-    #mx = torch.max(torch.abs(wave))
-    #wave = wave/torch.max(torch.abs(wave))
-    #std, mean = torch.std_mean(wave)
-    #wave = (wave - mean)/std
-    #return wave, mean, std
-    #return torch.t(wave)
 
 def main(args):
 
@@ -60,7 +54,7 @@ def main(args):
     assert args.checkpoint is not None
     model = LitSepSpeaker.load_from_checkpoint(args.checkpoint,
                                                config=config).to(device)
-    divisor = get_divisor(model)
+    padding_value = get_padding_value(model)
     model.eval()
     
     sample_rate = config['dataset']['segment']['sample_rate']
@@ -107,8 +101,8 @@ def main(args):
 
             # normalize and padding
             mixture = (mixture - mix_mean)/mix_std
-            if divisor > 0 and mixture_original_length % divisor > 0:
-                mixture = padding(mixture, divisor)
+            if padding_value > 0 and mixture_original_length % padding_value > 1:
+                mixture = padding(mixture, padding_value)
 
             estimate, _ = model(mixture.to(device), enroll.to(device))
             estimate = estimate[:, :mixture_original_length]
@@ -117,20 +111,13 @@ def main(args):
             est_stoi.append(_stoi(estimate.cuda(), source.cuda()).cpu().detach().numpy())
             est_sdr.append(_sdr(estimate.cuda(), source.cuda()).cpu().detach().numpy())
             
-            #std, mean = torch.std_mean(estimate)
-            #estimate = (estimate-mean)/std
-            #estimate = estimate/torch.max(torch.abs(estimate)) * torch.max(torch.abs(mixture))
-            #estimate = torchaudio.functional.gain(estimate / torch.max(torch.abs(estimate)), -6.0)
-            #estimate *= std
-            
             estimate_outdir = args.output_dir
             if not os.path.exists(estimate_outdir):
                 os.path.mkdir(estimate_outdir)
             outpath = os.path.join(estimate_outdir, key) + '_estimate.wav'
+            # save as flot32 wave file
             torchaudio.save(filepath=outpath, src=estimate.to('cpu'),
                             sample_rate=sample_rate)
-#                            encoding='PCM_S', bits_per_sample=16 
-#                            )
             estimates.append(outpath)
 
             decoded = decoder.transcribe(outpath, verbose=None, language='ja')
