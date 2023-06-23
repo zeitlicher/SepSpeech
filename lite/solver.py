@@ -12,14 +12,16 @@ from typing import Tuple
  PyTorch Lightning 用 solver
 '''
 class LitSepSpeaker(pl.LightningModule):
-    def __init__(self, config:dict) -> None:
+    def __init__(self, config:dict, model_type=None) -> None:
         super().__init__()
+        if model_type is None:
+            model_type = config['model_type']
         self.config = config
-        if config['model_type'] == 'unet':
+        if model_type == 'unet':
             self.model = UNet(config)
-        elif config['model_type'] == 'unet2':
+        elif model_type == 'unet2':
             self.model = UNet2(config)
-        elif config['model_type'] == 'tasnet':
+        elif model_type == 'tasnet':
             self.model = ConvTasNet(config)
         else:
             raise ValueError('wrong parameter: '+config['model_type'])

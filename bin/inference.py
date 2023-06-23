@@ -9,7 +9,9 @@ import yaml
   
 def main(config, args):
 
-    model = LitSepSpeaker.load_from_checkpoint(args.checkpoint, config=config)
+    model = LitSepSpeaker.load_from_checkpoint(args.checkpoint,
+                                               config=config,
+                                               model_type=args.model_type)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     model.eval()
@@ -18,15 +20,17 @@ def main(config, args):
     mx = torch.max(mixture)
     std, mean = torch.std_mean(mixture, dim=-1)
     mixture = (mixture-mean)/std
+    out_std = std
+    
     enroll, sr = torchaudio.load(args.enroll)
     std, mean = torch.std_mean(enroll, dim=-1)
     enroll = (enroll - mean)/std
+
     length = len(mixture.t())
     with torch.no_grad():
         output, _ = model(mixture.cuda(), enroll.cuda())
-    std, mean = torch.std_mean(output, dim=-1)
-    output /= std
-    output = output/torch.max(output) * mx
+    output *= out_std.cuda()
+    
     torchaudio.save(filepath=args.output, src=output.to('cpu'), sample_rate=sr)
 
 if __name__ == '__main__':
@@ -36,9 +40,10 @@ if __name__ == '__main__':
     parser.add_argument('--mixture', type=str, required=True)
     parser.add_argument('--enroll', type=str, required=True)
     parser.add_argument('--output', type=str, default='output.wav')
+    parser.add_argument('--model_type', type=str, default='tasnet')
     args=parser.parse_args()
 
     with open(args.config, 'r') as yf:
         config = yaml.safe_load(yf)
 
-    main(config, args)
+    main(config['config'], args)
