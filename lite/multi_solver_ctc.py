@@ -1,16 +1,19 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
+import torch.nn.functional as F
 import pytorch_lightning as pl
-from models.unet import UNet
-from models.unet2 import UNet2
+from models.unet_ctc import UNet
+from models.unet2_ctc import UNet2
 from models.conv_tasnet import ConvTasNet
 from loss.stft_loss import MultiResolutionSTFTLoss
 from typing import Tuple
-from lite.solver import LitSepSpeaker
+from lite.solver_ctc import LitSepSpeaker
 from loss.pesq_loss import PesqLoss
 from loss.stoi_loss import NegSTOILoss
 from loss.sdr_loss import NegativeSISDR
+from einops import rearrange
+import numpy as np
 
 '''
  PyTorch Lightning 用 solver
@@ -92,28 +95,47 @@ class LitMultiSepSpeaker(LitSepSpeaker):
         return _loss, d
                 
     def training_step(self, batch, batch_idx:int) -> Tensor:
-        mixtures, sources, enrolls, lengths, speakers = batch
+        mixtures, sources, enrolls, lengths, speakers, labels, label_lengths = batch
 
-        src_hat, spk_hat = self.forward(mixtures, enrolls)
+        src_hat, spk_hat, logits = self.forward(mixtures, enrolls)
 
         _loss, d = self.compute_loss_values(src_hat,
                                             sources,
                                             spk_hat,
                                             speakers)
+        valid_lengths = [ self.model.valid_length_encoder(l) for l in label_lengths ]
+        logprobs = rearrange(F.log_softmax(logits), 'b t c -> t b c')
+        
+        _ctc_loss = self.ctc_loss(logprobs,
+                                  labels,
+                                  torch.from_numpy(np.array(valid_lengths)),
+                                  torch.from_numpy(np.array(label_lengths)))
+        _loss += self.ctc_weight * _ctc_loss
+
+        d['train_ctc_loss'] = _ctc_loss
         d['train_loss'] = _loss
         self.log_dict(d)
         
         return _loss
 
     def validation_step(self, batch, batch_idx, dataloader_idx=0):
-        mixtures, sources, enrolls, lengths, speakers = batch
+        mixtures, sources, enrolls, lengths, speakers, labels, label_lengths = batch
 
-        src_hat, spk_hat = self.forward(mixtures, enrolls)
+        src_hat, spk_hat, logits = self.forward(mixtures, enrolls)
         _loss, d = self.compute_loss_values(src_hat,
                                             sources,
                                             spk_hat,
                                             speakers,
                                             valid=True)
+        valid_lengths = [ self.model.valid_length_encoder(l) for l in label_lengths ]
+        logprobs = rearrange(F.log_softmax(logits), 'b t c -> t b c')
+        
+        _ctc_loss = self.ctc_loss(logprobs,
+                                  labels,
+                                  torch.from_numpy(np.array(valid_lengths)),
+                                  torch.from_numpy(np.array(label_lengths)))
+        _loss += self.ctc_weight * _ctc_loss
+        
         d['valid_loss'] = _loss
         self.log_dict(d)
         

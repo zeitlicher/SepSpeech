@@ -1,4 +1,4 @@
-model_type: tasnet
+model_type: unet
 # dataset
 dataset:
   process:
@@ -9,14 +9,15 @@ dataset:
     enroll_segment: 20
     sample_rate: 16000
   train:
-    csv_path: 'audio/csv/train_3p.csv'
+    csv_path: 'audio/csv/train_3p_phone.csv'
     enroll_path: 'audio/csv/enroll_3p.csv'
   valid:  
-    csv_path: 'audio/csv/valid_3p.csv'
+    csv_path: 'audio/csv/valid_3p_phone.csv'
     enroll_path: 'audio/csv/enroll_3p.csv'
   test:
     csv_path: 
-    enroll_path: 
+    enroll_path:
+  tokenizer: 'audio/csv/vocab_phone/vocab.json'
 # trainer parameters
 trainer:
   accelerator: 'auto'
@@ -26,10 +27,10 @@ trainer:
   profiler: 'simple'
   gradient_clip_val: 5.
 optimizer:
-  lr: 1.e-4
+  lr: 1.0e-4 #4.0e-5
 logger:
   save_dir: './'
-  version: 2
+  version: 13
   name: 'lightning_logs'
 checkpoint:
   monitor: 'valid_loss'
@@ -41,13 +42,27 @@ checkpoint:
 loss:
   lambda1: 1.0
   lambda2: 0.1
+  ce_loss:
+    active: True
+    weight: 1.
+  stft_loss:
+    active: True
+    weight: 1.
+  pesq_loss:
+    active: False
+    weight: 1.
+  stoi_loss:
+    active: False
+  sdr_loss:
+    active: False
+    weight: 1.
 speaker:
   adpt_type: none
 tasnet:
   kernel_size: 20
   in_channels: 256
   enc_channels: 256
-  conv_channels: 512
+  conv_channels: 256
   num_blocks: 6
   block_kernel_size: 3
   num_repeats: 4
@@ -70,6 +85,11 @@ unet:
   reference: 0.1
   causal: True
   num_speakers: 307
+#
+  ctc:
+    use: True
+    weight: 1.
+    output_class: 41
 diffusion:
   timesteps: 200
   beta_start: 0.001
