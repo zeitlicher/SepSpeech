@@ -42,12 +42,12 @@ class SpeechDatasetCTC(SpeechDataset):
         row = self.df.iloc[idx]
         label = row['label']
         label = self.tokenizer.text2token(label)
-        #with open(label_path, 'r') as f:
-        #    line = f.readline().strip()
-        #    label = self.tokenizer.token2id(line)
-            
+        
         return mixture, source, enroll, speaker, label
 
+    def set_sort_by_len(self):
+        self.df = self.df.sort_values('length')
+        
 def data_processing(data:Tuple[Tensor,Tensor,Tensor,int, Tensor]) -> Tuple[Tensor, Tensor, Tensor, list, Tensor, list]:
     mixtures = []
     sources = []
@@ -67,7 +67,8 @@ def data_processing(data:Tuple[Tensor,Tensor,Tensor,int, Tensor]) -> Tuple[Tenso
         #speakers.append(torch.from_numpy(speaker.astype(np.int)).clone())
         speakers.append(speaker)
 
-        labels.append(torch.from_numpy(np.array(label)))
+        #labels.append(torch.from_numpy(np.array(label)))
+        labels.append(torch.tensor(label, dtype=torch.int32))
         label_lengths.append(len(labels))
 
     mixtures = nn.utils.rnn.pad_sequence(mixtures, batch_first=True)
@@ -77,7 +78,6 @@ def data_processing(data:Tuple[Tensor,Tensor,Tensor,int, Tensor]) -> Tuple[Tenso
     speakers = torch.from_numpy(np.array(speakers)).clone()
 
     labels = nn.utils.rnn.pad_sequence(labels, batch_first=True)
-    
     mixtures = mixtures.squeeze()
     sources = sources.squeeze()
     enrolls = enrolls.squeeze()
@@ -86,5 +86,5 @@ def data_processing(data:Tuple[Tensor,Tensor,Tensor,int, Tensor]) -> Tuple[Tenso
         mixtures = mixtures.unsqueeze(0)
         sources = sources.unsqueeze(0)
         enrolls = enrolls.unsqueeze(0)
-        
+
     return mixtures, sources, enrolls, lengths, speakers, labels, label_lengths

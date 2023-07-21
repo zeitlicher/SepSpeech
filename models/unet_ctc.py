@@ -229,6 +229,17 @@ class UNet(nn.Module):
         self.ctc_fc = None
         self.ctc_weight = 0.
         if config['unet']['ctc']['use'] :
+            #self.ctc_trans = nn.ConvTranspose1d(256, 256, kernel_size=self.kernel_size,stride=2)
+            self.ctc_trans = nn.Sequential(
+                nn.ConvTranspose1d(in_channels, in_channels, self.kernel_size, stride=2),
+                nn.ReLU(),
+                nn.ConvTranspose1d(in_channels, in_channels, self.kernel_size, stride=2),
+                nn.ReLU(),
+                nn.Conv1d(in_channels, in_channels, kernel_size=self.kernel_size),
+                nn.ReLU(),
+                nn.Conv1d(in_channels, in_channels, kernel_size=self.kernel_size),
+                nn.ReLU()
+            )                
             self.ctc_fc = nn.Linear(in_channels, config['unet']['ctc']['output_class'])
             self.ctc_weight = config['unet']['ctc']['weight']
             
@@ -247,6 +258,10 @@ class UNet(nn.Module):
         for idx in range(self.depth):
             length = math.ceil((length - self.kernel_size)/self.stride) + 1
             length = max(length, 1)
+        length = (length-1)*2 + self.kernel_size - 1
+        length = (length-1)*2 + self.kernel_size - 1
+        length = math.ceil((length - self.kernel_size)) + 1
+        length = math.ceil((length - self.kernel_size)) + 1
         return int(length)
     
     @property
@@ -296,7 +311,8 @@ class UNet(nn.Module):
 
         z = None
         if self.ctc_fc is not None:
-            z = x.permute(0, 2, 1)
+            z = self.ctc_trans(x)
+            z = rearrange(z, 'b c t -> b t c')
             z = self.ctc_fc(z)
             
         #for decode, transform in zip(self.decoder, self.transform_d):

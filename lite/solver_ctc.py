@@ -32,7 +32,7 @@ class LitSepSpeaker(pl.LightningModule):
         self.ce_loss = nn.CrossEntropyLoss(reduction='sum')
         self.stft_loss = MultiResolutionSTFTLoss()
 
-        self.ctc_loss = nn.CTCLoss()
+        #self.ctc_loss = nn.CTCLoss(zero_infinity=True)
         self.ctc_weight = config['unet']['ctc']['weight']
         self.padding_value = 0
         
@@ -53,7 +53,12 @@ class LitSepSpeaker(pl.LightningModule):
         # CTC
         logprobs = rearrange(F.log_softmax(logits), 'b t c -> t b c')
         valid_lengths = [ self.model.valid_length_encoder(l) for l in lengths ]
-        _ctc_loss = self.ctc_loss(logprobs, labels, torch.from_numpy(valid_lengths), torch.from_numpy(label_lengths))
+        with torch.amp.autocast('cuda', dtype=torch.float32):
+            label_lengths = torch.tensor(label_lengths).to(torch.int32)
+            valid_lengths = torch.tensor(valid_lengths).to(torch.int32)
+            labels_true = torch.cat([labels[i, :l] for i, l in enumerate(label_lengths) ])
+            _ctc_loss = F.ctc_loss(logprobs, labels, valid_lengths, label_lengths, blank=0, zero_infinity=True)
+
         _loss += self.ctc_weight * _ctc_loss
         
         self.log_dict({'train_loss': _loss,
@@ -81,7 +86,12 @@ class LitSepSpeaker(pl.LightningModule):
         # CTC
         logprobs = rearrange(F.log_softmax(logits), 'b t c -> t b c')
         valid_lengths = [ self.model.valid_length_encoder(l) for l in lengths ]
-        _ctc_loss = self.ctc_loss(logprobs, labels, torch.from_numpy(valid_lengths), torch.from_numpy(label_lengths))
+        with torch.amp.autocast('cuda', dtype=torch.float32):
+            label_lengths = torch.tensor(label_lengths).to(torch.int32)
+            valid_lengths = torch.tensor(valid_lengths).to(torch.int32)
+            labels_true = torch.cat([labels[i, :l] for i, l in enumerate(label_lengths) ])
+            _ctc_loss = F.ctc_loss(logprobs, labels, valid_lengths, label_lengths, blank=0, zero_infinity=True)
+            
         _loss += self.ctc_weight * _ctc_loss
         
         self.log_dict({'valid_loss': _loss,

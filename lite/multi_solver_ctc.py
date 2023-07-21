@@ -104,15 +104,19 @@ class LitMultiSepSpeaker(LitSepSpeaker):
                                             spk_hat,
                                             speakers)
         valid_lengths = [ self.model.valid_length_encoder(l) for l in label_lengths ]
-        logprobs = rearrange(F.log_softmax(logits), 'b t c -> t b c')
-        
-        _ctc_loss = self.ctc_loss(logprobs,
-                                  labels,
-                                  torch.from_numpy(np.array(valid_lengths)),
-                                  torch.from_numpy(np.array(label_lengths)))
-        _loss += self.ctc_weight * _ctc_loss
 
-        d['train_ctc_loss'] = _ctc_loss
+        if logits is not None:
+            logprobs = rearrange(F.log_softmax(logits, dim=-1), 'b t c -> t b c')
+
+            with torch.amp.autocast('cuda', dtype=torch.float32):
+                label_lengths = torch.tensor(label_lengths).to(torch.int32)
+                valid_lengths = torch.tensor(valid_lengths).to(torch.int32)
+                labels_true = torch.cat([labels[i, :l] for i, l in enumerate(label_lengths) ])
+                _ctc_loss = F.ctc_loss(logprobs, labels, valid_lengths, label_lengths, blank=0, zero_infinity=True)
+                
+            _loss += self.ctc_weight * _ctc_loss
+
+            d['train_ctc_loss'] = _ctc_loss
         d['train_loss'] = _loss
         self.log_dict(d)
         
@@ -128,14 +132,20 @@ class LitMultiSepSpeaker(LitSepSpeaker):
                                             speakers,
                                             valid=True)
         valid_lengths = [ self.model.valid_length_encoder(l) for l in label_lengths ]
-        logprobs = rearrange(F.log_softmax(logits), 'b t c -> t b c')
-        
-        _ctc_loss = self.ctc_loss(logprobs,
-                                  labels,
-                                  torch.from_numpy(np.array(valid_lengths)),
-                                  torch.from_numpy(np.array(label_lengths)))
-        _loss += self.ctc_weight * _ctc_loss
-        
+
+        if logits is not None:
+            logprobs = rearrange(F.log_softmax(logits, dim=-1), 'b t c -> t b c')
+
+            with torch.amp.autocast('cuda', dtype=torch.float32):
+                label_lengths = torch.tensor(label_lengths).to(torch.int32)
+                valid_lengths = torch.tensor(valid_lengths).to(torch.int32)
+                labels_true = torch.cat([labels[i, :l] for i, l in enumerate(label_lengths) ])
+                _ctc_loss = F.ctc_loss(logprobs, labels, valid_lengths, label_lengths, blank=0, zero_infinity=True)
+            
+            _loss += self.ctc_weight * _ctc_loss
+
+            d['valid_ctc_loss'] = _ctc_loss
+            
         d['valid_loss'] = _loss
         self.log_dict(d)
         

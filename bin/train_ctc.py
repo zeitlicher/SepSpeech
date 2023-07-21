@@ -33,6 +33,10 @@ def main(config:dict, checkpoint_path=None):
                                      **config['dataset']['segment'],
                                      padding_value=padding_value,
                                      tokenizer=tokenizer)
+    shuffle = True if config['dataset']['sort_by_len'] else False
+    if config['dataset']['sort_by_len']:
+        train_dataset.set_sort_by_len()
+        
     train_loader = data.DataLoader(dataset=train_dataset,
                                    **config['dataset']['process'],
                                    pin_memory=True,
