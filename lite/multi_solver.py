@@ -23,7 +23,7 @@ class LitMultiSepSpeaker(LitSepSpeaker):
         self.ce_loss_weight = self.stft_loss_weight = self.pesq_loss_weight = self.stoi_loss_weight = self.sdr_loss_weight = 0.
 
         if config['loss']['ce_loss']['active']:
-            self.ce_loss = nn.CrossEntropyLoss(reduction='sum')
+            self.ce_loss = nn.CrossEntropyLoss(reduction='mean')
             self.ce_loss_weight = config['loss']['ce_loss']['weight']
         if config['loss']['stft_loss']['active']:
             self.stft_loss = MultiResolutionSTFTLoss()

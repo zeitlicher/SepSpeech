@@ -29,7 +29,7 @@ class LitSepSpeaker(pl.LightningModule):
         self.lambda1 = config['loss']['lambda1']
         self.lambda2 = config['loss']['lambda2']
 
-        self.ce_loss = nn.CrossEntropyLoss(reduction='sum')
+        self.ce_loss = nn.CrossEntropyLoss(reduction='mean')
         self.stft_loss = MultiResolutionSTFTLoss()
         self.padding_value = self.get_padding_value()
         
@@ -79,10 +79,22 @@ class LitSepSpeaker(pl.LightningModule):
     '''
     
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(),
-                                     **self.config['optimizer'])
-        return optimizer
-
+        #optimizer = torch.optim.Adam(self.parameters(),
+        #                             **self.config['optimizer'])
+        #return optimizer
+        optimizer = torch.optim.RAdam(
+            self.parameters(),
+            **self.config['optimizer'])
+        scheduler = torch.optim.lr_scheduler.OneCycleLR(
+            optimizer,
+            **self.config['scheduler']
+        )
+        #scheduler = torch.optim.LinearLR(
+        #    optimizer,
+        #    **self.config['sceduler']
+        #)
+        return [optimizer], [scheduler]
+    
     def get_padding_value(self):
         self.model.cuda()
         start = -1
