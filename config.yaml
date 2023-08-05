@@ -29,6 +29,10 @@ trainer:
   gradient_clip_val: 5.
 optimizer:
   lr: 1.e-4 #4.0e-5 #1.0e-4
+scheduler:
+  max_lr: 1.e-4
+  total_steps: 300000
+  pct_start: 0.2
 logger:
   save_dir: './'
   version: 13
@@ -42,12 +46,12 @@ checkpoint:
 # training parameters
 loss:
   lambda1: 1.0
-  lambda2: 0.1
+  lambda2: 1.0
   ce_loss:
     active: True
     weight: 1.
   stft_loss:
-    active: True
+    active: False
     weight: 1.
   pesq_loss:
     active: False
@@ -55,7 +59,7 @@ loss:
   stoi_loss:
     active: False
   sdr_loss:
-    active: False
+    active: True
     weight: 1.
 speaker:
   adpt_type: none
@@ -72,7 +76,7 @@ tasnet:
 unet:
   attention: True
   normalize: False #True
-  floor: 0.001
+  floor: 0.1
   resample: 2
   depth: 5
   in_channels: 1
@@ -86,11 +90,15 @@ unet:
   reference: 0.1
   causal: True
   num_speakers: 307
-#
-  ctc:
-    use: True
-    weight: 1.
-    output_class: 41
+ctc:
+  use: True
+  weight: 0.0
+  parameters:
+    kernel_size: 8
+    stride: 4
+    padding: 4
+    chout: 256
+    outdim: 41 # phoneme
 diffusion:
   timesteps: 200
   beta_start: 0.001

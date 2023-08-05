@@ -31,7 +31,7 @@ do
 	for snr in 0 5 10 20;
 	do
 	    #for model_type in tasnet unet;
-	    for model_type in unet2;
+	    for model_type in unet_sdr;
 	    do
 		#for typ in mix_result est_result;
 		for typ in mix_result est_result;
