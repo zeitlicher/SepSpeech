@@ -32,7 +32,8 @@ class LitSepSpeaker(pl.LightningModule):
         self.ce_loss = nn.CrossEntropyLoss(reduction='mean')
         self.stft_loss = MultiResolutionSTFTLoss()
         self.padding_value = self.get_padding_value()
-        
+        #self.padding_value = 0
+      
         self.save_hyperparameters()
 
     def forward(self, mix:Tensor, enr:Tensor) -> Tuple[Tensor, Tensor]:

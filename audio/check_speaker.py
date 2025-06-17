@@ -1,0 +1,22 @@
+import os, sys
+import argparse
+import array
+import math
+import numpy as np
+import random
+import wave
+import pandas as pd
+
+def main(args):
+    df_speech = pd.read_csv(args.csv)
+
+    for index, row in df_speech.iterrows():
+        speaker=row['speaker']
+        print (speaker)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--csv', type=str, required=True)
+    args=parser.parse_args()
+
+    main(args)

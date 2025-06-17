@@ -10,6 +10,7 @@ import argparse
 import yaml
 import math
 import models.unet as unet
+from einops import rearrange
 
 '''
     ConvTasNet
@@ -341,6 +342,9 @@ class ConvTasNet(nn.Module):
         if x.dim() == 1:
             x = torch.unsqueeze(x, 0)
 
+        # check for cropping
+        _, input_length = x.shape
+        
         # updample
         #x = F.pad(x, (0, self.valid_length(x.shape[-1]) - x.shape[-1]))
         #x = self.upsample(x)
@@ -363,12 +367,21 @@ class ConvTasNet(nn.Module):
             m = self.non_linear(torch.stack(e, dim=0))
         # spks x [n x N x T]
         s = w * m
-        out = self.decoder_1d(y, squeeze=True)
+        #out = self.decoder_1d(y, squeeze=True)
+        s = rearrange(s, 's b c t -> (s b) c t')
+        out = self.decoder_1d(s, squeeze=True)
         if out.dim() == 1: # in case of batch size = 1
             out = torch.unsqueeze(out, 0)
         # downsample
         #out = self.downsample(out)
-        
+
+        # cropping
+        _, output_length = out.shape
+        if output_length > input_length:
+            out = out[:, :input_length]
+        else:
+            out = F.pad(out, (0, input_length - output_length))
+            
         # spks x n x S
         return out, z
 

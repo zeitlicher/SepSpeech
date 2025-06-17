@@ -1,4 +1,4 @@
-model_type: unet
+model_type: tasnet
 # dataset
 dataset:
   process:
@@ -35,7 +35,7 @@ scheduler:
   pct_start: 0.2
 logger:
   save_dir: './'
-  version: 13
+  version: 20
   name: 'lightning_logs'
 checkpoint:
   monitor: 'valid_loss'
@@ -67,7 +67,7 @@ tasnet:
   kernel_size: 20
   in_channels: 256
   enc_channels: 256
-  conv_channels: 256
+  conv_channels: 512
   num_blocks: 6
   block_kernel_size: 3
   num_repeats: 4
